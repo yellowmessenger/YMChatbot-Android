@@ -6,7 +6,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yellowmessenger.ymchat.BotEventListener;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
-import com.yellowmessenger.ymchat.models.BotEventsModel;
+import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.HashMap;
@@ -33,10 +33,8 @@ public class MainActivity extends AppCompatActivity {
         //setting event listener
         ymChat.onEventFromBot(new BotEventListener() {
             @Override
-            public void onSuccess(BotEventsModel botEvent) {
-            }
-            @Override
-            public void onFailure(String error) {
+            public void onSuccess(YMBotEventResponse botEvent) {
+
             }
         });
 
@@ -45,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             //Starting the bot activity
-            ymChat.startChatBot(this);
+            ymChat.startChatbot(this);
         });
     }
 }

@@ -28,7 +28,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 
-import com.yellowmessenger.ymchat.models.BotEventsModel;
+import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -194,7 +194,7 @@ public class BotWebView extends AppCompatActivity {
         Log.d(TAG, "onCreate: setting up local listener");
         YMChat.getInstance().setLocalListener(new BotEventListener() {
             @Override
-            public void onSuccess(BotEventsModel botEvent) {
+            public void onSuccess(YMBotEventResponse botEvent) {
                 Log.d(TAG, "onSuccess: "+botEvent.getCode());
 
                 switch (botEvent.getCode()){
@@ -210,9 +210,6 @@ public class BotWebView extends AppCompatActivity {
                          }
                         break;
                 }
-            }
-            @Override
-            public void onFailure(String error) {
             }
         });
 
@@ -243,7 +240,7 @@ public class BotWebView extends AppCompatActivity {
 
             ImageButton backButton = findViewById(R.id.backButton);
             backButton.setOnClickListener(view -> {
-                YMChat.getInstance().emitEvent(new BotEventsModel("bot-closed", ""));
+                YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", ""));
                 fh.closeBot();
                 this.finish();
             });
@@ -327,7 +324,7 @@ public class BotWebView extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        YMChat.getInstance().emitEvent(new BotEventsModel("bot-closed",""));
+        YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed",""));
         fh.closeBot();
         this.finish();
     }

@@ -36,7 +36,7 @@ public class JavaScriptInterface {
 
     @JavascriptInterface
     public void  receiveMessage(String s) {
-        BotEventsModel incomingEvent = new Gson().fromJson(s, BotEventsModel.class);
+        YMBotEventResponse incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
 
 
         // Pass-through events (Bot will not close)

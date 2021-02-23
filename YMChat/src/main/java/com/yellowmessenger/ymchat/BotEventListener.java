@@ -1,8 +1,8 @@
 package com.yellowmessenger.ymchat;
 
-import com.yellowmessenger.ymchat.models.BotEventsModel;
+import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
 public interface BotEventListener {
-    void onSuccess(BotEventsModel botEvent);
-    void onFailure(String error);
+    void onSuccess(YMBotEventResponse botEvent);
+//    void onFailure(String error);
 }

@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
 
-import com.yellowmessenger.ymchat.models.BotEventsModel;
+import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 import com.yellowmessenger.ymchat.models.ConfigService;
 
 public class YMChat {
@@ -31,21 +31,21 @@ public class YMChat {
     public void onEventFromBot( BotEventListener listener){
        this.listener = listener;
     }
-    public void startChatBot(Context context){
+    public void startChatbot(Context context){
         ConfigService.getInstance().setConfigData(config); // convert to map
         myContext = context;
         _intent = new Intent(myContext, BotWebView.class);
         myContext.startActivity(_intent);
     }
 
-    public void emitEvent(BotEventsModel event){
+    public void emitEvent(YMBotEventResponse event){
         if(event != null){
             Log.v("WebView Event","From Bot: "+event.getCode());
             listener.onSuccess(event);
             localListener.onSuccess(event);
         }
-        else
-            listener.onFailure("An error occurred.");
+//        else
+//            listener.onFailure("An error occurred.");
     }
 
 

@@ -2,11 +2,11 @@ package com.yellowmessenger.ymchat.models;
 
 
 
-public class BotEventsModel{
+public class YMBotEventResponse {
 
     String code, data;
 
-    public BotEventsModel(String code, String data) {
+    public YMBotEventResponse(String code, String data) {
         this.code = code;
         this.data = data;
     }
