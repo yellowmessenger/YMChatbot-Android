@@ -376,6 +376,8 @@ public class WebviewOverlay extends Fragment {
         });
 
         String botUrl = getString(R.string.chatbot_base_url)+ConfigService.getInstance().getBotURLParams();
+        Log.d(TAG, "botURL: "+
+                botUrl);
         myWebView.loadUrl(botUrl);
         return myWebView;
 

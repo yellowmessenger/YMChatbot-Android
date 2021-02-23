@@ -20,14 +20,15 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        //Initialize the bot
+        //Get YMChat instance
         YMChat ymChat =  YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
-//        payloadData.put("platform","Android-App");
+        payloadData.put("some-key","some-value");
         ymChat.config.payload = payloadData;
+        ymChat.config.enableSpeech = true;
 
         //setting event listener
         ymChat.onEventFromBot(new BotEventListener() {
