@@ -4,7 +4,8 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yellowmessenger.ymchat.BotEventListener;
-import com.yellowmessenger.ymchat.YMBotPlugin;
+import com.yellowmessenger.ymchat.YMChat;
+import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.BotEventsModel;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,22 +21,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //Initialize the bot
-        YMBotPlugin pluginYM =  YMBotPlugin.getInstance();
-        //Configuration data
-        HashMap<String, Object> configurations = new HashMap<>();
+        YMChat ymChat =  YMChat.getInstance();
+        ymChat.config = new YMConfig(botId);
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
-
-        //Setting Config data.
-        configurations.put("botID", botId); // Required.
-        String configData = YMBotPlugin.mapToString(configurations);
-
         //Setting Payload Data
-        payloadData.put("platform","Android-App");
-        pluginYM.setPayload(payloadData);
+//        payloadData.put("platform","Android-App");
+        ymChat.config.payload = payloadData;
 
-        //Initialising chatbot
-        pluginYM.init(configData, new BotEventListener() {
+        //setting event listener
+        ymChat.onEventFromBot(new BotEventListener() {
             @Override
             public void onSuccess(BotEventsModel botEvent) {
             }
@@ -49,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             //Starting the bot activity
-            pluginYM.startChatBot(this);
+            ymChat.startChatBot(this);
         });
     }
 }

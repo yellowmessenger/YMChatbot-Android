@@ -28,7 +28,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.yellowmessenger.ymchat.models.ConfigDataModel;
+import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.JavaScriptInterface;
 import com.google.gson.Gson;
 
@@ -175,12 +175,8 @@ public class WebviewOverlay extends Fragment {
 
         // Preload start
         final Context context = getActivity();
-        String botId = ConfigDataModel.getInstance().getConfig("botID");
-        Map payload = ConfigDataModel.getInstance().getPayload();
-        String payloadJSON = URLEncoder.encode(new Gson().toJson(payload));
-        String enableHistory = ConfigDataModel.getInstance().getConfig("enableHistory");
+
         myWebView = new WebView(context);
-        final String botUrl = getString(R.string.chatbot_base_url)+"?botId=" + botId + "&enableHistory=" + enableHistory + "&ym.payload=" + payloadJSON;
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setDomStorageEnabled(true);
         myWebView.getSettings().setSupportMultipleWindows(true);
@@ -243,8 +239,8 @@ public class WebviewOverlay extends Fragment {
                 contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
                 contentSelectionIntent.setType("*/*");
 
-                String hideCameraForUpload = ConfigDataModel.getInstance().getConfig("hideCameraForUpload");
-                if(Boolean.parseBoolean(hideCameraForUpload)){
+                boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
+                if(hideCameraForUpload){
                     takePictureIntent = null;
                 }
 
@@ -300,8 +296,8 @@ public class WebviewOverlay extends Fragment {
                 // Create file chooser intent
                 Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
 
-                String hideCameraForUpload = ConfigDataModel.getInstance().getConfig("hideCameraForUpload");
-                if(!Boolean.parseBoolean(hideCameraForUpload)){
+                boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
+                if(!hideCameraForUpload){
                     // Set camera intent to file chooser
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS
                             , new Parcelable[] { captureIntent });
@@ -378,6 +374,8 @@ public class WebviewOverlay extends Fragment {
                 return true;
             }
         });
+
+        String botUrl = getString(R.string.chatbot_base_url)+ConfigService.getInstance().getBotURLParams();
         myWebView.loadUrl(botUrl);
         return myWebView;
 

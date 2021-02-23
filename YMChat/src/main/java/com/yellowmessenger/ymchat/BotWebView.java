@@ -29,7 +29,7 @@ import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.yellowmessenger.ymchat.models.BotEventsModel;
-import com.yellowmessenger.ymchat.models.ConfigDataModel;
+import com.yellowmessenger.ymchat.models.ConfigService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
@@ -85,7 +85,7 @@ public class BotWebView extends AppCompatActivity {
 
     public void setStatusBarColor(){
         try{
-        String color = ConfigDataModel.getInstance().getConfig("statusBarColor");
+        String color = ConfigService.getInstance().getConfig().statusBarColor;
 //        boolean isHexCode = color.matches("-?[0-9a-fA-F]+");
 
 //            Log.d(TAG, "setStatusBarColor: "+isHexCode);
@@ -123,7 +123,7 @@ public class BotWebView extends AppCompatActivity {
 
     public void setActionBarColor(){
         try{
-            String color = ConfigDataModel.getInstance().getConfig("actionBarColor");
+            String color = ConfigService.getInstance().getConfig().actionBarColor;
             boolean isHexCode = color.matches("-?[0-9a-fA-F]+");
             int customColor = -1;
             try {
@@ -153,7 +153,7 @@ public class BotWebView extends AppCompatActivity {
 
     public void setOverviewColor(){
         try{
-        String color = ConfigDataModel.getInstance().getConfig("actionBarColor");
+        String color = ConfigService.getInstance().getConfig().actionBarColor;
 
         boolean isHexCode = color.matches("-?[0-9a-fA-F]+");
         int customColor = -1;
@@ -192,7 +192,7 @@ public class BotWebView extends AppCompatActivity {
 
         // setting up local listener
         Log.d(TAG, "onCreate: setting up local listener");
-        YMBotPlugin.getInstance().setLocalListener(new BotEventListener() {
+        YMChat.getInstance().setLocalListener(new BotEventListener() {
             @Override
             public void onSuccess(BotEventsModel botEvent) {
                 Log.d(TAG, "onSuccess: "+botEvent.getCode());
@@ -230,8 +230,8 @@ public class BotWebView extends AppCompatActivity {
         fragManager.beginTransaction()
                 .add(R.id.container,fh)
                 .commit();
-        String enableSpeech = ConfigDataModel.getInstance().getConfig("enableSpeech");
-        if(Boolean.parseBoolean(enableSpeech)){
+        boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
+        if(enableSpeech){
             FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
             micButton.setVisibility(View.VISIBLE);
             micButton.setOnClickListener(view -> {
@@ -243,12 +243,12 @@ public class BotWebView extends AppCompatActivity {
 
             ImageButton backButton = findViewById(R.id.backButton);
             backButton.setOnClickListener(view -> {
-                YMBotPlugin.getInstance().emitEvent(new BotEventsModel("bot-closed", ""));
+                YMChat.getInstance().emitEvent(new BotEventsModel("bot-closed", ""));
                 fh.closeBot();
                 this.finish();
             });
-        String disableCloseButton = ConfigDataModel.getInstance().getConfig("disableCloseButton");
-        if(Boolean.parseBoolean(disableCloseButton)) {
+        boolean showCloseButton = ConfigService.getInstance().getConfig().showCloseButton;
+        if(!showCloseButton) {
             backButton.setVisibility(View.INVISIBLE);
         }
 
@@ -264,7 +264,7 @@ public class BotWebView extends AppCompatActivity {
 
     public void runUpload(String uid){
         try {
-            String botId = ConfigDataModel.getInstance().getConfig("botID");
+            String botId = ConfigService.getInstance().getConfig().botId;
             postUrl= postUrl + botId + "&uid="+uid+"&secure=false";
             run();
         } catch (IOException e) {
@@ -276,7 +276,7 @@ public class BotWebView extends AppCompatActivity {
 
         OkHttpClient client = new OkHttpClient();
 
-        String imagePath = ConfigDataModel.getInstance().getCustomDataByKey("imagePath");
+        String imagePath = ConfigService.getInstance().getCustomDataByKey("imagePath");
         Log.d(TAG, "run: "+imagePath);
 
         File sourceFile = new File(imagePath);
@@ -327,7 +327,7 @@ public class BotWebView extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        YMBotPlugin.getInstance().emitEvent(new BotEventsModel("bot-closed",""));
+        YMChat.getInstance().emitEvent(new BotEventsModel("bot-closed",""));
         fh.closeBot();
         this.finish();
     }
@@ -348,7 +348,7 @@ public class BotWebView extends AppCompatActivity {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
         // Use a language model based on free-form speech recognition.
-        Map payload = ConfigDataModel.getInstance().getPayload();
+        Map payload = ConfigService.getInstance().getConfig().payload;
         String defaultLanguage = (String) payload.get("defaultLanguage");
         if(defaultLanguage == null){
             defaultLanguage = "en";

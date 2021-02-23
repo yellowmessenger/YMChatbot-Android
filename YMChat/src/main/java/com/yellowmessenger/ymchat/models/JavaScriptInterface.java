@@ -5,7 +5,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
 import com.yellowmessenger.ymchat.BotWebView;
-import com.yellowmessenger.ymchat.YMBotPlugin;
+import com.yellowmessenger.ymchat.YMChat;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -53,7 +53,7 @@ public class JavaScriptInterface {
             if(incomingEvent.code.equals("start-mic"))
             parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(incomingEvent.data) * 1000));
         }
-        YMBotPlugin.getInstance().emitEvent(incomingEvent);
+        YMChat.getInstance().emitEvent(incomingEvent);
     }
 
 }
