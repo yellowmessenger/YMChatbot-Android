@@ -3,54 +3,53 @@ package com.yellowmessenger.ymchatexample;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
+import com.yellowmessenger.ymchat.BotEventListener;
+import com.yellowmessenger.ymchat.YMBotPlugin;
+import com.yellowmessenger.ymchat.models.BotEventsModel;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-
-import android.view.View;
-
-import android.view.Menu;
-import android.view.MenuItem;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+
+    // Dummy bot id. (Purrs a lot)
+    String botId = "x1587041004122";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
+        //Initialize the bot
+        YMBotPlugin pluginYM =  YMBotPlugin.getInstance();
+        //Configuration data
+        HashMap<String, Object> configurations = new HashMap<>();
+        //Payload attributes
+        HashMap<String, Object> payloadData = new HashMap<>();
+
+        //Setting Config data.
+        configurations.put("botID", botId); // Required.
+        String configData = YMBotPlugin.mapToString(configurations);
+
+        //Setting Payload Data
+        payloadData.put("platform","Android-App");
+        pluginYM.setPayload(payloadData);
+
+        //Initialising chatbot
+        pluginYM.init(configData, new BotEventListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onSuccess(BotEventsModel botEvent) {
+            }
+            @Override
+            public void onFailure(String error) {
             }
         });
-    }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
+        setContentView(R.layout.activity_main);
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(view -> {
+            //Starting the bot activity
+            pluginYM.startChatBot(this);
+        });
     }
 }
