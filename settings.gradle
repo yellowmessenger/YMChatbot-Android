@@ -1,0 +1,3 @@
+include ':YMChat'
+include ':app'
+rootProject.name = "YMChat Example"
