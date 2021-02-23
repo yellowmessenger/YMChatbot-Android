@@ -30,22 +30,17 @@ import androidx.fragment.app.Fragment;
 
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.JavaScriptInterface;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Map;
 
 import static android.app.Activity.RESULT_OK;
 
 public class WebviewOverlay extends Fragment {
-    private final String TAG = "YM WebView Plugin";
+    private final String TAG = "YMChat";
     private WebView myWebView;
-
-
     private ValueCallback<Uri> mUploadMessage;
     private Uri mCapturedImageURI = null;
     private ValueCallback<Uri[]> mFilePathCallback;
@@ -58,17 +53,11 @@ public class WebviewOverlay extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-
         myWebView = (WebView) preLoadWebView();
         return myWebView;
     }
 
-
-    public void closeBot(){
-        myWebView.loadUrl("");
-    }
-
-
+    //File picker activity result
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -131,33 +120,13 @@ public class WebviewOverlay extends Fragment {
 
     @Override
     public void onStop() {
-
         super.onStop();
     }
-
 
     @Override
     public void onResume() {
         super.onResume();
 
-    }
-
-
-
-
-
-        private File createImageFile() throws IOException {
-        // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-        String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = Environment.getExternalStoragePublicDirectory(
-                Environment.DIRECTORY_PICTURES);
-        File imageFile = File.createTempFile(
-                imageFileName,  /* prefix */
-                ".jpg",  /* suffix */
-                storageDir      /* directory */
-        );
-        return imageFile;
     }
 
     @Override
@@ -166,13 +135,7 @@ public class WebviewOverlay extends Fragment {
     }
 
 
-
-
     public View preLoadWebView() {
-        // Testing API call.
-
-
-
         // Preload start
         final Context context = getActivity();
 
@@ -200,7 +163,8 @@ public class WebviewOverlay extends Fragment {
             private int mOriginalSystemUiVisibility;
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                Log.d("WebView", consoleMessage.message());
+                if(ConfigService.getInstance().getConfig().showConsoleLogs)
+                    Log.d("WebView", consoleMessage.message());
                 return true;
             }
 
@@ -314,24 +278,20 @@ public class WebviewOverlay extends Fragment {
             }
 
             //openFileChooser for other Android versions
-            public void openFileChooser(ValueCallback<Uri> uploadMsg,
-                                        String acceptType,
-                                        String capture) {
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
                 Log.d(TAG, "openFileChooser: Opening file picker");
 
                 openFileChooser(uploadMsg, acceptType);
             }
 
-            public Bitmap getDefaultVideoPoster()
-            {
+            public Bitmap getDefaultVideoPoster() {
                 if (mCustomView == null) {
                     return null;
                 }
                 return BitmapFactory.decodeResource(context.getResources(), 2130837573);
             }
 
-            public void onHideCustomView()
-            {
+            public void onHideCustomView() {
                 ((FrameLayout)getActivity().getWindow().getDecorView()).removeView(this.mCustomView);
                 this.mCustomView = null;
                 getActivity().getWindow().getDecorView().setSystemUiVisibility(this.mOriginalSystemUiVisibility);
@@ -340,8 +300,7 @@ public class WebviewOverlay extends Fragment {
                 this.mCustomViewCallback = null;
             }
 
-            public void onShowCustomView(View paramView, CustomViewCallback paramCustomViewCallback)
-            {
+            public void onShowCustomView(View paramView, CustomViewCallback paramCustomViewCallback) {
                 if (this.mCustomView != null)
                 {
                     onHideCustomView();
@@ -384,33 +343,36 @@ public class WebviewOverlay extends Fragment {
 
     }
 
-
-        public void sendEvent(String s){
-            Log.d("Sending Event: ", s);
-            myWebView.loadUrl("javascript:sendEvent(\""+s+"\");");
+    // Sending messages to bot
+    public void sendEvent(String s){
+        myWebView.loadUrl("javascript:sendEvent(\""+s+"\");");
     }
-//    @Override
-//    public void onPageStarted(String url, Bitmap favicon) {
-//    }
-//
-//    @Override
-//    public void onPageFinished(String url) {
-//        myWebView.setVisibility(View.VISIBLE);
-//    }
-//
-//
-//    @Override
-//    public void onPageError(int errorCode, String description, String failingUrl) {
-//        Log.e("WebView Error", "onPageError(errorCode = "+errorCode+",  description = "+description+",  failingUrl = "+failingUrl+")");
-//    }
-//
-//    @Override
-//    public void onDownloadRequested(String url, String suggestedFilename, String mimeType, long contentLength, String contentDisposition, String userAgent) {
-//    }
-//
-//    @Override
-//    public void onExternalPageRequest(String url) {
-//    }
+
+    //Empty url string on bot-close
+    public void closeBot(){
+        myWebView.loadUrl("");
+    }
+
+    // creating image filename
+    private File createImageFile() throws IOException {
+        // Create an image file name
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+        String imageFileName = "JPEG_" + timeStamp + "_";
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File imageFile = File.createTempFile(
+                imageFileName,  /* prefix */
+                ".jpg",  /* suffix */
+                storageDir      /* directory */
+        );
+        return imageFile;
+    }
+
+
+
+
+
+
 
 
 }

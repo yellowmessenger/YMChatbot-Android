@@ -3,10 +3,8 @@ package com.yellowmessenger.ymchatexample;
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.yellowmessenger.ymchat.BotEventListener;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
-import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.HashMap;
@@ -28,13 +26,11 @@ public class MainActivity extends AppCompatActivity {
         //Setting Payload Data
         payloadData.put("some-key","some-value");
         ymChat.config.payload = payloadData;
-        ymChat.config.enableSpeech = true;
 
         //setting event listener
-        ymChat.onEventFromBot(new BotEventListener() {
-            @Override
-            public void onSuccess(YMBotEventResponse botEvent) {
-
+        ymChat.onEventFromBot(botEvent -> {
+            switch (botEvent.getCode()){
+                case "event-name": break;
             }
         });
 

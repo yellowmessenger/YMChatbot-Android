@@ -54,7 +54,7 @@ import okhttp3.Response;
 
 
 public class BotWebView extends AppCompatActivity {
-    private final String TAG = "YM WebView Plugin";
+    private final String TAG = "YMChat";
     WebviewOverlay fh;
     private boolean willStartMic = false;
     public String postUrl= "https://app.yellowmessenger.com/api/chat/upload?bot=";
@@ -192,24 +192,25 @@ public class BotWebView extends AppCompatActivity {
 
         // setting up local listener
         Log.d(TAG, "onCreate: setting up local listener");
-        YMChat.getInstance().setLocalListener(new BotEventListener() {
-            @Override
-            public void onSuccess(YMBotEventResponse botEvent) {
-                Log.d(TAG, "onSuccess: "+botEvent.getCode());
+        YMChat.getInstance().setLocalListener(botEvent -> {
+            Log.d(TAG, "onSuccess: "+botEvent.getCode());
 
-                switch (botEvent.getCode()){
-                    case "upload-image" :
-                        Log.d(TAG, "onSuccess: got event");
-                        Map<String, Object> retMap = new Gson().fromJson(
-                                botEvent.getData(), new TypeToken<HashMap<String, Object>>() {}.getType());
-                         if(retMap.containsKey("uid")){
-                             String uId = retMap.get("uid").toString();
+            switch (botEvent.getCode()){
+                case "close-bot" :
+                    closeBot();
+                    this.finish();
+                    break;
+                case "upload-image" :
+                    Log.d(TAG, "onSuccess: got event");
+                    Map<String, Object> retMap = new Gson().fromJson(
+                            botEvent.getData(), new TypeToken<HashMap<String, Object>>() {}.getType());
+                     if(retMap.containsKey("uid")){
+                         String uId = retMap.get("uid").toString();
 
-                             runUpload(uId);
+                         runUpload(uId);
 
-                         }
-                        break;
-                }
+                     }
+                    break;
             }
         });
 

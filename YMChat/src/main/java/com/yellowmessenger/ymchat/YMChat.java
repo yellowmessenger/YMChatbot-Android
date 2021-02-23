@@ -1,5 +1,6 @@
 package com.yellowmessenger.ymchat;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -7,12 +8,13 @@ import android.util.Log;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 import com.yellowmessenger.ymchat.models.ConfigService;
 
+
 public class YMChat {
+    private final String TAG = "YMChat";
     private Context myContext;
     private Intent _intent;
     private BotEventListener listener, localListener;
     private static YMChat botPluginInstance;
-    private boolean isInitialized;
     public YMConfig config;
     private YMChat(){}
     public static YMChat getInstance(){
@@ -32,20 +34,27 @@ public class YMChat {
        this.listener = listener;
     }
     public void startChatbot(Context context){
-        ConfigService.getInstance().setConfigData(config); // convert to map
-        myContext = context;
-        _intent = new Intent(myContext, BotWebView.class);
-        myContext.startActivity(_intent);
+        try {
+            if (!config.botId.isEmpty()) {
+                ConfigService.getInstance().setConfigData(config);
+                myContext = context;
+                _intent = new Intent(myContext, BotWebView.class);
+                myContext.startActivity(_intent);
+            } else {
+                throw new RuntimeException("botId is not configured. Please set botId before calling startChatbot()");
+            }
+        }catch (RuntimeException e){
+            Log.e(TAG, "startChatbot: ", e );
+        }
     }
-
+    public void closeBot(){
+        localListener.onSuccess(new YMBotEventResponse("close-bot", ""));
+    }
     public void emitEvent(YMBotEventResponse event){
         if(event != null){
-            Log.v("WebView Event","From Bot: "+event.getCode());
             listener.onSuccess(event);
             localListener.onSuccess(event);
         }
-//        else
-//            listener.onFailure("An error occurred.");
     }
 
 
