@@ -16,7 +16,9 @@ public class YMChat {
     private BotEventListener listener, localListener;
     private static YMChat botPluginInstance;
     public YMConfig config;
-    private YMChat(){}
+    private YMChat(){
+        this.listener = botEvent -> {};
+    }
     public static YMChat getInstance(){
         if (botPluginInstance == null) {
             synchronized (YMChat.class) {

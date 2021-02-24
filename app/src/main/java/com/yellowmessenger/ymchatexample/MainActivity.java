@@ -26,6 +26,7 @@ public class MainActivity extends AppCompatActivity {
         //Setting Payload Data
         payloadData.put("some-key","some-value");
         ymChat.config.payload = payloadData;
+        ymChat.config.enableHistory = true;
 
         //setting event listener
         ymChat.onEventFromBot(botEvent -> {
