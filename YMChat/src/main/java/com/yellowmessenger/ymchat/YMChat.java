@@ -39,6 +39,7 @@ public class YMChat {
                 ConfigService.getInstance().setConfigData(config);
                 myContext = context;
                 _intent = new Intent(myContext, BotWebView.class);
+                _intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 myContext.startActivity(_intent);
             } else {
                 throw new RuntimeException("botId is not configured. Please set botId before calling startChatbot()");
