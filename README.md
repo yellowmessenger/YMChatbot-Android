@@ -4,9 +4,7 @@
 
 # Installation
 ## Gradle
-To integrate YMChatbot into your Xcode project using CocoaPods, specify it in your `Podfile`:
-
-Add the following configurations in App level gradle file
+To integrate YMChat into your Android project using gradle, specify the following configurations in App level `build.gradle` file
 ```gradle
 repositories {
     jcenter()
