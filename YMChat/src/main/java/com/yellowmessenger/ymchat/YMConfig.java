@@ -7,7 +7,7 @@ public class YMConfig {
     public boolean enableSpeech = false;
     public boolean enableHistory = false;
     public boolean showConsoleLogs = false;
-    public String ymAuthenticationToken;
+    public String ymAuthenticationToken = "";
     public String deviceToken;
     public String statusBarColor;
     public String actionBarColor;
@@ -20,12 +20,4 @@ public class YMConfig {
     public  YMConfig(String botId){
         this.botId = botId;
     }
-
-
-
-
-
-
-
-
 }

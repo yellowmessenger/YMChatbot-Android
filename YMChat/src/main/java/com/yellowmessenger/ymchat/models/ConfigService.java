@@ -54,7 +54,9 @@ public class ConfigService {
         payload.put("platform","Android-App");
         String payloadJSON = URLEncoder.encode(new Gson().toJson(payload));
         boolean enableHistory = config.enableHistory;
-        String ymAuthenticationToken = config.ymAuthenticationToken;
+        String ymAuthenticationToken = "";
+        if(config.ymAuthenticationToken != null)
+            ymAuthenticationToken = config.ymAuthenticationToken;
 
         final String botURLParams = "?botId=" + botId + "&enableHistory=" + enableHistory +"&ymAuthenticationToken="+ymAuthenticationToken + "&ym.payload=" + payloadJSON;
         return botURLParams;
