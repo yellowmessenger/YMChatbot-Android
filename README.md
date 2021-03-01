@@ -38,20 +38,20 @@ Example `onCreate` method of the Activity:
 ```java
 
 @Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-	    // Dummy bot id. (Purrs a lot)
-	    String botID = "x1587041004122";
-		//Get YMChat instance
-		YMChat ymChat = YMChat.getInstance();
-		ymChat.config = new YMConfig(botId);
-		setContentView(R.layout.activity_main);
-		FloatingActionButton fab = findViewById(R.id.fab);
-		fab.setOnClickListener(view -> {
-			//Starting the bot activity
-			ymChat.startChatbot(this);
-		});
-	}
+protected void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+    // Dummy bot id. (Purrs a lot)
+    String botID = "x1587041004122";
+	//Get YMChat instance
+	YMChat ymChat = YMChat.getInstance();
+	ymChat.config = new YMConfig(botId);
+	setContentView(R.layout.activity_main);
+	FloatingActionButton fab = findViewById(R.id.fab);
+	fab.setOnClickListener(view -> {
+		//Starting the bot activity
+		ymChat.startChatbot(this);
+	});
+}
 
 ```
 
@@ -103,10 +103,10 @@ Events from bot can be handled using event Listeners.  Simply define the `onSucc
 
 ```java
 ymChat.onEventFromBot(botEvent -> {
-			switch (botEvent.getCode()){
-			case "event-name": break;
-			}
-		});
+	switch (botEvent.getCode()){
+	case "event-name": break;
+	}
+});
 ```
 <!--
 ## Logging
