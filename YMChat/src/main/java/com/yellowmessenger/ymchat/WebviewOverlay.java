@@ -49,7 +49,6 @@ public class WebviewOverlay extends Fragment {
     private static final int FILECHOOSER_RESULTCODE = 1;
 
 
-
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -161,9 +160,10 @@ public class WebviewOverlay extends Fragment {
             private CustomViewCallback mCustomViewCallback;
             private int mOriginalOrientation;
             private int mOriginalSystemUiVisibility;
+
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                if(ConfigService.getInstance().getConfig().showConsoleLogs)
+                if (ConfigService.getInstance().getConfig().showConsoleLogs)
                     Log.d("WebView", consoleMessage.message());
                 return true;
             }
@@ -204,7 +204,7 @@ public class WebviewOverlay extends Fragment {
                 contentSelectionIntent.setType("*/*");
 
                 boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
-                if(hideCameraForUpload){
+                if (hideCameraForUpload) {
                     takePictureIntent = null;
                 }
 
@@ -261,10 +261,10 @@ public class WebviewOverlay extends Fragment {
                 Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
 
                 boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
-                if(!hideCameraForUpload){
+                if (!hideCameraForUpload) {
                     // Set camera intent to file chooser
                     chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS
-                            , new Parcelable[] { captureIntent });
+                            , new Parcelable[]{captureIntent});
                 }
 
 
@@ -292,7 +292,7 @@ public class WebviewOverlay extends Fragment {
             }
 
             public void onHideCustomView() {
-                ((FrameLayout)getActivity().getWindow().getDecorView()).removeView(this.mCustomView);
+                ((FrameLayout) getActivity().getWindow().getDecorView()).removeView(this.mCustomView);
                 this.mCustomView = null;
                 getActivity().getWindow().getDecorView().setSystemUiVisibility(this.mOriginalSystemUiVisibility);
                 getActivity().setRequestedOrientation(this.mOriginalOrientation);
@@ -301,8 +301,7 @@ public class WebviewOverlay extends Fragment {
             }
 
             public void onShowCustomView(View paramView, CustomViewCallback paramCustomViewCallback) {
-                if (this.mCustomView != null)
-                {
+                if (this.mCustomView != null) {
                     onHideCustomView();
                     return;
                 }
@@ -310,7 +309,7 @@ public class WebviewOverlay extends Fragment {
                 this.mOriginalSystemUiVisibility = getActivity().getWindow().getDecorView().getSystemUiVisibility();
                 this.mOriginalOrientation = getActivity().getRequestedOrientation();
                 this.mCustomViewCallback = paramCustomViewCallback;
-                ((FrameLayout)getActivity().getWindow().getDecorView()).addView(this.mCustomView, new FrameLayout.LayoutParams(-1, -1));
+                ((FrameLayout) getActivity().getWindow().getDecorView()).addView(this.mCustomView, new FrameLayout.LayoutParams(-1, -1));
                 getActivity().getWindow().getDecorView().setSystemUiVisibility(3846 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
             }
 
@@ -334,22 +333,23 @@ public class WebviewOverlay extends Fragment {
             }
         });
 
-        String botUrl = getString(R.string.chatbot_base_url)+ConfigService.getInstance().getBotURLParams();
-        Log.d(TAG, "botURL: "+
+        StringBuilder botUrlBuilder = new StringBuilder();
+        botUrlBuilder.append(ConfigService.getInstance().getConfig().url != null ? ConfigService.getInstance().getConfig().url : getString(R.string.chatbot_base_url));
+        botUrlBuilder.append(ConfigService.getInstance().getBotURLParams());
+        String botUrl = botUrlBuilder.toString();
+        Log.d(TAG, "botURL: " +
                 botUrl);
         myWebView.loadUrl(botUrl);
         return myWebView;
-
-
     }
 
     // Sending messages to bot
-    public void sendEvent(String s){
-        myWebView.loadUrl("javascript:sendEvent(\""+s+"\");");
+    public void sendEvent(String s) {
+        myWebView.loadUrl("javascript:sendEvent(\"" + s + "\");");
     }
 
     //Empty url string on bot-close
-    public void closeBot(){
+    public void closeBot() {
         myWebView.loadUrl("");
     }
 
@@ -367,12 +367,6 @@ public class WebviewOverlay extends Fragment {
         );
         return imageFile;
     }
-
-
-
-
-
-
 
 
 }
