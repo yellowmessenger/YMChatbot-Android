@@ -20,7 +20,7 @@ repositories {
 dependencies {
     ...
     ...
-	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.0.0
+	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.0.1
 }
 ```
   
@@ -107,6 +107,12 @@ ymChat.onEventFromBot(botEvent -> {
 	case "event-name": break;
 	}
 });
+```
+## Custom URL configuration (for on premise deployments)
+Base url for the bot can be customized by setting `config.url` parameter.
+
+```java
+ymChat.config.url = "<CUSTOM-BASE-URL>";
 ```
 <!--
 ## Logging
