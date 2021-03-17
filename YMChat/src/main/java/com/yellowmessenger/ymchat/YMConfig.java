@@ -8,7 +8,7 @@ public class YMConfig {
     public boolean enableHistory = false;
     public boolean showConsoleLogs = false;
     public String ymAuthenticationToken = "";
-    public String deviceToken;
+    public String deviceToken = "";
     public String statusBarColor;
     public String actionBarColor;
     public String micButtonColor;
