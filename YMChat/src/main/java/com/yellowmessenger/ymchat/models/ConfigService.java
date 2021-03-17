@@ -54,15 +54,25 @@ public class ConfigService {
         payload.put("platform", "Android-App");
         String payloadJSON = null;
         try {
-            payloadJSON = URLEncoder.encode(new Gson().toJson(payload),"UTF-8");
+            payloadJSON = URLEncoder.encode(new Gson().toJson(payload), "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            Log.e("ConfigService-",e.getMessage());
+            Log.e("ConfigService-", e.getMessage());
         }
-        String ymAuthenticationToken = "";
-        if (config.ymAuthenticationToken != null)
-            ymAuthenticationToken = config.ymAuthenticationToken;
 
-        return "?botId=" + botId + "&enableHistory=" + config.enableHistory + "&ymAuthenticationToken=" + ymAuthenticationToken + "&deviceToken=" + config.deviceToken + "&ym.payload=" + payloadJSON;
+        StringBuilder sb = new StringBuilder();
+        sb.append("?botId=");
+        sb.append(botId);
+        sb.append("&enableHistory=");
+        sb.append(config.enableHistory);
+        sb.append("&ymAuthenticationToken=");
+        sb.append(config.ymAuthenticationToken != null ? config.ymAuthenticationToken : "");
+        sb.append("&deviceToken=");
+        sb.append(config.deviceToken != null ? config.deviceToken : "");
+        sb.append("&ym.payload=");
+        sb.append(payloadJSON);
+
+
+        return sb.toString();
 
     }
 
