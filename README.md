@@ -108,6 +108,12 @@ ymChat.onEventFromBot(botEvent -> {
 	}
 });
 ```
+## Custom URL configuration (for on premise deployments)
+Base url for the bot can be customized by setting `config.url` parameter.
+
+```java
+ymChat.config.url = "<CUSTOM-BASE-URL>";
+```
 <!--
 ## Logging
 Logging can be enabled to understand the code flow and to fix bugs. It can be enabled from config
