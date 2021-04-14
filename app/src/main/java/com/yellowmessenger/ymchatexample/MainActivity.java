@@ -1,10 +1,12 @@
 package com.yellowmessenger.ymchatexample;
 
 import android.os.Bundle;
+import android.webkit.JavascriptInterface;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
+import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
 import androidx.appcompat.app.AppCompatActivity;
 import java.util.HashMap;
@@ -29,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config.enableHistory = true;
 
         //setting event listener
-        ymChat.onEventFromBot(botEvent -> {
+        ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
             switch (botEvent.getCode()){
                 case "event-name": break;
             }

@@ -38,7 +38,7 @@ public class ConfigService {
         if (config != null) {
             this.config = config;
             this.payload = config.payload;
-            this.customData = config.customData;
+            this.customData = config.customData != null ? config.customData : new HashMap<>();
             return true;
         }
         return false;
@@ -50,7 +50,7 @@ public class ConfigService {
 
     public String getBotURLParams() {
         String botId = config.botId;
-        payload = config.payload;
+        payload = config.payload != null ? config.payload : new HashMap<>();
         payload.put("platform", "Android-App");
         String payloadJSON = null;
         try {
