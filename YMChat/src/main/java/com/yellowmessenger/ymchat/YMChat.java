@@ -44,7 +44,7 @@ public class YMChat {
                 throw new RuntimeException("Context passed is null. Please pass valid context");
             }
 
-            if (config != null && !config.botId.isEmpty()) {
+            if (config != null && config.botId != null && !config.botId.isEmpty() ) {
                 ConfigService.getInstance().setConfigData(config);
                 Intent _intent = new Intent(context, BotWebView.class);
                 _intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
