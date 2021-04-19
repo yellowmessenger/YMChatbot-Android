@@ -48,7 +48,9 @@ public class ConfigService {
         return config;
     }
 
-    public String getBotURLParams() {
+    public String getBotURLParams() throws RuntimeException {
+        if (config.customBaseUrl == null || config.customBaseUrl.isEmpty())
+            throw new RuntimeException("customBaseUrl cannot be null or empty.");
         String botId = config.botId;
         payload = config.payload != null ? config.payload : new HashMap<>();
         payload.put("platform", "Android-App");
@@ -68,6 +70,10 @@ public class ConfigService {
         sb.append(config.ymAuthenticationToken != null ? config.ymAuthenticationToken : "");
         sb.append("&deviceToken=");
         sb.append(config.deviceToken != null ? config.deviceToken : "");
+        sb.append("&customBaseUrl=");
+        sb.append(config.customBaseUrl);
+
+
         sb.append("&ym.payload=");
         sb.append(payloadJSON);
 
