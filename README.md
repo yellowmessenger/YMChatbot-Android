@@ -109,10 +109,10 @@ ymChat.onEventFromBot(botEvent -> {
 });
 ```
 ## Custom URL configuration (for on premise deployments)
-Base url for the bot can be customized by setting `config.url` parameter.
+Base url for the bot can be customized by setting `config.customBaseUrl` parameter. Use the same url used for on-prem deployment.
 
 ```java
-ymChat.config.url = "<CUSTOM-BASE-URL>";
+ymChat.config.customBaseUrl = "<CUSTOM-BASE-URL>";
 ```
 <!--
 ## Logging

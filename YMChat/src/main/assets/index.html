@@ -1,0 +1,152 @@
+
+
+<!doctype html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <style>
+         .no-js #loader { display: none;  }
+         .js #loader { display: block; position: absolute; left: 100px; top: 0; }
+         .se-pre-con {
+         position: fixed;
+         left: 0px;
+         top: 0px;
+         width: 100%;
+         height: 100%;
+         z-index: 9999;
+         background: url(https://thumbs.gfycat.com/ImpoliteLivelyGenet-max-1mb.gif) center no-repeat #fff;
+         }
+      </style>
+    <script>
+         document.addEventListener("DOMContentLoaded", function(){
+//              document.getElementById("se-pre-con").style.display = "none";
+         });
+      </script>
+</head>
+<body>
+<div id="se-pre-con" class="se-pre-con"></div>
+<script type="text/javascript">
+        var getParams = function (url) {
+            var params = {};
+            var parser = document.createElement('a');
+            parser.href = url;
+            var query = parser.search.substring(1);
+            var vars = query.split('&');
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split('=');
+                params[pair[0]] = decodeURIComponent(pair[1]);
+            }
+            return params;
+        };
+        let payload = getParams(window.location.href)["ym.payload"];
+        let botId = getParams(window.location.href)["botId"];
+        let enableHistory = getParams(window.location.href)["enableHistory"];
+        let ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
+        let deviceToken = getParams(window.location.href)["deviceToken"];
+        let customBaseUrl = getParams(window.location.href)["customBaseUrl"];
+
+
+        let payloadJSON = {};
+        try{
+            payloadJSON = JSON.parse(payload);
+        }catch(e){
+        }
+
+
+        window.ymConfig = {
+            bot: botId || '',
+            pwa: true,
+            sdk: true, // Currently only used for analytics
+            enableHistory: (enableHistory === 'true') ,
+            ymAuthenticationToken: ymAuthenticationToken,
+            deviceToken: deviceToken,
+            logging: true,
+            handlers: {
+                sendIOSEvent: function (data) {
+                 console.log(data);
+
+                    try {
+                        window.webkit.messageHandlers.ymHandler.postMessage(data);
+                    } catch (e) { }
+                    try {
+                        window.YMHandler.receiveMessage(JSON.stringify(data));
+                    } catch (e) { }
+                    try {
+                        window.ReactNativeWebView.postMessage(JSON.stringify(data));
+                    } catch (e) { }
+
+                }
+            },
+            payload: payload,
+            triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
+            triggerJourney: payloadJSON.JourneySlug
+        };
+
+        if(payloadJSON.UserId) {
+            window.ymConfig.userId = payloadJSON.UserId;
+        }
+
+        function sendEvent(s = "") {
+            const iframe = document.getElementById('ymIframe');
+            iframe.contentWindow.postMessage(JSON.stringify({
+                    event_code: 'send-voice-text',
+                    data: s
+                }));
+
+
+            try {
+                window.YMHandler.receiveMessage(JSON.stringify({ code: "Message Received", data: s }));
+            } catch (e) { }
+            try {
+                window.webkit.messageHandlers.ymHandler.postMessage({ code: "Message Received", data: s });
+            } catch (e) { }
+        }
+
+        (function () {
+            var w = window, ic = w.YellowMessenger;
+            if ("function" === typeof ic)
+                ic("reattach_activator"), ic("update", ymConfig);
+            else {
+                var d = document, i = function () {
+                    i.c(arguments)
+                };
+
+                function l() {
+                    var e = d.createElement("script");
+                    e.type = "text/javascript", e.async = !0, e.src = (customBaseUrl)+"/widget/mobile.js";
+                    var t = d.getElementsByTagName("script")[0];
+                    t.parentNode.insertBefore(e, t)
+                }
+               /*
+                function l() {
+                    var e = d.createElement("script");
+                    e.type = "text/javascript", e.async = !0, e.src = "https://botplatform.io/components/securedwidget/mobile.js";
+                    var t = d.getElementsByTagName("script")[0];
+                    t.parentNode.insertBefore(e, t)
+                }
+                */
+
+                i.q = [], i.c = function (e) {
+                    i.q.push(e)
+                }, w.YellowMessenger = i, w.attachEvent ? w.attachEvent("onload", l) : w.addEventListener("load", l, !1)
+            }
+            if ('serviceWorker' in window.navigator) {
+
+                window.navigator.serviceWorker.register('https://app.yellowmessenger.com/pwa/service-worker',
+                    {
+                        'scope': '/pwa/mobile/'+botId
+                    })
+                    .then(function (reg) {
+                        console.log("Service worker registered.", reg);
+                    }).catch(function (err) {
+                        console.log("No it didn't. This happened:", err)
+                    });
+            }
+        })();
+    </script>
+</body>
+</html>
