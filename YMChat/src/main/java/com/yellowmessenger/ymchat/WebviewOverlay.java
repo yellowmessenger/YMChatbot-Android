@@ -100,9 +100,7 @@ public class WebviewOverlay extends Fragment {
                 }
                 Uri result = null;
                 try {
-                    if (resultCode != RESULT_OK) {
-                        result = null;
-                    } else {
+                    if (resultCode == RESULT_OK) {
                         // retrieve from the private variable if the intent is null
                         result = data == null ? mCapturedImageURI : data.getData();
                     }
@@ -114,7 +112,6 @@ public class WebviewOverlay extends Fragment {
                 mUploadMessage = null;
             }
         }
-        return;
     }
 
     @Override
@@ -125,7 +122,6 @@ public class WebviewOverlay extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
     }
 
     @Override
@@ -147,10 +143,8 @@ public class WebviewOverlay extends Fragment {
         myWebView.getSettings().setGeolocationDatabasePath(context.getFilesDir().getPath());
 
 
-        if (Build.VERSION.SDK_INT > 17) {
-            myWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-            myWebView.addJavascriptInterface(new JavaScriptInterface((BotWebView) getActivity(), myWebView), "YMHandler");
-        }
+        myWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
+        myWebView.addJavascriptInterface(new JavaScriptInterface((BotWebView) getActivity(), myWebView), "YMHandler");
 
         myWebView.setWebViewClient(new WebViewClient());
 
@@ -178,7 +172,7 @@ public class WebviewOverlay extends Fragment {
                 mFilePathCallback = filePath;
 
                 Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                if (getActivity() != null && takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
                     // Create the File where the photo should go
                     File photoFile = null;
                     try {
@@ -269,7 +263,9 @@ public class WebviewOverlay extends Fragment {
 
 
                 // On select image call onActivityResult method of activity
-                getActivity().startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+                if (getActivity() != null) {
+                    getActivity().startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+                }
             }
 
             // openFileChooser for Android < 3.0
@@ -292,10 +288,12 @@ public class WebviewOverlay extends Fragment {
             }
 
             public void onHideCustomView() {
-                ((FrameLayout) getActivity().getWindow().getDecorView()).removeView(this.mCustomView);
+                if (getActivity() != null) {
+                    ((FrameLayout) getActivity().getWindow().getDecorView()).removeView(this.mCustomView);
+                    getActivity().getWindow().getDecorView().setSystemUiVisibility(this.mOriginalSystemUiVisibility);
+                    getActivity().setRequestedOrientation(this.mOriginalOrientation);
+                }
                 this.mCustomView = null;
-                getActivity().getWindow().getDecorView().setSystemUiVisibility(this.mOriginalSystemUiVisibility);
-                getActivity().setRequestedOrientation(this.mOriginalOrientation);
                 this.mCustomViewCallback.onCustomViewHidden();
                 this.mCustomViewCallback = null;
             }
@@ -306,11 +304,15 @@ public class WebviewOverlay extends Fragment {
                     return;
                 }
                 this.mCustomView = paramView;
-                this.mOriginalSystemUiVisibility = getActivity().getWindow().getDecorView().getSystemUiVisibility();
-                this.mOriginalOrientation = getActivity().getRequestedOrientation();
+                if (getActivity() != null) {
+                    this.mOriginalSystemUiVisibility = getActivity().getWindow().getDecorView().getSystemUiVisibility();
+                    this.mOriginalOrientation = getActivity().getRequestedOrientation();
+                }
                 this.mCustomViewCallback = paramCustomViewCallback;
-                ((FrameLayout) getActivity().getWindow().getDecorView()).addView(this.mCustomView, new FrameLayout.LayoutParams(-1, -1));
-                getActivity().getWindow().getDecorView().setSystemUiVisibility(3846 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+                if (getActivity() != null) {
+                    ((FrameLayout) getActivity().getWindow().getDecorView()).addView(this.mCustomView, new FrameLayout.LayoutParams(-1, -1));
+                    getActivity().getWindow().getDecorView().setSystemUiVisibility(3846 | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+                }
             }
 
             @Override
@@ -330,11 +332,12 @@ public class WebviewOverlay extends Fragment {
                     }
                 });
                 return true;
+
             }
         });
 
         StringBuilder botUrlBuilder = new StringBuilder();
-        botUrlBuilder.append(ConfigService.getInstance().getConfig().url != null ? ConfigService.getInstance().getConfig().url : getString(R.string.chatbot_base_url));
+        botUrlBuilder.append(getString(R.string.chatbot_base_url));
         botUrlBuilder.append(ConfigService.getInstance().getBotURLParams());
         String botUrl = botUrlBuilder.toString();
         Log.d(TAG, "botURL: " +
@@ -360,12 +363,11 @@ public class WebviewOverlay extends Fragment {
         String imageFileName = "JPEG_" + timeStamp + "_";
         File storageDir = Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES);
-        File imageFile = File.createTempFile(
+        return File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",  /* suffix */
                 storageDir      /* directory */
         );
-        return imageFile;
     }
 
 

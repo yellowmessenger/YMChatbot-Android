@@ -28,13 +28,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 
-import com.yellowmessenger.ymchat.models.YMBotEventResponse;
-import com.yellowmessenger.ymchat.models.ConfigService;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.skyfishjy.library.RippleBackground;
+import com.yellowmessenger.ymchat.models.ConfigService;
+import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
 import java.io.File;
 import java.io.IOException;
@@ -57,21 +57,23 @@ public class BotWebView extends AppCompatActivity {
     private final String TAG = "YMChat";
     WebviewOverlay fh;
     private boolean willStartMic = false;
-    public String postUrl= "https://app.yellowmessenger.com/api/chat/upload?bot=";
+    public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
 
-    public void startMic(long countdown_time){
+    public void startMic(long countdown_time) {
         RelativeLayout voiceArea = findViewById(R.id.voiceArea);
-        if(!willStartMic){
-        willStartMic = true;
+        if (!willStartMic) {
+            willStartMic = true;
             new CountDownTimer(countdown_time, 1000) {
-                public void onTick(long millisUntilFinished) {}
+                public void onTick(long millisUntilFinished) {
+                }
+
                 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 public void onFinish() {
-                    if(voiceArea.getVisibility() == View.INVISIBLE && willStartMic){
+                    if (voiceArea.getVisibility() == View.INVISIBLE && willStartMic) {
                         toggleBottomSheet();
                     }
                 }
@@ -79,107 +81,83 @@ public class BotWebView extends AppCompatActivity {
         }
     }
 
-    public void closeBot(){
+    public void closeBot() {
         fh.closeBot();
     }
 
-    public void setStatusBarColor(){
-        try{
-        String color = ConfigService.getInstance().getConfig().statusBarColor;
-//        boolean isHexCode = color.matches("-?[0-9a-fA-F]+");
-
-//            Log.d(TAG, "setStatusBarColor: "+isHexCode);
-
-        int customColor = -1;
+    public void setStatusBarColor() {
         try {
+            String color = ConfigService.getInstance().getConfig().statusBarColor;
+            int customColor = -1;
+            try {
 
-            customColor =Integer.parseInt(color);
-//            customColor = isHexCode ? Integer.parseInt(color, 16)  : Integer.parseInt(color);
-
-        }
-        catch (Exception e){
-            Log.d(TAG, e.getMessage());
-        }
-
-        if(customColor != -1) {
-
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                Window window = BotWebView.this.getWindow();
-                // clear FLAG_TRANSLUCENT_STATUS flag:
-                window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
-                // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
-                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-                // finally change the color
-                window.setStatusBarColor(customColor);
+                customColor = Integer.parseInt(color);
+            } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
             }
-        }
-        }
-        catch (Exception e){
 
+            if (customColor != -1) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Window window = BotWebView.this.getWindow();
+                    // clear FLAG_TRANSLUCENT_STATUS flag:
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                    // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    // finally change the color
+                    window.setStatusBarColor(customColor);
+                }
+            }
+        } catch (Exception e) {
             Log.d(TAG, "Incorrect color code for status bar.");
         }
     }
 
-    public void setActionBarColor(){
-        try{
+    public void setActionBarColor() {
+        try {
             String color = ConfigService.getInstance().getConfig().actionBarColor;
-            boolean isHexCode = color.matches("-?[0-9a-fA-F]+");
             int customColor = -1;
             try {
                 customColor = Integer.parseInt(color);
-            }
-            catch (Exception e){
+            } catch (Exception e) {
                 Log.d(TAG, e.getMessage());
             }
 
-            if(customColor != -1) {
-
-
+            if (customColor != -1) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     ActionBar actionBar = BotWebView.this.getSupportActionBar();
                     if (actionBar != null) {
                         actionBar.setBackgroundDrawable(new ColorDrawable(customColor));
                     }
-
                 }
             }
-        }
-        catch (Exception e){
-
+        } catch (Exception e) {
             Log.d(TAG, "Incorrect color code for App bar.");
         }
     }
 
-    public void setOverviewColor(){
-        try{
-        String color = ConfigService.getInstance().getConfig().actionBarColor;
-
-        boolean isHexCode = color.matches("-?[0-9a-fA-F]+");
-        int customColor = -1;
+    public void setOverviewColor() {
         try {
-            customColor =  Integer.parseInt(color);
-        }
-        catch (Exception e){
-            Log.d(TAG, e.getMessage());
-        }
-
-        if(customColor != -1) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                ActivityManager.TaskDescription td = new ActivityManager.TaskDescription(null, null, customColor);
-                 this.setTaskDescription(td);
+            String color = ConfigService.getInstance().getConfig().actionBarColor;
+            int customColor = -1;
+            try {
+                customColor = Integer.parseInt(color);
+            } catch (Exception e) {
+                Log.d(TAG, e.getMessage());
             }
+
+            if (customColor != -1) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    ActivityManager.TaskDescription td = new ActivityManager.TaskDescription(null, null, customColor);
+                    this.setTaskDescription(td);
+                }
+            }
+        } catch (Exception e) {
+
+            Log.d(TAG, "Incorrect color code for overview title bar.");
         }
-    }
-        catch (Exception e){
-
-        Log.d(TAG, "Incorrect color code for overview title bar.");
-    }
-
 
 
     }
-
 
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
@@ -193,23 +171,25 @@ public class BotWebView extends AppCompatActivity {
         // setting up local listener
         Log.d(TAG, "onCreate: setting up local listener");
         YMChat.getInstance().setLocalListener(botEvent -> {
-            Log.d(TAG, "onSuccess: "+botEvent.getCode());
+            Log.d(TAG, "onSuccess: " + botEvent.getCode());
 
-            switch (botEvent.getCode()){
-                case "close-bot" :
+            switch (botEvent.getCode()) {
+                case "close-bot":
                     closeBot();
                     this.finish();
                     break;
-                case "upload-image" :
+                case "upload-image":
                     Log.d(TAG, "onSuccess: got event");
                     Map<String, Object> retMap = new Gson().fromJson(
-                            botEvent.getData(), new TypeToken<HashMap<String, Object>>() {}.getType());
-                     if(retMap.containsKey("uid")){
-                         String uId = retMap.get("uid").toString();
-
-                         runUpload(uId);
-
-                     }
+                            botEvent.getData(), new TypeToken<HashMap<String, Object>>() {
+                            }.getType());
+                    if (retMap != null && retMap.containsKey("uid")) {
+                        Object uid = retMap.get("uid");
+                        if (uid instanceof String) {
+                            String uId = (String) retMap.get("uid");
+                            runUpload(uId);
+                        }
+                    }
                     break;
             }
         });
@@ -223,30 +203,27 @@ public class BotWebView extends AppCompatActivity {
                 });
         setContentView(R.layout.activity_bot_web_view);
 
-        fh=new WebviewOverlay();
-        FragmentManager fragManager=getSupportFragmentManager();
+        fh = new WebviewOverlay();
+        FragmentManager fragManager = getSupportFragmentManager();
         fragManager.beginTransaction()
-                .add(R.id.container,fh)
+                .add(R.id.container, fh)
                 .commit();
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
-        if(enableSpeech){
+        if (enableSpeech) {
             FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
             micButton.setVisibility(View.VISIBLE);
-            micButton.setOnClickListener(view -> {
-                toggleBottomSheet();
-            });
+            micButton.setOnClickListener(view -> toggleBottomSheet());
         }
 
 
-
-            ImageButton backButton = findViewById(R.id.backButton);
-            backButton.setOnClickListener(view -> {
-                YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", ""));
-                fh.closeBot();
-                this.finish();
-            });
+        ImageButton backButton = findViewById(R.id.backButton);
+        backButton.setOnClickListener(view -> {
+            YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", ""));
+            fh.closeBot();
+            this.finish();
+        });
         boolean showCloseButton = ConfigService.getInstance().getConfig().showCloseButton;
-        if(!showCloseButton) {
+        if (!showCloseButton) {
             backButton.setVisibility(View.INVISIBLE);
         }
 
@@ -260,10 +237,14 @@ public class BotWebView extends AppCompatActivity {
     }
 
 
-    public void runUpload(String uid){
+    public void runUpload(String uid) {
         try {
+            if (uid == null) {
+                Log.e(TAG, "uid is null from bot.");
+                return;
+            }
             String botId = ConfigService.getInstance().getConfig().botId;
-            postUrl= postUrl + botId + "&uid="+uid+"&secure=false";
+            postUrl = postUrl + botId + "&uid=" + uid + "&secure=false";
             run();
         } catch (IOException e) {
             e.printStackTrace();
@@ -275,58 +256,59 @@ public class BotWebView extends AppCompatActivity {
         OkHttpClient client = new OkHttpClient();
 
         String imagePath = ConfigService.getInstance().getCustomDataByKey("imagePath");
-        Log.d(TAG, "run: "+imagePath);
+        if (imagePath != null && !imagePath.isEmpty()) {
+            Log.d(TAG, "run: " + imagePath);
 
-        File sourceFile = new File(imagePath);
+            File sourceFile = new File(imagePath);
 
-        Log.d(TAG, "File...::::" + sourceFile + " : " + sourceFile.exists());
+            Log.d(TAG, "File...::::" + sourceFile + " : " + sourceFile.exists());
 
-        final MediaType MEDIA_TYPE = imagePath.endsWith("png") ?
-                MediaType.parse("image/png") : MediaType.parse("image/jpeg");
-        Log.d(TAG, "run: "+postUrl);
-        Log.d(TAG, sourceFile.getName());
+            final MediaType MEDIA_TYPE = imagePath.endsWith("png") ?
+                    MediaType.parse("image/png") : MediaType.parse("image/jpeg");
+            Log.d(TAG, "run: " + postUrl);
+            Log.d(TAG, sourceFile.getName());
 
 
-        RequestBody requestBody = new MultipartBody.Builder()
-                .setType(MultipartBody.FORM)
-                .addFormDataPart("images", sourceFile.getName(), RequestBody.create(MEDIA_TYPE, sourceFile))
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("images", sourceFile.getName(), RequestBody.create(MEDIA_TYPE, sourceFile))
 //                .addFormDataPart("images", sourceFile.getName()+"."+MEDIA_TYPE.subtype(), RequestBody.create(MEDIA_TYPE, sourceFile))
-                .build();
+                    .build();
 
-        Request request = new Request.Builder()
-                .url(postUrl)
-                .post(requestBody)
-                .build();
+            Request request = new Request.Builder()
+                    .url(postUrl)
+                    .post(requestBody)
+                    .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                call.cancel();
-                Log.d("Upload", "Can't upload");
-            }
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                    Log.d("Upload", "Can't upload");
+                }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
 
-                final String myResponse = response.body().string();
+                    final String myResponse = response.body() != null ? response.body().string() : "";
 
-                BotWebView.this.runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        Log.d("Upload", myResponse);
-                    }
-                });
+                    BotWebView.this.runOnUiThread(() -> Log.d("Upload", myResponse));
 
-            }
-        });
+                }
+            });
+        } else {
+            Log.e(TAG, "imagePath is either null or empty");
+        }
     }
 
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed",""));
-        fh.closeBot();
+        YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", ""));
+        if (fh != null) {
+            fh.closeBot();
+        }
         this.finish();
     }
 
@@ -346,9 +328,9 @@ public class BotWebView extends AppCompatActivity {
         Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
 
         // Use a language model based on free-form speech recognition.
-        Map payload = ConfigService.getInstance().getConfig().payload;
-        String defaultLanguage = (String) payload.get("defaultLanguage");
-        if(defaultLanguage == null){
+        Map<String, Object> payload = ConfigService.getInstance().getConfig().payload;
+        String defaultLanguage = payload != null ? (String) payload.get("defaultLanguage") : null;
+        if (defaultLanguage == null) {
             defaultLanguage = "en";
         }
         Log.d(TAG, "startListeningWithoutDialog: " + defaultLanguage);
@@ -358,10 +340,9 @@ public class BotWebView extends AppCompatActivity {
         intent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, languagePref);
 
 
-
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS,true);
+        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
         intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
         intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
                 appContext.getPackageName());
@@ -375,14 +356,14 @@ public class BotWebView extends AppCompatActivity {
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public  void toggleBottomSheet() {
+    public void toggleBottomSheet() {
 
-        final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.animated_btn);
+        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.animated_btn);
         RelativeLayout voiceArea = findViewById(R.id.voiceArea);
         FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
         TextView textView = findViewById(R.id.speechTranscription);
 
-        if(voiceArea.getVisibility() == View.INVISIBLE){
+        if (voiceArea.getVisibility() == View.INVISIBLE) {
             textView.setText("I'm listening...");
             willStartMic = false;
             voiceArea.setVisibility(View.VISIBLE);
@@ -390,56 +371,55 @@ public class BotWebView extends AppCompatActivity {
             startListeningWithoutDialog();
 
             micButton.setImageDrawable(getDrawable(R.drawable.ic_back_button));
-        }else {
+        } else {
             voiceArea.setVisibility(View.INVISIBLE);
             rippleBackground.stopRippleAnimation();
             micButton.setImageDrawable(getDrawable(R.drawable.ic_mic_button));
-            sr.stopListening();
+            if (sr != null) {
+                sr.stopListening();
+            }
         }
 
 
     }
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void closeVoiceArea(){
-        final RippleBackground rippleBackground=(RippleBackground)findViewById(R.id.animated_btn);
+    public void closeVoiceArea() {
+        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.animated_btn);
         RelativeLayout voiceArea = findViewById(R.id.voiceArea);
         FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
         TextView textView = findViewById(R.id.speechTranscription);
 
-            voiceArea.setVisibility(View.INVISIBLE);
-            rippleBackground.stopRippleAnimation();
-            micButton.setImageDrawable(getDrawable(R.drawable.ic_mic_button));
+        voiceArea.setVisibility(View.INVISIBLE);
+        rippleBackground.stopRippleAnimation();
+        micButton.setImageDrawable(getDrawable(R.drawable.ic_mic_button));
+        if (sr != null) {
             sr.stopListening();
             sr.destroy();
+        }
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-            super.onActivityResult(requestCode, resultCode, data);
-            if (fh != null) {
-                Log.d("BotWebView", "onActivityResult is being called");
-                fh.onActivityResult(requestCode, resultCode, data);
-            }
+        super.onActivityResult(requestCode, resultCode, data);
+        if (fh != null) {
+            Log.d("BotWebView", "onActivityResult is being called");
+            fh.onActivityResult(requestCode, resultCode, data);
+        }
 
 
         if (resultCode == RESULT_OK && data != null) {
-            switch (requestCode) {
-                case 100:
-                    ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
-                    fh.sendEvent(result.get(0));
-                    break;
+            if (requestCode == 100) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                fh.sendEvent(result.get(0));
             }
-        }
-        else if(null == data){
-
-        }
-        else {
+        } else {
             Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
         }
     }
+
     private String speech_result = "";
 
 
@@ -476,7 +456,7 @@ public class BotWebView extends AppCompatActivity {
             View parentLayout = findViewById(android.R.id.content);
             Snackbar snackbar = Snackbar
                     .make(parentLayout, "We've encountered an error. Please press Mic to continue with voice input.", Snackbar.LENGTH_LONG);
-            snackbar.show() ;
+            snackbar.show();
 
         }
 
@@ -484,25 +464,32 @@ public class BotWebView extends AppCompatActivity {
         public void onResults(Bundle results) {
             ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             TextView textView = findViewById(R.id.speechTranscription);
-            textView.setText(result.get(0));
+            textView.setText(result != null && result.size() > 0 ? result.get(0) : "");
 
             if (singleResult) {
                 if (result != null && result.size() > 0) {
                     speech_result = result.get(0);
-                    sr.cancel();
-                    fh.sendEvent(result.get(0));
+                    if (sr != null)
+                        sr.cancel();
+
+                    if (fh != null)
+                        fh.sendEvent(result.get(0));
                 }
                 closeVoiceArea();
-                singleResult=false;
+                singleResult = false;
             }
 
 
         }
 
         public void onPartialResults(Bundle partialResults) {
-            Log.d(TAG, "onPartialResults "+partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).get(0));
+            String value = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) != null
+                    && partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).size() > 0
+                    ? partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).get(0)
+                    : "";
+            Log.d(TAG, "onPartialResults " + value);
             TextView textView = findViewById(R.id.speechTranscription);
-            textView.setText(partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).get(0));
+            textView.setText(value);
         }
 
         public void onEvent(int eventType, Bundle params) {
