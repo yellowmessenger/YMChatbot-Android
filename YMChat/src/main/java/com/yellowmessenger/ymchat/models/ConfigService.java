@@ -53,7 +53,7 @@ public class ConfigService {
             throw new RuntimeException("customBaseUrl cannot be null or empty.");
         String botId = config.botId;
         payload = config.payload != null ? config.payload : new HashMap<>();
-        payload.put("platform", "Android-App");
+        payload.put("Platform", "Android-App");
         String payloadJSON = null;
         try {
             payloadJSON = URLEncoder.encode(new Gson().toJson(payload), "UTF-8");
