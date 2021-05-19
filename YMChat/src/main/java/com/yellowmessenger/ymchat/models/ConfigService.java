@@ -58,7 +58,7 @@ public class ConfigService {
         try {
             payloadJSON = URLEncoder.encode(new Gson().toJson(payload), "UTF-8");
         } catch (Exception e) {
-            throw new RuntimeException("In payload map value can be of primitive type or Map<String,String> ::\nError message :: " + e.getMessage());
+            throw new RuntimeException("In payload map, value can be of primitive type or Map<String,String> ::\nError message :: " + e.getMessage());
         }
 
         StringBuilder sb = new StringBuilder();
