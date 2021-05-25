@@ -177,6 +177,7 @@ public class BotWebView extends AppCompatActivity {
                 case "close-bot":
                     closeBot();
                     this.finish();
+                    YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", ""));
                     break;
                 case "upload-image":
                     Log.d(TAG, "onSuccess: got event");
