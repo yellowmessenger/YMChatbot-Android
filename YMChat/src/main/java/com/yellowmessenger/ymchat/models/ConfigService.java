@@ -6,12 +6,12 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.YMConfig;
 
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
 public class ConfigService {
+    private static final String TAG = ConfigService.class.getSimpleName();
     private static ConfigService configInstance;
     private YMConfig config; // For configurations
     private Map<String, Object> payload; // For payload key-values
@@ -48,9 +48,7 @@ public class ConfigService {
         return config;
     }
 
-    public String getBotURLParams() throws RuntimeException {
-        if (config.customBaseUrl == null || config.customBaseUrl.isEmpty())
-            throw new RuntimeException("customBaseUrl cannot be null or empty.");
+    public String getBotURLParams() {
         String botId = config.botId;
         payload = config.payload != null ? config.payload : new HashMap<>();
         payload.put("Platform", "Android-App");
@@ -58,7 +56,7 @@ public class ConfigService {
         try {
             payloadJSON = URLEncoder.encode(new Gson().toJson(payload), "UTF-8");
         } catch (Exception e) {
-            throw new RuntimeException("In payload map, value can be of primitive type or Map<String,String> ::\nError message :: " + e.getMessage());
+            Log.e(TAG, e.getMessage());
         }
 
         StringBuilder sb = new StringBuilder();

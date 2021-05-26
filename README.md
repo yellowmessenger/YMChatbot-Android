@@ -49,7 +49,12 @@ protected void onCreate(Bundle savedInstanceState) {
 	FloatingActionButton fab = findViewById(R.id.fab);
 	fab.setOnClickListener(view -> {
 		//Starting the bot activity
-		ymChat.startChatbot(this);
+		try {
+            ymChat.startChatbot(this);
+          } catch (Exception e) {
+           //Catch and handle the exception
+            e.printStackTrace();
+          }
 	});
 }
 
