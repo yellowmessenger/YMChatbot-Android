@@ -37,9 +37,8 @@ public class MainActivity extends AppCompatActivity {
                 case "event-name": break;
             }
         });
-        ymChat.onBotClose((YMBotEventResponse botEvent) -> {
+        ymChat.onBotClose(() -> {
             Log.d("Example App", "Bot Was closed");
-
         });
 
         setContentView(R.layout.activity_main);
