@@ -68,7 +68,7 @@ public class YMChat {
 
     public void emitEvent(YMBotEventResponse event) {
         if (event != null) {
-            if(botCloseEventListener!= null && event.getCode().equals("bot-closed")){
+            if(botCloseEventListener!= null && event.getCode() !=null && event.getCode().equals("bot-closed")){
                 botCloseEventListener.onClosed();
             }
             else{
