@@ -104,7 +104,7 @@ Bot can be programatically closed using `closeBot()` function
 ymChat.closeBot();
 ```
 
-## Bot close event
+### Bot close event
 Bot close event is separetly sent and it can be handled by listening to onBotClose event as mentioned below.
 
 ```java
