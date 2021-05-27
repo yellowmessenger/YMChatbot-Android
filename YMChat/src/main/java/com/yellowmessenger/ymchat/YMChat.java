@@ -11,6 +11,7 @@ import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 public class YMChat {
     private final String TAG = "YMChat";
     private BotEventListener listener, localListener;
+    private BotCloseEventListener botCloseEventListener;
     private static YMChat botPluginInstance;
     public YMConfig config;
 
@@ -36,6 +37,9 @@ public class YMChat {
 
     public void onEventFromBot(BotEventListener listener) {
         this.listener = listener;
+    }
+    public void onBotClose(BotCloseEventListener listener) {
+        this.botCloseEventListener = listener;
     }
 
     public void startChatbot(Context context) {
@@ -64,11 +68,17 @@ public class YMChat {
 
     public void emitEvent(YMBotEventResponse event) {
         if (event != null) {
-            if (listener != null)
-                listener.onSuccess(event);
+            if(botCloseEventListener!= null && event.getCode() !=null && event.getCode().equals("bot-closed")){
+                botCloseEventListener.onClosed();
+            }
+            else{
+                if (listener != null)
+                    listener.onSuccess(event);
 
-            if (localListener != null)
-                localListener.onSuccess(event);
+                if (localListener != null)
+                    localListener.onSuccess(event);
+            }
+
         }
     }
 
