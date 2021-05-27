@@ -1,6 +1,7 @@
 package com.yellowmessenger.ymchatexample;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -35,6 +36,9 @@ public class MainActivity extends AppCompatActivity {
             switch (botEvent.getCode()){
                 case "event-name": break;
             }
+        });
+        ymChat.onBotClose(() -> {
+            Log.d("Example App", "Bot Was closed");
         });
 
         setContentView(R.layout.activity_main);
