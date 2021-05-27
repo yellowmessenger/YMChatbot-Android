@@ -2,10 +2,14 @@ package com.yellowmessenger.ymchat;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
+
+import java.net.URLEncoder;
 
 
 public class YMChat {
@@ -42,23 +46,43 @@ public class YMChat {
         this.botCloseEventListener = listener;
     }
 
-    public void startChatbot(Context context) {
-        try {
-            if (context == null) {
-                throw new RuntimeException("Context passed is null. Please pass valid context");
-            }
 
-            if (config != null && config.botId != null && !config.botId.isEmpty() ) {
-                ConfigService.getInstance().setConfigData(config);
-                Intent _intent = new Intent(context, BotWebView.class);
-                _intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                context.startActivity(_intent);
-            } else {
-                throw new RuntimeException("botId is not configured. Please set botId before calling startChatbot()");
-            }
-        } catch (RuntimeException e) {
-            Log.e(TAG, "startChatbot: ", e);
+    public void startChatbot(@NonNull Context context) throws Exception {
+        try {
+             if(validate(context)){
+                 ConfigService.getInstance().setConfigData(config);
+                 Intent _intent = new Intent(context, BotWebView.class);
+                 _intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                 context.startActivity(_intent);
+             }
+        } catch (Exception e) {
+            throw new Exception(("Exception in staring chat bot ::\nException message :: " + e.getMessage()));
         }
+    }
+
+    private boolean validate(Context context) throws Exception {
+        if (context == null) {
+            throw new Exception("Context passed is null. Please pass valid context");
+        }
+
+        if (config == null) {
+            throw new Exception("Please initialise config, it cannot be null.");
+        }
+
+        if (config.botId == null || config.botId.isEmpty()) {
+            throw new Exception("botId is not configured. Please set botId before calling startChatbot()");
+        }
+        if (config.customBaseUrl == null || config.customBaseUrl.isEmpty()) {
+            throw new Exception("customBaseUrl cannot be null or empty.");
+        }
+        if (config.payload != null) {
+            try {
+                URLEncoder.encode(new Gson().toJson(config.payload), "UTF-8");
+            } catch (Exception e) {
+                throw new Exception("In payload map, value can be of primitive type or json convertible value ::\nException message :: " + e.getMessage());
+            }
+        }
+        return true;
     }
 
     public void closeBot() {

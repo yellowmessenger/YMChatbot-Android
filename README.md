@@ -49,7 +49,12 @@ protected void onCreate(Bundle savedInstanceState) {
 	FloatingActionButton fab = findViewById(R.id.fab);
 	fab.setOnClickListener(view -> {
 		//Starting the bot activity
-		ymChat.startChatbot(this);
+		try {
+            ymChat.startChatbot(this);
+          } catch (Exception e) {
+           //Catch and handle the exception
+            e.printStackTrace();
+          }
 	});
 }
 
@@ -71,7 +76,7 @@ ymChat.config.enableSpeech = true
 ```
 
 ### Payload
-Additional payload can be added in the form of key value pair, which is then passed to the bot
+Additional payload can be added in the form of key value pair, which is then passed to the bot. The value of payload can be either Primitive type or json convertible value
 ```java
 HashMap<String, Object> payloadData = new HashMap<>();
 //Setting Payload Data
