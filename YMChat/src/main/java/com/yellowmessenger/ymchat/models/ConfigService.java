@@ -51,7 +51,7 @@ public class ConfigService {
     public String getBotURLParams() {
         String botId = config.botId;
         payload = config.payload != null ? config.payload : new HashMap<>();
-        payload.put("Platform", "Android-App");
+        payload.put("platform", "Android-App");
         String payloadJSON = null;
         try {
             payloadJSON = URLEncoder.encode(new Gson().toJson(payload), "UTF-8");

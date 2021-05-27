@@ -2,8 +2,8 @@
 - [Installation](#installation)
 - [Usage](#usage)
 
-# Installation
-## Gradle
+## Installation
+### Gradle
 To integrate YMChat into your Android project using gradle, specify the following configurations in App level `build.gradle` file
 ```gradle
 repositories {
@@ -24,8 +24,8 @@ dependencies {
 }
 ```
   
-# Usage
-## Basic
+## Usage
+### Basic
 Import the YMChat library in your Activity.
 ```java
 import com.yellowmessenger.ymchat.YMChat;
@@ -60,16 +60,16 @@ protected void onCreate(Bundle savedInstanceState) {
 
 ```
 
-## YMConfig
+### YMConfig
 YMConfig configures chatbot before it presented on the screen. It is recommended to set appropriate config before presenting the bot
 
-### Initialize
+#### Initialize
 YMConfig requires a botID to initialize. All other settings can be changed after config has been initialised
 ```java
 ymChat.config = new YMConfig("<BOT-ID>");
 ```
 
-### Speech recognition
+#### Speech recognition
 Speech to text can be enabled by setting the enableSpeech flag present in config. Default value is `false`
 ```java
 ymChat.config.enableSpeech = true
@@ -77,6 +77,7 @@ ymChat.config.enableSpeech = true
 
 ### Payload
 Additional payload can be added in the form of key value pair, which is then passed to the bot. The value of payload can be either Primitive type or json convertible value
+
 ```java
 HashMap<String, Object> payloadData = new HashMap<>();
 //Setting Payload Data
@@ -84,20 +85,20 @@ payloadData.put("some-key","some-value");
 ymChat.config.payload = payloadData;
 ```
 
-### History
+#### History
 Chat history can be enabled by setting the `enableHistory` flag present in YMConfig. Default value is `false`
 ```java
 ymChat.config.enableHistory = true
 ```
 
-## Starting the bot
+### Starting the bot
 Chat bot can be presented by calling `startChatbot()` and passing your Activity context as an argument
 ```java
 ymChat.startChatbot(this);
 ```
 
 
-## Close bot
+### Close bot
 Bot can be programatically closed using `closeBot()` function
 ```java
 ymChat.closeBot();
@@ -112,7 +113,7 @@ ymChat.onBotClose(() -> {
  });
 ```
 
-## Events from bot
+### Events from bot
 Events from bot can be handled using event Listeners.  Simply define the `onSuccess` method of `onEventFromBot` listener.
 
 ```java
