@@ -79,7 +79,7 @@ public class YMChat {
             try {
                 URLEncoder.encode(new Gson().toJson(config.payload), "UTF-8");
             } catch (Exception e) {
-                throw new Exception("In payload map, value can be of primitive type or Map<String,String> ::\nException message :: " + e.getMessage());
+                throw new Exception("In payload map, value can be of primitive type or json convertible value ::\nException message :: " + e.getMessage());
             }
         }
         return true;
