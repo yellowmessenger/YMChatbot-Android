@@ -20,7 +20,7 @@ repositories {
 dependencies {
     ...
     ...
-	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.2.0
+	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.3.0
 }
 ```
   
@@ -49,7 +49,12 @@ protected void onCreate(Bundle savedInstanceState) {
 	FloatingActionButton fab = findViewById(R.id.fab);
 	fab.setOnClickListener(view -> {
 		//Starting the bot activity
-		ymChat.startChatbot(this);
+		try {
+            ymChat.startChatbot(this);
+          } catch (Exception e) {
+           //Catch and handle the exception
+            e.printStackTrace();
+          }
 	});
 }
 
@@ -70,8 +75,9 @@ Speech to text can be enabled by setting the enableSpeech flag present in config
 ymChat.config.enableSpeech = true
 ```
 
-#### Payload
-Additional payload can be added in the form of key value pair, which is then passed to the bot
+### Payload
+Additional payload can be added in the form of key value pair, which is then passed to the bot. The value of payload can be either Primitive type or json convertible value
+
 ```java
 HashMap<String, Object> payloadData = new HashMap<>();
 //Setting Payload Data
@@ -96,6 +102,15 @@ ymChat.startChatbot(this);
 Bot can be programatically closed using `closeBot()` function
 ```java
 ymChat.closeBot();
+```
+
+### Bot close event
+Bot close event is separetly sent and it can be handled by listening to onBotClose event as mentioned below.
+
+```java
+ymChat.onBotClose(() -> {
+  Log.d("Example App", "Bot Was closed");
+ });
 ```
 
 ### Events from bot

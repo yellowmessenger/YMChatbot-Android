@@ -1,6 +1,7 @@
 package com.yellowmessenger.ymchatexample;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.webkit.JavascriptInterface;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -14,7 +15,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)
-    String botId = "x1587041004122";
+    String botId = "x1587041004122"; //x1612170282642 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,13 +37,21 @@ public class MainActivity extends AppCompatActivity {
                 case "event-name": break;
             }
         });
+        ymChat.onBotClose(() -> {
+            Log.d("Example App", "Bot Was closed");
+        });
 
         setContentView(R.layout.activity_main);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(view -> {
             //Starting the bot activity
-            ymChat.startChatbot(this);
+            try {
+                ymChat.startChatbot(this);
+            } catch (Exception e) {
+                //Catch and handle the exception
+                e.printStackTrace();
+            }
         });
     }
 }

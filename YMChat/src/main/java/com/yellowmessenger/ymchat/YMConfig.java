@@ -1,5 +1,7 @@
 package com.yellowmessenger.ymchat;
 
+import androidx.annotation.NonNull;
+
 import java.util.HashMap;
 
 public class YMConfig {
@@ -19,7 +21,7 @@ public class YMConfig {
     public String closeButtonColor;
     public HashMap<String, Object> payload = new HashMap<>(); // For payload key-values
     public HashMap<String, String> customData = new HashMap<>(); // other data key-values
-    public  YMConfig(String botId){
+    public  YMConfig(@NonNull String botId){
         this.botId = botId;
     }
 }
