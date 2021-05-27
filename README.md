@@ -76,7 +76,7 @@ ymChat.config.enableSpeech = true
 ```
 
 ### Payload
-Additional payload can be added in the form of key value pair, which is then passed to the bot
+Additional payload can be added in the form of key value pair, which is then passed to the bot. The value of payload can be either Primitive type or Map<String,String>
 ```java
 HashMap<String, Object> payloadData = new HashMap<>();
 //Setting Payload Data
