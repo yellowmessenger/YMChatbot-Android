@@ -337,7 +337,7 @@ public class WebviewOverlay extends Fragment {
         });
 
         StringBuilder botUrlBuilder = new StringBuilder();
-        botUrlBuilder.append(getString(R.string.chatbot_base_url));
+        botUrlBuilder.append(getString(R.string.ym_chatbot_base_url));
         botUrlBuilder.append(ConfigService.getInstance().getBotURLParams());
         String botUrl = botUrlBuilder.toString();
         Log.d(TAG, "botURL: " +
