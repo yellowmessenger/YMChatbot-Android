@@ -20,7 +20,7 @@ repositories {
 dependencies {
     ...
     ...
-	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.3.0
+	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.3.1
 }
 ```
   
