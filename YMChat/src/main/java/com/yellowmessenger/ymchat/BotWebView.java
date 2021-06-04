@@ -371,11 +371,11 @@ public class BotWebView extends AppCompatActivity {
             rippleBackground.startRippleAnimation();
             startListeningWithoutDialog();
 
-            micButton.setImageDrawable(getDrawable(R.drawable.ic_back_button));
+            micButton.setImageDrawable(getDrawable(R.drawable.ic_back_button_ym));
         } else {
             voiceArea.setVisibility(View.INVISIBLE);
             rippleBackground.stopRippleAnimation();
-            micButton.setImageDrawable(getDrawable(R.drawable.ic_mic_button));
+            micButton.setImageDrawable(getDrawable(R.drawable.ic_mic_button_ym));
             if (sr != null) {
                 sr.stopListening();
             }
@@ -393,7 +393,7 @@ public class BotWebView extends AppCompatActivity {
 
         voiceArea.setVisibility(View.INVISIBLE);
         rippleBackground.stopRippleAnimation();
-        micButton.setImageDrawable(getDrawable(R.drawable.ic_mic_button));
+        micButton.setImageDrawable(getDrawable(R.drawable.ic_mic_button_ym));
         if (sr != null) {
             sr.stopListening();
             sr.destroy();

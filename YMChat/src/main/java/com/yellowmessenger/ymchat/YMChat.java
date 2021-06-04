@@ -42,6 +42,7 @@ public class YMChat {
     public void onEventFromBot(BotEventListener listener) {
         this.listener = listener;
     }
+
     public void onBotClose(BotCloseEventListener listener) {
         this.botCloseEventListener = listener;
     }
@@ -49,12 +50,12 @@ public class YMChat {
 
     public void startChatbot(@NonNull Context context) throws Exception {
         try {
-             if(validate(context)){
-                 ConfigService.getInstance().setConfigData(config);
-                 Intent _intent = new Intent(context, BotWebView.class);
-                 _intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                 context.startActivity(_intent);
-             }
+            if (validate(context)) {
+                ConfigService.getInstance().setConfigData(config);
+                Intent _intent = new Intent(context, BotWebView.class);
+                _intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                context.startActivity(_intent);
+            }
         } catch (Exception e) {
             throw new Exception(("Exception in staring chat bot ::\nException message :: " + e.getMessage()));
         }
@@ -92,10 +93,9 @@ public class YMChat {
 
     public void emitEvent(YMBotEventResponse event) {
         if (event != null) {
-            if(botCloseEventListener!= null && event.getCode() !=null && event.getCode().equals("bot-closed")){
+            if (botCloseEventListener != null && event.getCode() != null && event.getCode().equals("bot-closed")) {
                 botCloseEventListener.onClosed();
-            }
-            else{
+            } else {
                 if (listener != null)
                     listener.onSuccess(event);
 

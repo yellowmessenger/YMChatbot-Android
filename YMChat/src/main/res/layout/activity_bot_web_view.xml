@@ -10,10 +10,7 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorDark">
-    </FrameLayout>
-
-
+        android:background="@color/ymColorDark"></FrameLayout>
 
 
     <RelativeLayout
@@ -26,10 +23,9 @@
         android:layout_marginStart="0dp"
         android:layout_marginLeft="0dp"
         android:layout_marginBottom="0dp"
-        android:background="@color/translucent"
+        android:background="@color/ymTranslucent"
         android:clickable="true"
         android:visibility="invisible">
-
 
 
         <TextView
@@ -47,7 +43,7 @@
             android:layout_marginEnd="20dp"
             android:layout_marginRight="20dp"
             android:text="Start Speaking..."
-            android:textColor="@color/colorWhite"
+            android:textColor="@color/ymColorWhite"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true"
@@ -65,13 +61,12 @@
         android:layout_marginEnd="0dp"
         android:layout_marginRight="0dp"
         android:layout_marginBottom="0dp"
-        android:background="@color/transparent"
-        app:rb_color="@color/accentBlue"
+        android:background="@color/ymTransparent"
+        app:rb_color="@color/ymAccentBlue"
         app:rb_duration="2500"
         app:rb_radius="40dp"
         app:rb_rippleAmount="3"
-        app:rb_scale="2"
-        >
+        app:rb_scale="2">
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/floatingActionButton"
@@ -91,15 +86,15 @@
             android:layout_marginBottom="50dp"
             android:clickable="true"
             android:visibility="invisible"
-            app:backgroundTint="@color/accentBlue"
+            app:backgroundTint="@color/ymAccentBlue"
             app:fabCustomSize="80dp"
             app:fabSize="normal"
-            app:srcCompat="@drawable/ic_mic_button"
+            app:srcCompat="@drawable/ic_mic_button_ym"
             tools:ignore="VectorDrawableCompat" />
 
     </com.skyfishjy.library.RippleBackground>
 
-     <ImageButton
+    <ImageButton
         android:id="@+id/backButton"
         android:layout_width="32dp"
         android:layout_height="32dp"
@@ -108,9 +103,9 @@
         android:layout_marginTop="20dp"
         android:layout_marginEnd="16dp"
         android:layout_marginRight="16dp"
-        android:background="@color/transparent"
+        android:background="@color/ymTransparent"
         android:padding="10dp"
         android:scaleType="centerInside"
-        app:srcCompat="@drawable/ic_back_button" />
+        app:srcCompat="@drawable/ic_back_button_ym" />
 
 </RelativeLayout>

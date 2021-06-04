@@ -1,7 +1,6 @@
 package com.yellowmessenger.ymchat.models;
 
 
-
 public class YMBotEventResponse {
 
     String code, data;
