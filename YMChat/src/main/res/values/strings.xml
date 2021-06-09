@@ -3,4 +3,8 @@
     <string name="title_activity_test">TestActivity</string>
     <string name="ym_chatbot_base_url">file:///android_asset/index.html</string>
     <string name="ym_chatbot_base_url_github">https://yellowmessenger.github.io/pages/app/mobile.html</string>
+    <string name="ym_msg_listening">I\'m listening...</string>
+    <string name="ym_msg_start_speaking">Start Speaking...</string>
+    <string name="ym_fab_voice_button">voice button</string>
+    <string name="ym_file_provider">com.yellowmessenger.ymchat.fileprovider</string>
 </resources>

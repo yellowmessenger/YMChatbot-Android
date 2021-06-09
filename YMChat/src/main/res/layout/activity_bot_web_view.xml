@@ -10,21 +10,18 @@
         android:id="@+id/container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/ymColorDark"></FrameLayout>
+        android:background="@color/ymColorDark" />
 
 
     <RelativeLayout
         android:id="@+id/voiceArea"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="@dimen/ym_voice_area_height"
         android:layout_alignParentStart="true"
-        android:layout_alignParentLeft="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginStart="0dp"
-        android:layout_marginLeft="0dp"
-        android:layout_marginBottom="0dp"
         android:background="@color/ymTranslucent"
         android:clickable="true"
+        android:focusable="true"
         android:visibility="invisible">
 
 
@@ -33,76 +30,47 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_marginStart="20dp"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:layout_marginEnd="20dp"
-            android:layout_marginRight="20dp"
-            android:text="Start Speaking..."
-            android:textColor="@color/ymColorWhite"
+            android:layout_marginStart="@dimen/ym_margin_normal"
+            android:layout_marginLeft="@dimen/ym_margin_normal"
+            android:layout_marginTop="@dimen/ym_margin_normal"
+            android:layout_marginEnd="@dimen/ym_margin_normal"
+            android:layout_marginRight="@dimen/ym_margin_normal"
             android:clickable="true"
             android:focusable="true"
             android:focusableInTouchMode="true"
-            android:textSize="18sp" />
+            android:text="@string/ym_msg_start_speaking"
+            android:textColor="@color/ymColorWhite"
+            android:textSize="@dimen/ym_text_size_medium" />
     </RelativeLayout>
 
-
-    <com.skyfishjy.library.RippleBackground
-        android:id="@+id/animated_btn"
-        android:layout_width="180dp"
-        android:layout_height="180dp"
-        android:layout_alignParentRight="true"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="0dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginBottom="0dp"
-        android:background="@color/ymTransparent"
-        app:rb_color="@color/ymAccentBlue"
-        app:rb_duration="2500"
-        app:rb_radius="40dp"
-        app:rb_rippleAmount="3"
-        app:rb_scale="2">
+        android:layout_marginEnd="@dimen/ym_margin_small"
+        android:layout_marginBottom="@dimen/ym_margin_large"
+        android:clickable="true"
+        android:contentDescription="@string/ym_fab_voice_button"
+        android:focusable="true"
+        android:visibility="gone"
+        app:backgroundTint="@color/ymAccentBlue"
+        app:fabSize="normal"
+        app:srcCompat="@drawable/ic_mic_button_ym"
+        tools:ignore="VectorDrawableCompat" />
 
-        <com.google.android.material.floatingactionbutton.FloatingActionButton
-            android:id="@+id/floatingActionButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginStart="50dp"
-            android:layout_marginLeft="50dp"
-            android:layout_marginTop="50dp"
-            android:layout_marginEnd="50dp"
-            android:layout_marginRight="50dp"
-            android:layout_marginBottom="50dp"
-            android:clickable="true"
-            android:visibility="invisible"
-            app:backgroundTint="@color/ymAccentBlue"
-            app:fabCustomSize="80dp"
-            app:fabSize="normal"
-            app:srcCompat="@drawable/ic_mic_button_ym"
-            tools:ignore="VectorDrawableCompat" />
-
-    </com.skyfishjy.library.RippleBackground>
 
     <ImageButton
         android:id="@+id/backButton"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="@dimen/ym_back_button_width"
+        android:layout_height="@dimen/ym_back_button_width"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginTop="20dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginRight="16dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/ym_margin_normal"
+        android:layout_marginEnd="@dimen/ym_margin_normal"
         android:background="@color/ymTransparent"
         android:padding="10dp"
         android:scaleType="centerInside"

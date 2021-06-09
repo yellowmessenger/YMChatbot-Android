@@ -146,4 +146,42 @@ If facing problem in release build, add the following configuration in the app's
 }
 ```
 
+## Dependencies
+Following dependencies are used in chat bot SDK
+```java
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.7.2'
+    implementation 'com.google.code.gson:gson:2.8.6'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+```
+
+## Permissions
+We are declaring and asking for following permission in our manifest file
+```java
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+```
+All permissions will be asked at run time except INTERNET.
+For attachment (picking from phone or taking picture using camera)
+```java
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+```
+For voice input
+```java
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+```
+
+For smooth experiance of attaching file/image in Android 10+ we have enabled legacy external storage in our app
+```java
+    <application android:requestLegacyExternalStorage="true">
+```
+
+
 

@@ -1,9 +1,11 @@
 package com.yellowmessenger.ymchat;
 
 
+import android.Manifest;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
@@ -21,10 +23,13 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.content.res.AppCompatResources;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 
@@ -32,7 +37,6 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.skyfishjy.library.RippleBackground;
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
@@ -62,6 +66,17 @@ public class BotWebView extends AppCompatActivity {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
+    private ActivityResultLauncher<String> requestPermissionLauncher =
+            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
+                if (isGranted) {
+                    toggleBottomSheet();
+                    // Permission is granted. Continue the action or workflow in your
+                    // app.
+                } else {
+                    Toast.makeText(this, "Record audio permission required for voice input", Toast.LENGTH_SHORT).show();
+                }
+            });
+
 
     public void startMic(long countdown_time) {
         RelativeLayout voiceArea = findViewById(R.id.voiceArea);
@@ -71,10 +86,9 @@ public class BotWebView extends AppCompatActivity {
                 public void onTick(long millisUntilFinished) {
                 }
 
-                @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
                 public void onFinish() {
                     if (voiceArea.getVisibility() == View.INVISIBLE && willStartMic) {
-                        toggleBottomSheet();
+                        showVoiceOption();
                     }
                 }
             }.start();
@@ -88,6 +102,9 @@ public class BotWebView extends AppCompatActivity {
     public void setStatusBarColor() {
         try {
             String color = ConfigService.getInstance().getConfig().statusBarColor;
+            if (color == null || color.isEmpty())
+                return;
+
             int customColor = -1;
             try {
 
@@ -115,6 +132,8 @@ public class BotWebView extends AppCompatActivity {
     public void setActionBarColor() {
         try {
             String color = ConfigService.getInstance().getConfig().actionBarColor;
+            if (color == null || color.isEmpty())
+                return;
             int customColor = -1;
             try {
                 customColor = Integer.parseInt(color);
@@ -138,6 +157,8 @@ public class BotWebView extends AppCompatActivity {
     public void setOverviewColor() {
         try {
             String color = ConfigService.getInstance().getConfig().actionBarColor;
+            if (color == null || color.isEmpty())
+                return;
             int customColor = -1;
             try {
                 customColor = Integer.parseInt(color);
@@ -159,8 +180,6 @@ public class BotWebView extends AppCompatActivity {
 
     }
 
-
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -213,7 +232,7 @@ public class BotWebView extends AppCompatActivity {
         if (enableSpeech) {
             FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
             micButton.setVisibility(View.VISIBLE);
-            micButton.setOnClickListener(view -> toggleBottomSheet());
+            micButton.setOnClickListener(view -> showVoiceOption());
         }
 
 
@@ -229,6 +248,17 @@ public class BotWebView extends AppCompatActivity {
         }
 
 
+    }
+
+    private void showVoiceOption() {
+        if (ContextCompat.checkSelfPermission(
+                this, Manifest.permission.RECORD_AUDIO) ==
+                PackageManager.PERMISSION_GRANTED) {
+            toggleBottomSheet();
+        } else {
+            requestPermissionLauncher.launch(
+                    Manifest.permission.RECORD_AUDIO);
+        }
     }
 
     @Override
@@ -356,26 +386,22 @@ public class BotWebView extends AppCompatActivity {
         sr.startListening(intent);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public void toggleBottomSheet() {
 
-        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.animated_btn);
+    public void toggleBottomSheet() {
         RelativeLayout voiceArea = findViewById(R.id.voiceArea);
         FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
         TextView textView = findViewById(R.id.speechTranscription);
 
         if (voiceArea.getVisibility() == View.INVISIBLE) {
-            textView.setText("I'm listening...");
+            textView.setText(R.string.ym_msg_listening);
             willStartMic = false;
             voiceArea.setVisibility(View.VISIBLE);
-            rippleBackground.startRippleAnimation();
             startListeningWithoutDialog();
 
-            micButton.setImageDrawable(getDrawable(R.drawable.ic_back_button_ym));
+            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_back_button_ym));
         } else {
             voiceArea.setVisibility(View.INVISIBLE);
-            rippleBackground.stopRippleAnimation();
-            micButton.setImageDrawable(getDrawable(R.drawable.ic_mic_button_ym));
+            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_button_ym));
             if (sr != null) {
                 sr.stopListening();
             }
@@ -384,16 +410,13 @@ public class BotWebView extends AppCompatActivity {
 
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void closeVoiceArea() {
-        final RippleBackground rippleBackground = (RippleBackground) findViewById(R.id.animated_btn);
         RelativeLayout voiceArea = findViewById(R.id.voiceArea);
         FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
         TextView textView = findViewById(R.id.speechTranscription);
 
         voiceArea.setVisibility(View.INVISIBLE);
-        rippleBackground.stopRippleAnimation();
-        micButton.setImageDrawable(getDrawable(R.drawable.ic_mic_button_ym));
+        micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_button_ym));
         if (sr != null) {
             sr.stopListening();
             sr.destroy();
@@ -416,8 +439,6 @@ public class BotWebView extends AppCompatActivity {
                 ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
                 fh.sendEvent(result.get(0));
             }
-        } else {
-            Toast.makeText(getApplicationContext(), "Failed to recognize speech!", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -451,7 +472,6 @@ public class BotWebView extends AppCompatActivity {
             Log.d(TAG, "onEndofSpeech");
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onError(int error) {
             closeVoiceArea();
             View parentLayout = findViewById(android.R.id.content);
@@ -461,7 +481,6 @@ public class BotWebView extends AppCompatActivity {
 
         }
 
-        @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
         public void onResults(Bundle results) {
             ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
             TextView textView = findViewById(R.id.speechTranscription);

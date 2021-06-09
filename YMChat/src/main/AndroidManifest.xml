@@ -3,20 +3,39 @@
     package="com.yellowmessenger.ymchat">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.CAMERA2" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <queries>
+        <!-- Camera -->
+        <intent>
+            <action android:name="android.media.action.IMAGE_CAPTURE" />
+        </intent>
+        <!-- Gallery -->
+        <intent>
+            <action android:name="android.intent.action.GET_CONTENT" />
+        </intent>
+    </queries>
 
-    <application>
+    <application android:requestLegacyExternalStorage="true">
         <activity
             android:name=".BotWebView"
+            android:configChanges="orientation|screenSize"
+            android:fitsSystemWindows="true"
             android:launchMode="singleTask"
             android:theme="@style/YmAppTheme.NoActionBar"
-            android:configChanges="orientation|screenSize"
-            android:windowSoftInputMode="adjustResize"
-            android:fitsSystemWindows="true" />
+            android:windowSoftInputMode="adjustResize" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="@string/ym_file_provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
     </application>
 
 
