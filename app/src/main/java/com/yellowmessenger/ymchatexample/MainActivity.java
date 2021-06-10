@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)
-    String botId = "x1608615889375";//"x1587041004122"; //x1612170282642
+    String botId = "x1587041004122";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

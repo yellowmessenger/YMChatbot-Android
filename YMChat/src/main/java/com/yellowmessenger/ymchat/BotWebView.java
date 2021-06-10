@@ -70,8 +70,6 @@ public class BotWebView extends AppCompatActivity {
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (isGranted) {
                     toggleBottomSheet();
-                    // Permission is granted. Continue the action or workflow in your
-                    // app.
                 } else {
                     Toast.makeText(this, "Record audio permission required for voice input", Toast.LENGTH_SHORT).show();
                 }
