@@ -78,20 +78,16 @@ public class WebviewOverlay extends Fragment {
 
         // Check that the response is a good one
         if (resultCode == Activity.RESULT_OK) {
-            if (data != null) {
-                if (data.getDataString() == null) {
-                    // If there is no data, then we may have taken a photo
-                    if (mCameraPhotoPath != null) {
-                        results = new Uri[]{Uri.parse(mCameraPhotoPath)};
-                    }
-                } else {
-                    String dataString = data.getDataString();
-                    if (dataString != null) {
-                        results = new Uri[]{Uri.parse(dataString)};
-                    }
+            if (data != null && data.getDataString() != null) {
+                String dataString = data.getDataString();
+                results = new Uri[]{Uri.parse(dataString)};
+            } else {
+                // If there is no data, then we may have taken a photo
+                if (mCameraPhotoPath != null) {
+                    results = new Uri[]{Uri.parse(mCameraPhotoPath)};
                 }
-
             }
+
         }
 
         mFilePathCallback.onReceiveValue(results);
@@ -243,7 +239,7 @@ public class WebviewOverlay extends Fragment {
                 if (photoFile != null) {
                     mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
                     Uri photoURI;
-                    if (Build.VERSION.SDK_INT >= 24) {
+                    if (Build.VERSION.SDK_INT >= 24 && getContext() != null) {
                         photoURI = FileProvider.getUriForFile(getContext(),
                                 getString(R.string.ym_file_provider),
                                 photoFile);
@@ -308,13 +304,13 @@ public class WebviewOverlay extends Fragment {
     private boolean checkForStoragePermission(Context context) {
         if (ContextCompat.checkSelfPermission(
                 context,
-                Manifest.permission.WRITE_EXTERNAL_STORAGE
+                Manifest.permission.READ_EXTERNAL_STORAGE
         )
                 == PackageManager.PERMISSION_GRANTED
         ) {
             return true;
         } else {
-            requestPermissionLauncher.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE);
+            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
             return false;
         }
     }

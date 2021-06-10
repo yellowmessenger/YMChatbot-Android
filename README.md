@@ -23,6 +23,13 @@ dependencies {
 	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.3.2
 }
 ```
+### strings.xml
+Add follwing key in you strings.xml file, this will override default file provider used by SDK.
+Overriding the file provider path will avoid conflict with other app using YM CHATBOT SDK. You can use your application id and suffix it with ".fileprovider"
+Example - applicationId : "com.abc.xyz" then  application_id_for_provider = com.abc.xyz.fileprovider
+```xml
+    <string name="application_id_for_provider">your.application.id.fileprovider</string>
+```
   
 ## Usage
 ### Basic
@@ -164,23 +171,18 @@ Following dependencies are used in chat bot SDK
 We are declaring and asking for following permission in our manifest file
 ```java
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
 ```
 All permissions will be asked at run time except INTERNET.
-For attachment (picking from phone or taking picture using camera)
+For attachment (picking  file/images from phone storage)
 ```java
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 ```
 For voice input
 ```java
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-```
-
-For smooth experiance of attaching file/image in Android 10+ we have enabled legacy external storage in our app
-```java
-    <application android:requestLegacyExternalStorage="true">
 ```
 
 

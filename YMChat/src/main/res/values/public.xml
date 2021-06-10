@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- mandatory key -->
+    <!-- Required to create a unique private file provider for your app exam "your.application.id.fileprovider"-->
+    <public name ="application_id_for_provider" type="string">com.yellowmessenger.ymchat.fileprovider</public>
+</resources>
