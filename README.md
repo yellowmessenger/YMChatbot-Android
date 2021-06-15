@@ -138,14 +138,6 @@ YMChat.shared.enableLogging = true
 -->
 
 
-## Important
-If facing problem in release build, add the following configuration in the app's proguard-rules.pro file.
-```java
--keep public class com.example.ymwebview.** {
-   *;
-}
-```
-
 ## Push Notifications
 YMChat supports firebase notifications. Push notifications needs `authentication token` and `device token`
 
@@ -166,5 +158,10 @@ ymChat.config.deviceToken = "your-firebase-device-token"
 A demo has been created to better understand the integration of SDK in Android app
 [https://github.com/yellowmessenger/YmChatBot-Android-DemoApp](https://github.com/yellowmessenger/YmChatBot-Android-DemoApp)
 
-
-
+## Important
+If facing problem in release build, add the following configuration in the app's proguard-rules.pro file.
+```java
+-keep public class com.example.ymwebview.** {
+   *;
+}
+```
