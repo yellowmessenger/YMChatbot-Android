@@ -155,7 +155,7 @@ Authentication token can be set using `ymAuthenticationToken` variable. Auth tok
 ```java
 ymChat.config.ymAuthenticationToken = "your-token"
 ```
-z
+
 ### Device Token
 Device token can be set using `deviceToken` variable. Pass `fcmToken` as a parameter to this method.
 ```java
