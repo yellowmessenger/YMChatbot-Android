@@ -146,4 +146,25 @@ If facing problem in release build, add the following configuration in the app's
 }
 ```
 
+## Push Notifications
+YMChat supports firebase notifications. Push notifications needs `authentication token` and `device token`
+
+
+### Authentication Token
+Authentication token can be set using `ymAuthenticationToken` variable. Auth token can be a unique identifier like email or UUID
+```java
+ymChat.config.ymAuthenticationToken = "your-token"
+```
+z
+### Device Token
+Device token can be set using `deviceToken` variable. Pass `fcmToken` as a parameter to this method.
+```java
+ymChat.config.deviceToken = "your-firebase-device-token"
+```
+
+## Demo App
+A demo has been created to better understand the integration of SDK in Android app
+[https://github.com/yellowmessenger/YmChatBot-Android-DemoApp](https://github.com/yellowmessenger/YmChatBot-Android-DemoApp)
+
+
 
