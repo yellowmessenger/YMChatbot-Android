@@ -161,7 +161,7 @@ A demo has been created to better understand the integration of SDK in Android a
 ## Important
 If facing problem in release build, add the following configuration in the app's proguard-rules.pro file.
 ```java
--keep public class com.example.ymwebview.** {
+-keep public class com.yellowmessenger.ymchat.** {
    *;
 }
 ```
