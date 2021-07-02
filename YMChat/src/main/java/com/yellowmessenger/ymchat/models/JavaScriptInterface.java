@@ -36,14 +36,8 @@ public class JavaScriptInterface {
 
     @JavascriptInterface
     public void receiveMessage(String s) {
+        Log.d("Event from Bot", "receiveMessage: "+s);
         YMBotEventResponse incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
-
-
-        // Pass-through events (Bot will not close)
-        Map<String, Object> retMap = new Gson().fromJson(
-                incomingEvent.data, new TypeToken<HashMap<String, Object>>() {
-                }.getType());
-        Boolean isYmAction = retMap.containsKey("ym-action");
 
         Log.d("Event from Bot", "receiveMessage: " + incomingEvent.code);
         if (incomingEvent.code.equals("start-mic"))

@@ -19,6 +19,7 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -62,6 +63,9 @@ public class BotWebView extends AppCompatActivity {
     WebviewOverlay fh;
     private boolean willStartMic = false;
     public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
+
+    private ImageView closeButton;
+    private FloatingActionButton micButton;
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -209,6 +213,19 @@ public class BotWebView extends AppCompatActivity {
                         }
                     }
                     break;
+                case "image-opened":
+                    runOnUiThread(() -> {
+                        hideMic();
+                        hideCloseButton();
+                    });
+                    break;
+                case "image-closed":
+                    runOnUiThread(() -> {
+                        showCloseButton();
+                        showMic();
+                    });
+                    break;
+
             }
         });
 
@@ -227,25 +244,52 @@ public class BotWebView extends AppCompatActivity {
                 .add(R.id.container, fh)
                 .commit();
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
+        micButton = findViewById(R.id.floatingActionButton);
         if (enableSpeech) {
-            FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
             micButton.setVisibility(View.VISIBLE);
             micButton.setOnClickListener(view -> showVoiceOption());
         }
 
 
-        ImageButton backButton = findViewById(R.id.backButton);
-        backButton.setOnClickListener(view -> {
+        closeButton = findViewById(R.id.backButton);
+        closeButton.setOnClickListener(view -> {
             YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", ""));
             fh.closeBot();
             this.finish();
         });
         boolean showCloseButton = ConfigService.getInstance().getConfig().showCloseButton;
         if (!showCloseButton) {
-            backButton.setVisibility(View.INVISIBLE);
+            closeButton.setVisibility(View.GONE);
         }
 
 
+    }
+
+    private void hideCloseButton() {
+        closeButton.setVisibility(View.GONE);
+    }
+
+    private void hideMic() {
+        micButton.hide();
+    }
+
+
+    private void showCloseButton() {
+        boolean showCloseButton = ConfigService.getInstance().getConfig().showCloseButton;
+        if (showCloseButton) {
+            closeButton.setVisibility(View.VISIBLE);
+        } else {
+            closeButton.setVisibility(View.GONE);
+        }
+    }
+
+    private void showMic() {
+        boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
+        if (enableSpeech) {
+            micButton.show();
+        } else {
+            micButton.hide();
+        }
     }
 
     private void showVoiceOption() {
