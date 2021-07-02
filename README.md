@@ -30,7 +30,7 @@ Example - applicationId : "com.abc.xyz" then  application_id_for_provider = com.
 ```xml
     <string name="application_id_for_provider">your.application.id.fileprovider</string>
 ```
-  
+
 ## Usage
 ### Basic
 Import the YMChat library in your Activity.
@@ -93,9 +93,14 @@ ymChat.config.payload = payloadData;
 ```
 
 #### History
-Chat history can be enabled by setting the `enableHistory` flag present in YMConfig. Default value is `false`
+Chat history can be enabled by setting the `enableHistory` flag present in YMConfig and by passing `UserId` in payloadData mentioned above.
+Default value for  `enableHistory` is `false`
 ```java
 ymChat.config.enableHistory = true
+```
+One `UserId` should belong to only one user. Same user id need to be passed everytime SDK is intitalised.
+```java
+payloadData.put("UserId","user_id_of_customer");
 ```
 
 ### Starting the bot
@@ -145,10 +150,30 @@ YMChat.shared.enableLogging = true
 -->
 
 
+## Push Notifications
+YMChat supports firebase notifications. Push notifications needs `authentication token` and `device token`
+
+
+### Authentication Token
+Authentication token can be set using `ymAuthenticationToken` variable. Auth token can be a unique identifier like email or UUID
+```java
+ymChat.config.ymAuthenticationToken = "your-token"
+```
+
+### Device Token
+Device token can be set using `deviceToken` variable. Pass `fcmToken` as a parameter to this method.
+```java
+ymChat.config.deviceToken = "your-firebase-device-token"
+```
+
+## Demo App
+A demo has been created to better understand the integration of SDK in Android app
+[https://github.com/yellowmessenger/YmChatBot-Android-DemoApp](https://github.com/yellowmessenger/YmChatBot-Android-DemoApp)
+
 ## Important
 If facing problem in release build, add the following configuration in the app's proguard-rules.pro file.
 ```java
--keep public class com.example.ymwebview.** {
+-keep public class com.yellowmessenger.ymchat.** {
    *;
 }
 ```
@@ -161,6 +186,7 @@ Following dependencies are used in chat bot SDK
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
     implementation 'com.google.code.gson:gson:2.8.6'
+     implementation 'androidx.multidex:multidex:2.0.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
