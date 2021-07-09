@@ -88,25 +88,32 @@ public class YMChat {
 
     public void closeBot() {
         if (localListener != null)
-            localListener.onSuccess(new YMBotEventResponse("close-bot", ""));
+            localListener.onSuccess(new YMBotEventResponse("close-bot", "", false));
     }
 
     public void emitEvent(YMBotEventResponse event) {
         if (event != null) {
-            if (botCloseEventListener != null && event.getCode() != null && event.getCode().equals("bot-closed")) {
+            if (botCloseEventListener != null && event.getCode() != null && isCloseBotEvent(event)) {
                 botCloseEventListener.onClosed();
             } else {
                 if (listener != null)
                     listener.onSuccess(event);
-
-                if (localListener != null)
-                    localListener.onSuccess(event);
             }
 
         }
     }
 
 
+    public void emitLocalEvent(YMBotEventResponse event) {
+        if (event != null) {
+            if (localListener != null)
+                localListener.onSuccess(event);
+        }
+    }
+
+    private boolean isCloseBotEvent(YMBotEventResponse event) {
+        return (event.getCode() != null && event.getCode().equals("bot-closed"));
+    }
 }
 
 

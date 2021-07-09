@@ -4,19 +4,15 @@ import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
+import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.BotWebView;
 import com.yellowmessenger.ymchat.YMChat;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class JavaScriptInterface {
     protected BotWebView parentActivity;
     protected WebView mWebView;
 
-    public JavaScriptInterface(BotWebView _activity, WebView _webView)  {
+    public JavaScriptInterface(BotWebView _activity, WebView _webView) {
         parentActivity = _activity;
         mWebView = _webView;
 
@@ -35,19 +31,22 @@ public class JavaScriptInterface {
     }
 
     @JavascriptInterface
-    public void  receiveMessage(String s) {
+    public void receiveMessage(String s) {
         YMBotEventResponse incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
+        Log.d("Event from Bot", "receiveMessage: " + incomingEvent.getCode());
+        if (incomingEvent.getCode().equals("start-mic")) {
+            parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(incomingEvent.getCode()) * 1000));
+        }
 
+        if ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode())) {
+            incomingEvent.setInternal(true);
+        }
 
-        // Pass-through events (Bot will not close)
-        Map<String, Object> retMap = new Gson().fromJson(
-                incomingEvent.data, new TypeToken<HashMap<String, Object>>() {}.getType());
-        Boolean isYmAction = retMap.containsKey("ym-action");
-
-        Log.d("Event from Bot", "receiveMessage: "+incomingEvent.code);
-            if(incomingEvent.code.equals("start-mic"))
-            parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(incomingEvent.data) * 1000));
-        YMChat.getInstance().emitEvent(incomingEvent);
+        if (incomingEvent.isInternal()) {
+            YMChat.getInstance().emitLocalEvent(incomingEvent);
+        } else {
+            YMChat.getInstance().emitEvent(incomingEvent);
+        }
     }
 
 }
