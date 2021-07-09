@@ -24,7 +24,7 @@ dependencies {
 }
 ```
 ### strings.xml (Only for version v1.4.0 & above)
-Add follwing key in you strings.xml file, this will override default file provider used by SDK.
+Add following key in you strings.xml file, this will override default file provider used by SDK.
 Overriding the file provider path will avoid conflict with other app using YM CHATBOT SDK. You can use your application id and suffix it with ".fileprovider"
 Example - applicationId : "com.abc.xyz" then  application_id_for_provider = com.abc.xyz.fileprovider
 ```xml
@@ -174,7 +174,7 @@ Following dependencies are used in chat bot SDK
     implementation 'com.google.android.material:material:1.3.0'
     implementation 'com.squareup.okhttp3:okhttp:4.7.2'
     implementation 'com.google.code.gson:gson:2.8.6'
-     implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.multidex:multidex:2.0.1'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
