@@ -5,12 +5,8 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.yellowmessenger.ymchat.BotWebView;
 import com.yellowmessenger.ymchat.YMChat;
-
-import java.util.HashMap;
-import java.util.Map;
 
 public class JavaScriptInterface {
     protected BotWebView parentActivity;
@@ -36,13 +32,21 @@ public class JavaScriptInterface {
 
     @JavascriptInterface
     public void receiveMessage(String s) {
-        Log.d("Event from Bot", "receiveMessage: "+s);
         YMBotEventResponse incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
+        Log.d("Event from Bot", "receiveMessage: " + incomingEvent.getCode());
+        if (incomingEvent.getCode().equals("start-mic")) {
+            parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(incomingEvent.getCode()) * 1000));
+        }
 
-        Log.d("Event from Bot", "receiveMessage: " + incomingEvent.code);
-        if (incomingEvent.code.equals("start-mic"))
-            parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(incomingEvent.data) * 1000));
-        YMChat.getInstance().emitEvent(incomingEvent);
+        if ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode())) {
+            incomingEvent.setInternal(true);
+        }
+
+        if (incomingEvent.isInternal()) {
+            YMChat.getInstance().emitLocalEvent(incomingEvent);
+        } else {
+            YMChat.getInstance().emitEvent(incomingEvent);
+        }
     }
 
 }

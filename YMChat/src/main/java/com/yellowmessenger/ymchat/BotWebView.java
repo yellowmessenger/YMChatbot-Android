@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -197,7 +196,7 @@ public class BotWebView extends AppCompatActivity {
             switch (botEvent.getCode()) {
                 case "close-bot":
                     closeBot();
-                    YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", ""));
+                    YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "", false));
                     this.finish();
                     break;
                 case "upload-image":
@@ -253,7 +252,7 @@ public class BotWebView extends AppCompatActivity {
 
         closeButton = findViewById(R.id.backButton);
         closeButton.setOnClickListener(view -> {
-            YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", ""));
+            YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "", false));
             fh.closeBot();
             this.finish();
         });
@@ -378,7 +377,7 @@ public class BotWebView extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
-        YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", ""));
+        YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "", false));
         if (fh != null) {
             fh.closeBot();
         }

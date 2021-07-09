@@ -88,7 +88,7 @@ public class YMChat {
 
     public void closeBot() {
         if (localListener != null)
-            localListener.onSuccess(new YMBotEventResponse("close-bot", ""));
+            localListener.onSuccess(new YMBotEventResponse("close-bot", "", false));
     }
 
     public void emitEvent(YMBotEventResponse event) {
@@ -96,29 +96,24 @@ public class YMChat {
             if (botCloseEventListener != null && event.getCode() != null && isCloseBotEvent(event)) {
                 botCloseEventListener.onClosed();
             } else {
-                if (listener != null && !(isImageOpenEvent(event) || isImageCloseEvent(event)))
+                if (listener != null)
                     listener.onSuccess(event);
-
-                if (localListener != null)
-                    localListener.onSuccess(event);
             }
 
+        }
+    }
+
+
+    public void emitLocalEvent(YMBotEventResponse event) {
+        if (event != null) {
+            if (localListener != null)
+                localListener.onSuccess(event);
         }
     }
 
     private boolean isCloseBotEvent(YMBotEventResponse event) {
         return (event.getCode() != null && event.getCode().equals("bot-closed"));
     }
-
-    private boolean isImageOpenEvent(YMBotEventResponse event) {
-        return (event.getCode() != null && event.getCode().equals("image-opened"));
-    }
-
-    private boolean isImageCloseEvent(YMBotEventResponse event) {
-        return (event.getCode() != null && event.getCode().equals("image-closed"));
-    }
-
-
 }
 
 
