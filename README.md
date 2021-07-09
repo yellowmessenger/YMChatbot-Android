@@ -166,18 +166,6 @@ Device token can be set using `deviceToken` variable. Pass `fcmToken` as a param
 ymChat.config.deviceToken = "your-firebase-device-token"
 ```
 
-## Demo App
-A demo has been created to better understand the integration of SDK in Android app
-[https://github.com/yellowmessenger/YmChatBot-Android-DemoApp](https://github.com/yellowmessenger/YmChatBot-Android-DemoApp)
-
-## Important
-If facing problem in release build, add the following configuration in the app's proguard-rules.pro file.
-```java
--keep public class com.yellowmessenger.ymchat.** {
-   *;
-}
-```
-
 ## Dependencies
 Following dependencies are used in chat bot SDK
 ```java
@@ -211,5 +199,16 @@ For voice input
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
 ```
 
+## Important
+If facing problem in release build, add the following configuration in the app's proguard-rules.pro file.
+```java
+-keep public class com.yellowmessenger.ymchat.** {
+   *;
+}
+```
+
+## Demo App
+A demo has been created to better understand the integration of SDK in Android app
+[https://github.com/yellowmessenger/YmChatBot-Android-DemoApp](https://github.com/yellowmessenger/YmChatBot-Android-DemoApp)
 
 
