@@ -20,10 +20,10 @@ repositories {
 dependencies {
     ...
     ...
-	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.3.2
+	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.4.0
 }
 ```
-### strings.xml
+### strings.xml (Only for version v1.4.0 & above)
 Add follwing key in you strings.xml file, this will override default file provider used by SDK.
 Overriding the file provider path will avoid conflict with other app using YM CHATBOT SDK. You can use your application id and suffix it with ".fileprovider"
 Example - applicationId : "com.abc.xyz" then  application_id_for_provider = com.abc.xyz.fileprovider
@@ -82,7 +82,7 @@ Speech to text can be enabled by setting the enableSpeech flag present in config
 ymChat.config.enableSpeech = true
 ```
 
-### Payload
+#### Payload
 Additional payload can be added in the form of key value pair, which is then passed to the bot. The value of payload can be either Primitive type or json convertible value
 
 ```java
