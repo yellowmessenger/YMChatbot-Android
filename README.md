@@ -20,10 +20,17 @@ repositories {
 dependencies {
     ...
     ...
-	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.3.2
+	   implementation 'com.github.yellowmessenger:YMChatbot-Android:v1.4.0
 }
 ```
-  
+### strings.xml (Only for version v1.4.0 & above)
+Add following key in your strings.xml file, this will override default file provider used by SDK.
+Overriding the file provider path will avoid conflict with other app using YM CHATBOT SDK. You can use your application id and suffix it with ".fileprovider"
+Example - applicationId : "com.abc.xyz" then  application_id_for_provider = com.abc.xyz.fileprovider
+```xml
+    <string name="application_id_for_provider">your.application.id.fileprovider</string>
+```
+
 ## Usage
 ### Basic
 Import the YMChat library in your Activity.
@@ -75,7 +82,7 @@ Speech to text can be enabled by setting the enableSpeech flag present in config
 ymChat.config.enableSpeech = true
 ```
 
-### Payload
+#### Payload
 Additional payload can be added in the form of key value pair, which is then passed to the bot. The value of payload can be either Primitive type or json convertible value
 
 ```java
@@ -86,9 +93,14 @@ ymChat.config.payload = payloadData;
 ```
 
 #### History
-Chat history can be enabled by setting the `enableHistory` flag present in YMConfig. Default value is `false`
+Chat history can be enabled by setting the `enableHistory` flag present in YMConfig and by passing `UserId` in payloadData mentioned above.
+Default value for  `enableHistory` is `false`
 ```java
 ymChat.config.enableHistory = true
+```
+One `UserId` should belong to only one user. Same user id need to be passed everytime SDK is intitalised.
+```java
+payloadData.put("UserId","user_id_of_customer");
 ```
 
 ### Starting the bot
@@ -154,9 +166,38 @@ Device token can be set using `deviceToken` variable. Pass `fcmToken` as a param
 ymChat.config.deviceToken = "your-firebase-device-token"
 ```
 
-## Demo App
-A demo has been created to better understand the integration of SDK in Android app
-[https://github.com/yellowmessenger/YmChatBot-Android-DemoApp](https://github.com/yellowmessenger/YmChatBot-Android-DemoApp)
+## Dependencies
+Following dependencies are used in chat bot SDK
+```java
+    implementation 'androidx.appcompat:appcompat:1.3.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.7.2'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'androidx.multidex:multidex:2.0.1'
+
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+```
+
+## Permissions
+We are declaring and asking for following permission in our manifest file
+```java
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+```
+All permissions will be asked at run time except INTERNET.
+For attachment (picking  file/images from phone storage)
+```java
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+```
+For voice input
+```java
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+```
 
 ## Important
 If facing problem in release build, add the following configuration in the app's proguard-rules.pro file.
@@ -165,3 +206,9 @@ If facing problem in release build, add the following configuration in the app's
    *;
 }
 ```
+
+## Demo App
+A demo has been created to better understand the integration of SDK in Android app
+[https://github.com/yellowmessenger/YmChatBot-Android-DemoApp](https://github.com/yellowmessenger/YmChatBot-Android-DemoApp)
+
+

@@ -41,15 +41,15 @@
             }
             return params;
         };
-        let payload = getParams(window.location.href)["ym.payload"];
-        let botId = getParams(window.location.href)["botId"];
-        let enableHistory = getParams(window.location.href)["enableHistory"];
-        let ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
-        let deviceToken = getParams(window.location.href)["deviceToken"];
-        let customBaseUrl = getParams(window.location.href)["customBaseUrl"];
+        var payload = getParams(window.location.href)["ym.payload"];
+        var botId = getParams(window.location.href)["botId"];
+        var enableHistory = getParams(window.location.href)["enableHistory"];
+        var ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
+        var deviceToken = getParams(window.location.href)["deviceToken"];
+        var customBaseUrl = getParams(window.location.href)["customBaseUrl"];
 
 
-        let payloadJSON = {};
+        var payloadJSON = {};
         try{
             payloadJSON = JSON.parse(payload);
         }catch(e){
@@ -89,8 +89,8 @@
             window.ymConfig.userId = payloadJSON.UserId;
         }
 
-        function sendEvent(s = "") {
-            const iframe = document.getElementById('ymIframe');
+        function sendEvent(s) {
+            var iframe = document.getElementById('ymIframe');
             iframe.contentWindow.postMessage(JSON.stringify({
                     event_code: 'send-voice-text',
                     data: s

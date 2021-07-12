@@ -15,7 +15,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)
-    String botId = "x1587041004122"; //x1612170282642 
+    String botId = "x1587041004122";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
         //Get YMChat instance
         YMChat ymChat =  YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
+        ymChat.config.enableSpeech = true;
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
