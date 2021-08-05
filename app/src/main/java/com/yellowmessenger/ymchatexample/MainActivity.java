@@ -10,12 +10,14 @@ import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)
-    String botId = "x1587041004122";
+    String botId = "x1626377921051";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +32,12 @@ public class MainActivity extends AppCompatActivity {
         //Setting Payload Data
         payloadData.put("some-key","some-value");
         ymChat.config.payload = payloadData;
-        ymChat.config.enableHistory = true;
+       // ymChat.config.enableHistory = true;
+
+        // To Change the color of status bar by default it will pick app theme
+        ymChat.config.statusBarColor = R.color.colorPrimaryDark;
+        // To Change the color of close button, default color is white
+        ymChat.config.closeButtonColor = R.color.white;
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
