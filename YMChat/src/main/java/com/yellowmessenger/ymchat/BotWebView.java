@@ -30,6 +30,7 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 
@@ -102,19 +103,8 @@ public class BotWebView extends AppCompatActivity {
 
     public void setStatusBarColor() {
         try {
-            String color = ConfigService.getInstance().getConfig().statusBarColor;
-            if (color == null || color.isEmpty())
-                return;
-
-            int customColor = -1;
-            try {
-
-                customColor = Integer.parseInt(color);
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
-            }
-
-            if (customColor != -1) {
+            int color = ConfigService.getInstance().getConfig().statusBarColor;
+            if (color != -1) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Window window = BotWebView.this.getWindow();
                     // clear FLAG_TRANSLUCENT_STATUS flag:
@@ -122,7 +112,7 @@ public class BotWebView extends AppCompatActivity {
                     // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                     // finally change the color
-                    window.setStatusBarColor(customColor);
+                    window.setStatusBarColor(ContextCompat.getColor(this,color));
                 }
             }
         } catch (Exception e) {
@@ -130,63 +120,26 @@ public class BotWebView extends AppCompatActivity {
         }
     }
 
-    public void setActionBarColor() {
+    public void setCloseButtonColor() {
         try {
-            String color = ConfigService.getInstance().getConfig().actionBarColor;
-            if (color == null || color.isEmpty())
-                return;
-            int customColor = -1;
-            try {
-                customColor = Integer.parseInt(color);
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
-            }
-
-            if (customColor != -1) {
+            int color = ConfigService.getInstance().getConfig().closeButtonColor;
+            if (color != -1) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ActionBar actionBar = BotWebView.this.getSupportActionBar();
-                    if (actionBar != null) {
-                        actionBar.setBackgroundDrawable(new ColorDrawable(customColor));
-                    }
+                    DrawableCompat.setTint(
+                            DrawableCompat.wrap(closeButton.getDrawable()),
+                            ContextCompat.getColor(this, color)
+                    );
                 }
             }
         } catch (Exception e) {
-            Log.d(TAG, "Incorrect color code for App bar.");
+            Log.d(TAG, "Incorrect color code for close button.");
         }
-    }
-
-    public void setOverviewColor() {
-        try {
-            String color = ConfigService.getInstance().getConfig().actionBarColor;
-            if (color == null || color.isEmpty())
-                return;
-            int customColor = -1;
-            try {
-                customColor = Integer.parseInt(color);
-            } catch (Exception e) {
-                Log.d(TAG, e.getMessage());
-            }
-
-            if (customColor != -1) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    ActivityManager.TaskDescription td = new ActivityManager.TaskDescription(null, null, customColor);
-                    this.setTaskDescription(td);
-                }
-            }
-        } catch (Exception e) {
-
-            Log.d(TAG, "Incorrect color code for overview title bar.");
-        }
-
-
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarColor();
-        setActionBarColor();
-        setOverviewColor();
 
         // setting up local listener
         Log.d(TAG, "onCreate: setting up local listener");
@@ -256,12 +209,7 @@ public class BotWebView extends AppCompatActivity {
             fh.closeBot();
             this.finish();
         });
-        boolean showCloseButton = ConfigService.getInstance().getConfig().showCloseButton;
-        if (!showCloseButton) {
-            closeButton.setVisibility(View.GONE);
-        }
-
-
+        showCloseButton();
     }
 
     private void hideCloseButton() {
@@ -277,6 +225,7 @@ public class BotWebView extends AppCompatActivity {
         boolean showCloseButton = ConfigService.getInstance().getConfig().showCloseButton;
         if (showCloseButton) {
             closeButton.setVisibility(View.VISIBLE);
+            setCloseButtonColor();
         } else {
             closeButton.setVisibility(View.GONE);
         }
@@ -305,7 +254,6 @@ public class BotWebView extends AppCompatActivity {
     @Override
     public void onResume() {
         super.onResume();
-        setOverviewColor();
     }
 
 
