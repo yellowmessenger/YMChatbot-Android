@@ -22,6 +22,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -54,7 +55,7 @@ public class WebviewOverlay extends Fragment {
                 if (isGranted) {
                     showFileChooser();
                 } else {
-                    showContentPicker(null);
+                    Toast.makeText(getContext(), "Read storage permission required to complete this operation.", Toast.LENGTH_LONG).show();
                 }
             });
 

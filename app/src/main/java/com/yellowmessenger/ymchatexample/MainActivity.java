@@ -2,14 +2,14 @@ package com.yellowmessenger.ymchatexample;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.webkit.JavascriptInterface;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
-import androidx.appcompat.app.AppCompatActivity;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
@@ -22,20 +22,26 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         //Get YMChat instance
-        YMChat ymChat =  YMChat.getInstance();
+        YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
         ymChat.config.enableSpeech = true;
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
-        payloadData.put("some-key","some-value");
+        payloadData.put("some-key", "some-value");
         ymChat.config.payload = payloadData;
         ymChat.config.enableHistory = true;
 
+        // To Change the color of status bar, by default it will pick app theme
+        ymChat.config.statusBarColor = R.color.colorPrimaryDark;
+        // To Change the color of close button, default color is white
+        ymChat.config.closeButtonColor = R.color.white;
+
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
-            switch (botEvent.getCode()){
-                case "event-name": break;
+            switch (botEvent.getCode()) {
+                case "event-name":
+                    break;
             }
         });
         ymChat.onBotClose(() -> {

@@ -13,12 +13,10 @@ public class YMConfig {
     public String ymAuthenticationToken = "";
     public String deviceToken = "";
     public String customBaseUrl = "https://app.yellowmessenger.com";
-    public String statusBarColor;
-    public String actionBarColor;
-    public String micButtonColor;
+    public int statusBarColor = -1;
     public boolean hideCameraForUpload = false;
     public boolean showCloseButton = true;
-    public String closeButtonColor;
+    public int closeButtonColor = -1;
     public HashMap<String, Object> payload = new HashMap<>(); // For payload key-values
     public HashMap<String, String> customData = new HashMap<>(); // other data key-values
 
