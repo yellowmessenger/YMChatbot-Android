@@ -146,7 +146,6 @@ public class WebviewOverlay extends Fragment {
 
             // For Android 5.0
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> filePath, FileChooserParams fileChooserParams) {
-                Log.d(TAG, "openFileChooser: Opening file picker");
                 // Double check that we don't have any existing callbacks
                 if (mFilePathCallback != null) {
                     mFilePathCallback.onReceiveValue(null);
@@ -215,9 +214,8 @@ public class WebviewOverlay extends Fragment {
         botUrlBuilder.append(getString(R.string.ym_chatbot_base_url));
         botUrlBuilder.append(ConfigService.getInstance().getBotURLParams());
         String botUrl = botUrlBuilder.toString();
-        Log.d(TAG, "botURL: " +
-                botUrl);
         myWebView.loadUrl(botUrl);
+        Log.d("URL----", botUrl);
         return myWebView;
     }
 
