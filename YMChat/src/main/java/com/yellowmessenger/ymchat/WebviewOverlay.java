@@ -215,7 +215,6 @@ public class WebviewOverlay extends Fragment {
         botUrlBuilder.append(ConfigService.getInstance().getBotURLParams());
         String botUrl = botUrlBuilder.toString();
         myWebView.loadUrl(botUrl);
-        Log.d("URL----", botUrl);
         return myWebView;
     }
 
