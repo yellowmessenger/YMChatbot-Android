@@ -26,13 +26,13 @@
             android:windowSoftInputMode="adjustResize" />
 
         <provider
-            android:name="androidx.core.content.FileProvider"
+            android:name=".YellowChatBotFileProvide"
             android:authorities="@string/ym_file_provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/file_paths" />
+                android:resource="@xml/yellow_chatbot_file_paths" />
         </provider>
 
     </application>

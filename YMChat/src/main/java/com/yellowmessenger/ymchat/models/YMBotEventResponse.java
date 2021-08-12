@@ -32,7 +32,7 @@ public class YMBotEventResponse {
         return internal;
     }
 
-    void setInternal(boolean internal){
+    void setInternal(boolean internal) {
         this.internal = internal;
     }
 }
