@@ -1,8 +1,6 @@
 package com.yellowmessenger.ymchat.models;
 
 
-import android.util.Log;
-
 import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.YMConfig;
 
@@ -55,8 +53,9 @@ public class ConfigService {
         String payloadJSON = null;
         try {
             payloadJSON = URLEncoder.encode(new Gson().toJson(payload), "UTF-8");
+            payloadJSON = payloadJSON.replaceAll("\\+", "%20");
         } catch (Exception e) {
-            Log.e(TAG, e.getMessage());
+            //Exception
         }
 
         StringBuilder sb = new StringBuilder();
@@ -70,11 +69,8 @@ public class ConfigService {
         sb.append(config.deviceToken != null ? config.deviceToken : "");
         sb.append("&customBaseUrl=");
         sb.append(config.customBaseUrl);
-
-
         sb.append("&ym.payload=");
         sb.append(payloadJSON);
-
 
         return sb.toString();
 

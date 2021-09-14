@@ -2,18 +2,15 @@ package com.yellowmessenger.ymchat;
 
 
 import android.Manifest;
-import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -26,7 +23,6 @@ import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
@@ -112,11 +108,11 @@ public class BotWebView extends AppCompatActivity {
                     // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
                     window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
                     // finally change the color
-                    window.setStatusBarColor(ContextCompat.getColor(this,color));
+                    window.setStatusBarColor(ContextCompat.getColor(this, color));
                 }
             }
         } catch (Exception e) {
-            Log.d(TAG, "Incorrect color code for status bar.");
+            //Exception occurred
         }
     }
 
@@ -132,7 +128,7 @@ public class BotWebView extends AppCompatActivity {
                 }
             }
         } catch (Exception e) {
-            Log.d(TAG, "Incorrect color code for close button.");
+            //Exception occurred
         }
     }
 
@@ -142,10 +138,7 @@ public class BotWebView extends AppCompatActivity {
         setStatusBarColor();
 
         // setting up local listener
-        Log.d(TAG, "onCreate: setting up local listener");
         YMChat.getInstance().setLocalListener(botEvent -> {
-            Log.d(TAG, "onSuccess: " + botEvent.getCode());
-
             switch (botEvent.getCode()) {
                 case "close-bot":
                     closeBot();
@@ -153,7 +146,6 @@ public class BotWebView extends AppCompatActivity {
                     this.finish();
                     break;
                 case "upload-image":
-                    Log.d(TAG, "onSuccess: got event");
                     Map<String, Object> retMap = new Gson().fromJson(
                             botEvent.getData(), new TypeToken<HashMap<String, Object>>() {
                             }.getType());
@@ -260,7 +252,6 @@ public class BotWebView extends AppCompatActivity {
     public void runUpload(String uid) {
         try {
             if (uid == null) {
-                Log.e(TAG, "uid is null from bot.");
                 return;
             }
             String botId = ConfigService.getInstance().getConfig().botId;
@@ -277,22 +268,13 @@ public class BotWebView extends AppCompatActivity {
 
         String imagePath = ConfigService.getInstance().getCustomDataByKey("imagePath");
         if (imagePath != null && !imagePath.isEmpty()) {
-            Log.d(TAG, "run: " + imagePath);
 
             File sourceFile = new File(imagePath);
-
-            Log.d(TAG, "File...::::" + sourceFile + " : " + sourceFile.exists());
-
             final MediaType MEDIA_TYPE = imagePath.endsWith("png") ?
                     MediaType.parse("image/png") : MediaType.parse("image/jpeg");
-            Log.d(TAG, "run: " + postUrl);
-            Log.d(TAG, sourceFile.getName());
-
-
             RequestBody requestBody = new MultipartBody.Builder()
                     .setType(MultipartBody.FORM)
                     .addFormDataPart("images", sourceFile.getName(), RequestBody.create(MEDIA_TYPE, sourceFile))
-//                .addFormDataPart("images", sourceFile.getName()+"."+MEDIA_TYPE.subtype(), RequestBody.create(MEDIA_TYPE, sourceFile))
                     .build();
 
             Request request = new Request.Builder()
@@ -304,20 +286,12 @@ public class BotWebView extends AppCompatActivity {
                 @Override
                 public void onFailure(Call call, IOException e) {
                     call.cancel();
-                    Log.d("Upload", "Can't upload");
                 }
 
                 @Override
                 public void onResponse(Call call, Response response) throws IOException {
-
-                    final String myResponse = response.body() != null ? response.body().string() : "";
-
-                    BotWebView.this.runOnUiThread(() -> Log.d("Upload", myResponse));
-
                 }
             });
-        } else {
-            Log.e(TAG, "imagePath is either null or empty");
         }
     }
 
@@ -353,7 +327,6 @@ public class BotWebView extends AppCompatActivity {
         if (defaultLanguage == null) {
             defaultLanguage = "en";
         }
-        Log.d(TAG, "startListeningWithoutDialog: " + defaultLanguage);
         String languagePref = defaultLanguage;
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, languagePref);
         intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, languagePref);
@@ -418,7 +391,6 @@ public class BotWebView extends AppCompatActivity {
 
         super.onActivityResult(requestCode, resultCode, data);
         if (fh != null) {
-            Log.d("BotWebView", "onActivityResult is being called");
             fh.onActivityResult(requestCode, resultCode, data);
         }
 
@@ -441,24 +413,18 @@ public class BotWebView extends AppCompatActivity {
 
 
         public void onReadyForSpeech(Bundle params) {
-            Log.d(TAG, "onReadyForSpeech");
         }
 
         public void onBeginningOfSpeech() {
-
         }
 
         public void onRmsChanged(float rmsdB) {
-            Log.d(TAG, "onRmsChanged");
-
         }
 
         public void onBufferReceived(byte[] buffer) {
-            Log.d(TAG, "onBufferReceived");
         }
 
         public void onEndOfSpeech() {
-            Log.d(TAG, "onEndofSpeech");
         }
 
         public void onError(int error) {
@@ -496,13 +462,11 @@ public class BotWebView extends AppCompatActivity {
                     && partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).size() > 0
                     ? partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).get(0)
                     : "";
-            Log.d(TAG, "onPartialResults " + value);
             TextView textView = findViewById(R.id.speechTranscription);
             textView.setText(value);
         }
 
         public void onEvent(int eventType, Bundle params) {
-            Log.d(TAG, "onEvent " + eventType);
         }
     }
 
