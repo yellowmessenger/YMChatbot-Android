@@ -135,7 +135,7 @@ public class YMChat {
 
     public void unlinkNotificationToken(String botId, String apiKey, String deviceToken, YellowCallback callback) throws Exception {
         try {
-            if (isValidate(botId, apiKey, deviceToken)) {
+            if (isValidate(botId, apiKey, deviceToken,callback)) {
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
@@ -214,7 +214,7 @@ public class YMChat {
     }
 
 
-    private boolean isValidate(String botId, String apiKey, String deviceToken) throws Exception {
+    private boolean isValidate(String botId, String apiKey, String deviceToken, YellowCallback callback) throws Exception {
         if (botId == null || botId.isEmpty()) {
             throw new Exception("botId is cannot be null or empty");
         }
@@ -226,6 +226,9 @@ public class YMChat {
         if (deviceToken == null || deviceToken.isEmpty()) {
             throw new Exception("deviceToken is cannot be null or empty");
         }
+
+        if(callback == null)
+            throw new Exception("callback cannot be null");
 
         return true;
     }
