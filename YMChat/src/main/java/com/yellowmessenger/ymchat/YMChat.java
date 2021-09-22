@@ -133,7 +133,7 @@ public class YMChat {
         return (event.getCode() != null && event.getCode().equals("bot-closed"));
     }
 
-    public void unlinkNotificationToken(String botId, String apiKey, String deviceToken, YellowCallback callback) throws Exception {
+    public void unlinkDeviceToken(String botId, String apiKey, String deviceToken, YellowCallback callback) throws Exception {
         try {
             if (isValidate(botId, apiKey, deviceToken,callback)) {
                 Thread thread = new Thread() {

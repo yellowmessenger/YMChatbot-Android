@@ -79,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
     private void unlinkDevice() {
         try {
             YMChat ymChat = YMChat.getInstance();
-            ymChat.unlinkNotificationToken(botId, apiKey, deviceToken, new YellowCallback() {
+            ymChat.unlinkDeviceToken(botId, apiKey, deviceToken, new YellowCallback() {
                 @Override
                 public void success() {
                     Toast.makeText(MainActivity.this, "Token unlinked", Toast.LENGTH_SHORT).show();
