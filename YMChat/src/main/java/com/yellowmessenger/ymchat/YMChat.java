@@ -35,7 +35,7 @@ public class YMChat {
     private BotCloseEventListener botCloseEventListener;
     private static YMChat botPluginInstance;
     public YMConfig config;
-    private String unlinkNotificationUrl = "https://staging.yellowmessenger.com/api/plugin/removeDeviceToken?bot=";
+    private String unlinkNotificationUrl = "https://app.yellow.ai/api/plugin/removeDeviceToken?bot=";
 
     private YMChat() {
         this.listener = botEvent -> {
@@ -179,8 +179,7 @@ public class YMChat {
                                             boolean isSuccess = jsonObject.getBoolean("success");
                                             String message = jsonObject.getString("message");
                                             if (isSuccess) {
-                                                callback.success();
-                                                new Handler(Looper.getMainLooper()).post(callback::success);
+                                                sendSuccessCallback(callback);
                                             } else {
                                                 sendFailureCallback(callback, "Failed to unlink the device :: Error message :: " + message);
                                             }
@@ -209,6 +208,11 @@ public class YMChat {
     private void sendFailureCallback(YellowCallback callback, String message) {
         new Handler(Looper.getMainLooper()).post(() -> callback.failure(message));
     }
+
+    private void sendSuccessCallback(YellowCallback callback) {
+        new Handler(Looper.getMainLooper()).post(callback::success);
+    }
+
 
     private boolean isValidate(String botId, String apiKey, String deviceToken) throws Exception {
         if (botId == null || botId.isEmpty()) {

@@ -2,13 +2,11 @@ package com.yellowmessenger.ymchatexample;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
@@ -19,9 +17,9 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)
-    String botId = "x1608615889375";
-    String deviceToken = "11231232132132dadsasd231assd23124234ac1";
-    String apiKey = "6ecc7380e0d6d058565f447a1150a6dc230dd2ecb4d8ed2f6e1bcc15eec27bb8";
+    String botId = "x1587041004122";
+    String deviceToken = "your device token";
+    String apiKey = "your api key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,7 +34,8 @@ public class MainActivity extends AppCompatActivity {
         //Setting Payload Data
         payloadData.put("some-key", "some-value");
         ymChat.config.payload = payloadData;
-        ymChat.config.enableHistory = true;
+
+        //To enable notifications
         ymChat.config.deviceToken = deviceToken;
 
         // To Change the color of status bar, by default it will pick app theme
@@ -57,8 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> {
+        Button startBtn = findViewById(R.id.startbtn);
+        startBtn.setOnClickListener(view -> {
             //Starting the bot activity
             try {
                 ymChat.startChatbot(this);
@@ -70,28 +69,30 @@ public class MainActivity extends AppCompatActivity {
 
         Button button = findViewById(R.id.button);
         button.setOnClickListener(v -> {
-            try{
-                ymChat.unlinkNotificationToken(botId, apiKey, deviceToken, new YellowCallback() {
-                    @Override
-                    public void success() {
-                        Toast.makeText(MainActivity.this,"Token unlinked",Toast.LENGTH_SHORT).show();
-
-                    }
-
-                    @Override
-                    public void failure(String message) {
-                        Toast.makeText(MainActivity.this,message,Toast.LENGTH_SHORT).show();
-                    }
-                });
-            } catch (Exception e){
-                //Catch and handle the exception
-                e.printStackTrace();
-            }
-
-        }
+                    unlinkDevice();
+                }
         );
 
 
+    }
 
+    private void unlinkDevice() {
+        try {
+            YMChat ymChat = YMChat.getInstance();
+            ymChat.unlinkNotificationToken(botId, apiKey, deviceToken, new YellowCallback() {
+                @Override
+                public void success() {
+                    Toast.makeText(MainActivity.this, "Token unlinked", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void failure(String message) {
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
+            //Catch and handle the exception
+            e.printStackTrace();
+        }
     }
 }
