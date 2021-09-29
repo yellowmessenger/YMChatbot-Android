@@ -64,6 +64,7 @@
             ymAuthenticationToken: ymAuthenticationToken,
             deviceToken: deviceToken,
             logging: true,
+            host: 'https://staging.yellowmessenger.com',
             handlers: {
                 sendIOSEvent: function (data) {
                  console.log(data);
@@ -116,7 +117,7 @@
 
                 function l() {
                     var e = d.createElement("script");
-                    e.type = "text/javascript", e.async = !0, e.src = (customBaseUrl)+"/widget/mobile.js";
+                    e.type = "text/javascript", e.async = !0, e.src = "https://staging.yellowmessenger.com/widget/v2/mobile.js";
                     var t = d.getElementsByTagName("script")[0];
                     t.parentNode.insertBefore(e, t)
                 }
