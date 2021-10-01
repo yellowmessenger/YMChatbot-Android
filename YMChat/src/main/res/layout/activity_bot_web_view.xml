@@ -51,14 +51,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="@dimen/ym_margin_small"
-        android:layout_marginBottom="@dimen/ym_margin_large"
+        android:layout_marginEnd="4dp"
         android:clickable="true"
         android:contentDescription="@string/ym_fab_voice_button"
         android:focusable="true"
         android:visibility="gone"
-        app:backgroundTint="@color/ymAccentBlue"
-        app:fabSize="normal"
+        app:fabSize="mini"
         app:srcCompat="@drawable/ic_mic_button_ym"
         tools:ignore="VectorDrawableCompat" />
 

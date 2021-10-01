@@ -28,12 +28,14 @@ public class MainActivity extends AppCompatActivity {
         //Get YMChat instance
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
-        //ymChat.config.enableSpeech = true;
+        ymChat.config.enableSpeech = true;
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
         payloadData.put("some-key", "some-value");
         ymChat.config.payload = payloadData;
+
+        ymChat.config.version = 2;
 
         //To enable notifications
         ymChat.config.deviceToken = deviceToken;
