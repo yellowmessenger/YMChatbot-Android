@@ -1,0 +1,207 @@
+{
+  "project_info": {
+    "project_number": "603673019323",
+    "firebase_url": "https://ym-mobile-app.firebaseio.com",
+    "project_id": "ym-mobile-app",
+    "storage_bucket": "ym-mobile-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603673019323:android:fc6a80e109e33d92da7a9e",
+        "android_client_info": {
+          "package_name": "ai.yellow.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "603673019323-m927s8vt08kvbo31npv45c7o2j83bm97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWCm5gbzrfgeGhtvKgi1WnZpeXFWd3d3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "603673019323-0ih9smkes0vj0cnvj3mtc5dkmgeq44ml.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "603673019323-amphsad46umgob3f0hao7lub3ckk07p8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yellowmessenger.sephapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603673019323:android:25d66b3ed9ad3062da7a9e",
+        "android_client_info": {
+          "package_name": "ai.yellow.supportagent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "603673019323-70hseiembn49ffdehipnfouofqsce0as.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ai.yellow.supportagent",
+            "certificate_hash": "0960083f3ea1e55c37be08483363112962cd69d9"
+          }
+        },
+        {
+          "client_id": "603673019323-l3tjf5ta48sht2uui4u8v06lvscdeopn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "ai.yellow.supportagent",
+            "certificate_hash": "48e0953d267027f542851e29cc7a7ea8a36671b5"
+          }
+        },
+        {
+          "client_id": "603673019323-m927s8vt08kvbo31npv45c7o2j83bm97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWCm5gbzrfgeGhtvKgi1WnZpeXFWd3d3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "603673019323-0ih9smkes0vj0cnvj3mtc5dkmgeq44ml.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "603673019323-amphsad46umgob3f0hao7lub3ckk07p8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yellowmessenger.sephapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603673019323:android:d3e72c57960d5b26da7a9e",
+        "android_client_info": {
+          "package_name": "com.yellowmessenger.agentappsdk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "603673019323-m927s8vt08kvbo31npv45c7o2j83bm97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWCm5gbzrfgeGhtvKgi1WnZpeXFWd3d3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "603673019323-0ih9smkes0vj0cnvj3mtc5dkmgeq44ml.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "603673019323-amphsad46umgob3f0hao7lub3ckk07p8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yellowmessenger.sephapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603673019323:android:6cf7ee11e9d1372dda7a9e",
+        "android_client_info": {
+          "package_name": "com.yellowmessenger.supportagent"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "603673019323-m927s8vt08kvbo31npv45c7o2j83bm97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWCm5gbzrfgeGhtvKgi1WnZpeXFWd3d3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "603673019323-0ih9smkes0vj0cnvj3mtc5dkmgeq44ml.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "603673019323-amphsad46umgob3f0hao7lub3ckk07p8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yellowmessenger.sephapp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603673019323:android:64c2874d555ae09fda7a9e",
+        "android_client_info": {
+          "package_name": "com.yellowmessenger.yellowairlinessdk"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "603673019323-m927s8vt08kvbo31npv45c7o2j83bm97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDWCm5gbzrfgeGhtvKgi1WnZpeXFWd3d3o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "603673019323-0ih9smkes0vj0cnvj3mtc5dkmgeq44ml.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "603673019323-amphsad46umgob3f0hao7lub3ckk07p8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yellowmessenger.sephapp"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

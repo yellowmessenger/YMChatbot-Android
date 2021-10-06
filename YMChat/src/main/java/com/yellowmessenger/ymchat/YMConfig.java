@@ -12,7 +12,7 @@ public class YMConfig {
     public boolean showConsoleLogs = false;
     public String ymAuthenticationToken = "";
     public String deviceToken = "";
-    public String customBaseUrl = "https://app.yellowmessenger.com";
+    public String customBaseUrl = "https://staging.yellowmessenger.com";
     public int statusBarColor = -1;
     public boolean hideCameraForUpload = false;
     public boolean showCloseButton = true;
