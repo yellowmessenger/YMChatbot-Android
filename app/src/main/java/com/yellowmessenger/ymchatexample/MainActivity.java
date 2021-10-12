@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1589891354544"; //"x1587041004122";
+    String botId = "x1587041004122";
     String deviceToken = "your device token";
     String apiKey = "your api key";
 
@@ -28,13 +28,17 @@ public class MainActivity extends AppCompatActivity {
         //Get YMChat instance
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
-        ymChat.config.enableSpeech = true;
+
+        //To enable speach to text
+        //ymChat.config.enableSpeech = true;
+        
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
         payloadData.put("some-key", "some-value");
         ymChat.config.payload = payloadData;
 
+        // Choose version(1 or 2), default is 1
         ymChat.config.version = 2;
 
         //To enable notifications
@@ -45,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
         // To Change the color of close button, default color is white
         ymChat.config.closeButtonColor = R.color.white;
 
-        ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
             switch (botEvent.getCode()) {
@@ -75,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
                     unlinkDevice();
                 }
         );
-
-
     }
 
     private void unlinkDevice() {
