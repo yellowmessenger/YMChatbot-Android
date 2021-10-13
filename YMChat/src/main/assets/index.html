@@ -56,7 +56,7 @@
         }catch(e){
         }
 
-        var scriptUrl = customBaseUrl+"/widget/mobile.js"
+       var scriptUrl = customBaseUrl+"/widget/mobile.js"
         if(version == '2'){
             scriptUrl = customBaseUrl+"/widget/v2/mobile.js"
         }
@@ -70,7 +70,6 @@
             ymAuthenticationToken: ymAuthenticationToken,
             deviceToken: deviceToken,
             logging: true,
-            host:customBaseUrl,
             handlers: {
                 sendIOSEvent: function (data) {
                  console.log(data);
@@ -91,6 +90,10 @@
             triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
             triggerJourney: payloadJSON.JourneySlug
         };
+
+        if(version == '2') {
+            window.ymConfig.host = customBaseUrl;
+        }
 
         if(payloadJSON.UserId) {
             window.ymConfig.userId = payloadJSON.UserId;
