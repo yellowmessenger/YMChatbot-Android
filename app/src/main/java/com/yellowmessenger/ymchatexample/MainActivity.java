@@ -16,7 +16,7 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Dummy bot id. (Purrs a lot)
+    // Dummy bot id. (Purrs a lot)J
     String botId = "x1587041004122";
     String deviceToken = "your device token";
     String apiKey = "your api key";
@@ -28,12 +28,18 @@ public class MainActivity extends AppCompatActivity {
         //Get YMChat instance
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
-        ymChat.config.enableSpeech = true;
+
+        //To enable speach to text
+        //ymChat.config.enableSpeech = true;
+        
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
         payloadData.put("some-key", "some-value");
         ymChat.config.payload = payloadData;
+
+        // Choose version(1 or 2), default is 1
+        ymChat.config.version = 2;
 
         //To enable notifications
         ymChat.config.deviceToken = deviceToken;
@@ -72,8 +78,6 @@ public class MainActivity extends AppCompatActivity {
                     unlinkDevice();
                 }
         );
-
-
     }
 
     private void unlinkDevice() {

@@ -17,6 +17,7 @@ public class YMConfig {
     public boolean hideCameraForUpload = false;
     public boolean showCloseButton = true;
     public int closeButtonColor = -1;
+    public int version = 1;
     public HashMap<String, Object> payload = new HashMap<>(); // For payload key-values
     public HashMap<String, String> customData = new HashMap<>(); // other data key-values
 

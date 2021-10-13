@@ -101,6 +101,10 @@ public class YMChat {
                 throw new Exception("In payload map, value can be of primitive type or json convertible value ::\nException message :: " + e.getMessage());
             }
         }
+
+        if (!(config.version == 1 || config.version == 2)) {
+            throw new Exception("version can be either 1 or 2");
+        }
         return true;
     }
 
@@ -135,7 +139,7 @@ public class YMChat {
 
     public void unlinkDeviceToken(String botId, String apiKey, String deviceToken, YellowCallback callback) throws Exception {
         try {
-            if (isValidate(botId, apiKey, deviceToken,callback)) {
+            if (isValidate(botId, apiKey, deviceToken, callback)) {
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
@@ -227,7 +231,7 @@ public class YMChat {
             throw new Exception("deviceToken is cannot be null or empty");
         }
 
-        if(callback == null)
+        if (callback == null)
             throw new Exception("callback cannot be null");
 
         return true;

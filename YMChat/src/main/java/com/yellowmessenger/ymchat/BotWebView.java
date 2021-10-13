@@ -192,8 +192,8 @@ public class BotWebView extends AppCompatActivity {
         if (enableSpeech) {
             micButton.setVisibility(View.VISIBLE);
             micButton.setOnClickListener(view -> showVoiceOption());
+            alignMicButton();
         }
-
 
         closeButton = findViewById(R.id.backButton);
         closeButton.setOnClickListener(view -> {
@@ -202,6 +202,18 @@ public class BotWebView extends AppCompatActivity {
             this.finish();
         });
         showCloseButton();
+    }
+
+    // Adjust view of FAB based on version
+    private void alignMicButton() {
+        int version = ConfigService.getInstance().getConfig().version;
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) micButton.getLayoutParams();
+        if (version == 1) {
+            params.setMargins(0, 0, 4, 96);
+        } else {
+            params.setMargins(0, 0, 4, 40);
+        }
+        micButton.setLayoutParams(params);
     }
 
     private void hideCloseButton() {
