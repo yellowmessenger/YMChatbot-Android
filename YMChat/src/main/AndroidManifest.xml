@@ -16,6 +16,12 @@
         </intent>
     </queries>
 
+    <queries>
+        <intent>
+            <action android:name="android.speech.RecognitionService" />
+        </intent>
+    </queries>
+
     <application>
         <activity
             android:name=".BotWebView"
