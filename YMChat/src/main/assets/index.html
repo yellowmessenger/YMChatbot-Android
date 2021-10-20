@@ -47,12 +47,18 @@
         var ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
         var deviceToken = getParams(window.location.href)["deviceToken"];
         var customBaseUrl = getParams(window.location.href)["customBaseUrl"];
+        var version = getParams(window.location.href)["version"];
 
 
         var payloadJSON = {};
         try{
             payloadJSON = JSON.parse(payload);
         }catch(e){
+        }
+
+       var scriptUrl = customBaseUrl+"/widget/mobile.js"
+        if(version == '2'){
+            scriptUrl = customBaseUrl+"/widget/v2/mobile.js"
         }
 
 
@@ -85,6 +91,10 @@
             triggerJourney: payloadJSON.JourneySlug
         };
 
+        if(version == '2') {
+            window.ymConfig.host = customBaseUrl;
+        }
+
         if(payloadJSON.UserId) {
             window.ymConfig.userId = payloadJSON.UserId;
         }
@@ -116,7 +126,7 @@
 
                 function l() {
                     var e = d.createElement("script");
-                    e.type = "text/javascript", e.async = !0, e.src = (customBaseUrl)+"/widget/mobile.js";
+                    e.type = "text/javascript", e.async = !0, e.src = scriptUrl;
                     var t = d.getElementsByTagName("script")[0];
                     t.parentNode.insertBefore(e, t)
                 }
