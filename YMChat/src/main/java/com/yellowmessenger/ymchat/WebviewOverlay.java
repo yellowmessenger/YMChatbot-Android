@@ -55,6 +55,10 @@ public class WebviewOverlay extends Fragment {
                 if (isGranted) {
                     showFileChooser();
                 } else {
+                    if(mFilePathCallback != null) {
+                        mFilePathCallback.onReceiveValue(null);
+                        mFilePathCallback = null;
+                    }
                     Toast.makeText(getContext(), "Read storage permission required to complete this operation.", Toast.LENGTH_LONG).show();
                 }
             });
@@ -123,8 +127,6 @@ public class WebviewOverlay extends Fragment {
         myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         myWebView.getSettings().setAllowFileAccess(true);
         myWebView.getSettings().setGeolocationDatabasePath(context.getFilesDir().getPath());
-
-
         myWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
         myWebView.addJavascriptInterface(new JavaScriptInterface((BotWebView) getActivity(), myWebView), "YMHandler");
 
@@ -220,38 +222,40 @@ public class WebviewOverlay extends Fragment {
 
     private void showFileChooser() {
         boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
-        if (checkForStoragePermission(getContext()) && !hideCameraForUpload) {
-            Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-            if (getActivity() != null && takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                // Create the File where the photo should go
-                File photoFile = null;
-                try {
-                    photoFile = createImageFile();
-                    takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
-                } catch (IOException ex) {
-                    // Error occurred while creating the File
-                    Log.e("ErrorCreatingFile", "Unable to create Image File", ex);
-                }
-
-                // Continue only if the File was successfully created
-                if (photoFile != null) {
-                    mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
-                    Uri photoURI;
-                    if (Build.VERSION.SDK_INT >= 24 && getContext() != null) {
-                        photoURI = FileProvider.getUriForFile(getContext(),
-                                getString(R.string.ym_file_provider),
-                                photoFile);
-                    } else {
-                        photoURI = Uri.fromFile(photoFile);
-
+        if (checkForStoragePermission(getContext())) {
+            Intent takePictureIntent = null;
+            if (!hideCameraForUpload) {
+                takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (getActivity() != null && takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                        takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
+                    } catch (IOException ex) {
+                        //IO exception occcurred
                     }
-                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
 
-                } else {
-                    takePictureIntent = null;
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
+                        Uri photoURI;
+                        if (Build.VERSION.SDK_INT >= 24 && getContext() != null) {
+                            photoURI = FileProvider.getUriForFile(getContext(),
+                                    getString(R.string.ym_file_provider),
+                                    photoFile);
+                        } else {
+                            photoURI = Uri.fromFile(photoFile);
+
+                        }
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+
+                    } else {
+                        takePictureIntent = null;
+                    }
                 }
-                showContentPicker(takePictureIntent);
             }
+            showContentPicker(takePictureIntent);
         }
     }
 
