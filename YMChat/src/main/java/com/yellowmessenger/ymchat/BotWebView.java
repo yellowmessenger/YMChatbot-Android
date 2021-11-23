@@ -204,11 +204,11 @@ public class BotWebView extends AppCompatActivity {
         });
         showCloseButton();
 
-        RelativeLayout constraintLayout = findViewById(R.id.parentView);
-        constraintLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+        RelativeLayout parentLayout = findViewById(R.id.parentView);
+        parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             Rect r = new Rect();
-            constraintLayout.getWindowVisibleDisplayFrame(r);
-            int screenHeight = constraintLayout.getRootView().getHeight();
+            parentLayout.getWindowVisibleDisplayFrame(r);
+            int screenHeight = parentLayout.getRootView().getHeight();
             int keypadHeight = screenHeight - r.bottom;
             if (keypadHeight > screenHeight * 0.15) {
                 hideMic();
