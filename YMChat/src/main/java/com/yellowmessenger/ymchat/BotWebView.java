@@ -5,9 +5,11 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.provider.Settings;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -18,7 +20,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -62,6 +63,7 @@ public class BotWebView extends AppCompatActivity {
 
     private ImageView closeButton;
     private FloatingActionButton micButton;
+    private RelativeLayout parentLayout;
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -71,9 +73,29 @@ public class BotWebView extends AppCompatActivity {
                 if (isGranted) {
                     toggleBottomSheet();
                 } else {
-                    Toast.makeText(this, "Record audio permission required for voice input", Toast.LENGTH_SHORT).show();
+                    //if(ActivityCompat.shouldShowRequestPermissionRationale())
+                    Snackbar.make(parentLayout,
+                            "To use speech to text feature Record Audio permission is required. Please enable it from settings.",
+                            Snackbar.LENGTH_LONG)
+                            .setAction("Settings", v -> startInstalledAppDetailsActivity(BotWebView.this))
+                            .show();
+                    //  Toast.makeText(this, "Record audio permission required for voice input", Toast.LENGTH_SHORT).show();
                 }
             });
+
+    public static void startInstalledAppDetailsActivity(final Context context) {
+        if (context == null) {
+            return;
+        }
+        final Intent i = new Intent();
+        i.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+        i.addCategory(Intent.CATEGORY_DEFAULT);
+        i.setData(Uri.parse("package:" + context.getPackageName()));
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        i.addFlags(Intent.FLAG_ACTIVITY_EXCLUDE_FROM_RECENTS);
+        context.startActivity(i);
+    }
 
 
     public void startMic(long countdown_time) {
@@ -181,6 +203,8 @@ public class BotWebView extends AppCompatActivity {
                     return insets.consumeSystemWindowInsets();
                 });
         setContentView(R.layout.activity_bot_web_view);
+
+        parentLayout = findViewById(R.id.parentView);
 
         fh = new WebviewOverlay();
         FragmentManager fragManager = getSupportFragmentManager();
