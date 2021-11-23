@@ -223,7 +223,7 @@ public class BotWebView extends AppCompatActivity {
         int version = ConfigService.getInstance().getConfig().version;
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) micButton.getLayoutParams();
         if (version == 1) {
-            params.setMargins(0, 0, 4, 96);
+            params.setMargins(0, 0, 4, 200);
         } else {
             params.setMargins(0, 0, 0, 144);
         }
