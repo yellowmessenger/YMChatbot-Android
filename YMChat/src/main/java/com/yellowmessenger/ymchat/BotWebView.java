@@ -389,7 +389,7 @@ public class BotWebView extends AppCompatActivity {
             micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_back_button_ym));
         } else {
             voiceArea.setVisibility(View.INVISIBLE);
-            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_button_ym));
+            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_ym_small));
             if (sr != null) {
                 sr.stopListening();
             }
@@ -404,7 +404,7 @@ public class BotWebView extends AppCompatActivity {
         TextView textView = findViewById(R.id.speechTranscription);
 
         voiceArea.setVisibility(View.INVISIBLE);
-        micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_button_ym));
+        micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_ym_small));
         if (sr != null) {
             sr.stopListening();
             sr.destroy();
