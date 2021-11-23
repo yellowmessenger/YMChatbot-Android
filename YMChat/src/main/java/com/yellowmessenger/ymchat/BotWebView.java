@@ -225,7 +225,7 @@ public class BotWebView extends AppCompatActivity {
         if (version == 1) {
             params.setMargins(0, 0, 4, 96);
         } else {
-            params.setMargins(0, 0, 4, 40);
+            params.setMargins(0, 0, 0, 144);
         }
         micButton.setLayoutParams(params);
     }
