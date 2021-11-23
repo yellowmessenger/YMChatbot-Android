@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -202,6 +203,19 @@ public class BotWebView extends AppCompatActivity {
             this.finish();
         });
         showCloseButton();
+
+        RelativeLayout parentLayout = findViewById(R.id.parentView);
+        parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            parentLayout.getWindowVisibleDisplayFrame(r);
+            int screenHeight = parentLayout.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
+            if (keypadHeight > screenHeight * 0.15) {
+                hideMic();
+            } else {
+                showMic();
+            }
+        });
     }
 
     // Adjust view of FAB based on version
