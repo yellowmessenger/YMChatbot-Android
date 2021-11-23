@@ -223,9 +223,9 @@ public class BotWebView extends AppCompatActivity {
         int version = ConfigService.getInstance().getConfig().version;
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) micButton.getLayoutParams();
         if (version == 1) {
-            params.setMargins(0, 0, 4, 96);
+            params.setMargins(0, 0, 4, 200);
         } else {
-            params.setMargins(0, 0, 4, 40);
+            params.setMargins(0, 0, 0, 144);
         }
         micButton.setLayoutParams(params);
     }
@@ -389,7 +389,7 @@ public class BotWebView extends AppCompatActivity {
             micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_back_button_ym));
         } else {
             voiceArea.setVisibility(View.INVISIBLE);
-            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_button_ym));
+            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_ym_small));
             if (sr != null) {
                 sr.stopListening();
             }
@@ -404,7 +404,7 @@ public class BotWebView extends AppCompatActivity {
         TextView textView = findViewById(R.id.speechTranscription);
 
         voiceArea.setVisibility(View.INVISIBLE);
-        micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_button_ym));
+        micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_ym_small));
         if (sr != null) {
             sr.stopListening();
             sr.destroy();

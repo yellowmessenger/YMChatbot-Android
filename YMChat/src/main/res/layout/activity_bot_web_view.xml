@@ -52,13 +52,17 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="4dp"
         android:clickable="true"
         android:contentDescription="@string/ym_fab_voice_button"
         android:focusable="true"
         android:visibility="gone"
-        app:fabSize="mini"
-        app:srcCompat="@drawable/ic_mic_button_ym"
+        app:fabCustomSize="@dimen/ym_custom_fab_size"
+        android:layout_marginEnd="@dimen/ym_negative_margin"
+        android:backgroundTint="@color/ymTransparent"
+        android:src="@drawable/ic_mic_ym_small"
+        app:borderWidth="0dp"
+        app:elevation="0dp"
+        app:pressedTranslationZ="0dp"
         tools:ignore="VectorDrawableCompat" />
 
 
