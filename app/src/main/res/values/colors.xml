@@ -9,5 +9,4 @@
     <color name="white">#FFFFFFFF</color>
     <color name="ymAccentBlue">#FF03DAC5</color>
     <color name="ym_icon_color">@color/teal_700</color>
-    <color name="ym_mic_color">@color/teal_700</color>
 </resources>
