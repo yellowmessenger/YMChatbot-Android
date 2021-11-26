@@ -8,4 +8,12 @@
     <string name="ym_fab_voice_button">voice button</string>
     <string name="application_id_for_provider">com.yellowmessenger.ymchatexample.fileprovider</string>
     <string name="ym_file_provider">@string/application_id_for_provider</string>
+    <string name="ym_title_camera">Camera</string>
+    <string name="ym_title_file">File</string>
+    <string name="ym_title_choose_option">Choose Option</string>
+    <string name="ym_text_settings">Settings</string>
+    <string name="ym_message_mic_permission">To use speech to text feature Record Audio permission is required. Please enable it from app settings.</string>
+    <string name="ym_message_storgae_permission">Read storage permission required to complete this operation. Please enable it from app settings.</string>
+    <string name="ym_message_camera_permission">Camera permission is required by the app to complete this operation. Please enable it from app settings.</string>
+    <string name="ym_message_camera_error">Not able to launch camera please use file option to pick image</string>
 </resources>

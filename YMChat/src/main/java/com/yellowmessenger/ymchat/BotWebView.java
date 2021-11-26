@@ -19,7 +19,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -42,7 +41,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 import okhttp3.Call;
@@ -63,6 +61,7 @@ public class BotWebView extends AppCompatActivity {
 
     private ImageView closeButton;
     private FloatingActionButton micButton;
+    private RelativeLayout parentLayout;
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -72,10 +71,9 @@ public class BotWebView extends AppCompatActivity {
                 if (isGranted) {
                     toggleBottomSheet();
                 } else {
-                    Toast.makeText(this, "Record audio permission required for voice input", Toast.LENGTH_SHORT).show();
+                    YmHelper.showSnackBarWithSettingAction(BotWebView.this, parentLayout, getString(R.string.ym_message_mic_permission));
                 }
             });
-
 
     public void startMic(long countdown_time) {
         RelativeLayout voiceArea = findViewById(R.id.voiceArea);
@@ -183,6 +181,8 @@ public class BotWebView extends AppCompatActivity {
                 });
         setContentView(R.layout.activity_bot_web_view);
 
+        parentLayout = findViewById(R.id.parentView);
+
         fh = new WebviewOverlay();
         FragmentManager fragManager = getSupportFragmentManager();
         fragManager.beginTransaction()
@@ -203,8 +203,10 @@ public class BotWebView extends AppCompatActivity {
             this.finish();
         });
         showCloseButton();
+        setKeyboardListener();
+    }
 
-        RelativeLayout parentLayout = findViewById(R.id.parentView);
+    private void setKeyboardListener() {
         parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
             Rect r = new Rect();
             parentLayout.getWindowVisibleDisplayFrame(r);
@@ -330,14 +332,6 @@ public class BotWebView extends AppCompatActivity {
             fh.closeBot();
         }
         this.finish();
-    }
-
-    private void speechRecognition() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, Locale.ENGLISH);
-        startActivityForResult(intent, 100);
-
     }
 
     SpeechRecognizer sr;

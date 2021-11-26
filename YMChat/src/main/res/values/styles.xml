@@ -5,6 +5,7 @@
     <style name="YmAppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="snackbarTextViewStyle">@style/YmSnackbarText</item>
     </style>
 
 
@@ -12,4 +13,8 @@
 
 
     <style name="YmAppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="YmSnackbarText" parent="@style/Widget.MaterialComponents.Snackbar.TextView">
+        <item name="android:maxLines">5</item>
+    </style>
 </resources>

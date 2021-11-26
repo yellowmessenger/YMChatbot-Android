@@ -11,5 +11,5 @@
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
 
     <!-- overriding the file provider path to avoid conflict with other app using YM CHATBOT SDK -->
-    <string name="application_id_for_provider">com.yellowmessenger.ymchatexample.fileprovider</string>
+    <string name="application_id_for_provider">ai.yellowmessenger.ymchatexample.fileprovider</string>
 </resources>
