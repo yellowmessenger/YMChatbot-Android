@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -12,6 +13,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -49,17 +51,32 @@ public class WebviewOverlay extends Fragment {
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
     private static final int INPUT_FILE_REQUEST_CODE = 1;
-
+    private boolean isCameraPermissionDenied = false;
+    private String requestedPermission = null;
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    showFileChooser();
-                } else {
-                    if(mFilePathCallback != null) {
-                        mFilePathCallback.onReceiveValue(null);
-                        mFilePathCallback = null;
+                if (!TextUtils.isEmpty(requestedPermission)) {
+                    if (requestedPermission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                        if (isGranted) {
+                            showFileChooser();
+                        } else {
+                            if (mFilePathCallback != null) {
+                                mFilePathCallback.onReceiveValue(null);
+                                mFilePathCallback = null;
+                            }
+                            Toast.makeText(getContext(), "Read storage permission required to complete this operation.", Toast.LENGTH_LONG).show();
+                        }
+                    } else if (requestedPermission.equals(Manifest.permission.CAMERA)) {
+                        if (!isGranted) {
+                            isCameraPermissionDenied = true;
+                        }
+                        showFileChooser();
+                    } else {
+                        if (mFilePathCallback != null) {
+                            mFilePathCallback.onReceiveValue(null);
+                            mFilePathCallback = null;
+                        }
                     }
-                    Toast.makeText(getContext(), "Read storage permission required to complete this operation.", Toast.LENGTH_LONG).show();
                 }
             });
 
@@ -121,6 +138,7 @@ public class WebviewOverlay extends Fragment {
         final Context context = getActivity();
 
         myWebView = new WebView(context);
+        myWebView.clearCache(true);
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setDomStorageEnabled(true);
         myWebView.getSettings().setSupportMultipleWindows(true);
@@ -225,37 +243,99 @@ public class WebviewOverlay extends Fragment {
         if (checkForStoragePermission(getContext())) {
             Intent takePictureIntent = null;
             if (!hideCameraForUpload) {
-                takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                if (getActivity() != null && takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-                    // Create the File where the photo should go
-                    File photoFile = null;
-                    try {
-                        photoFile = createImageFile();
-                        takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
-                    } catch (IOException ex) {
-                        //IO exception occcurred
+                //Check if Camera Permission is used in Parent App
+                //if true ,
+                if (hasCameraPermissionInManifest(getContext())) {
+                    // check if app is granted permission for Camera
+                    // If true show Camera option else ask for permission
+                    if (checkForCameraPermission(getContext())) {
+                        takePictureIntent = getPictureIntent();
+                        showContentPicker(takePictureIntent);
+                    } else if (isCameraPermissionDenied) {
+                        showContentPicker(takePictureIntent);
                     }
-
-                    // Continue only if the File was successfully created
-                    if (photoFile != null) {
-                        mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
-                        Uri photoURI;
-                        if (Build.VERSION.SDK_INT >= 24 && getContext() != null) {
-                            photoURI = FileProvider.getUriForFile(getContext(),
-                                    getString(R.string.ym_file_provider),
-                                    photoFile);
-                        } else {
-                            photoURI = Uri.fromFile(photoFile);
-
-                        }
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-
-                    } else {
-                        takePictureIntent = null;
-                    }
+                } else {
+                    takePictureIntent = getPictureIntent();
+                    showContentPicker(takePictureIntent);
                 }
+            } else {
+                showContentPicker(takePictureIntent);
             }
-            showContentPicker(takePictureIntent);
+        }
+
+    }
+
+    private Intent getPictureIntent() {
+        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        if (getActivity() != null && takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+            // Create the File where the photo should go
+            File photoFile = null;
+            try {
+                photoFile = createImageFile();
+                takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
+            } catch (IOException ex) {
+                //IO exception occcurred
+            }
+
+            // Continue only if the File was successfully created
+            if (photoFile != null) {
+                mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
+                Uri photoURI;
+                if (Build.VERSION.SDK_INT >= 24 && getContext() != null) {
+                    photoURI = FileProvider.getUriForFile(getContext(),
+                            getString(R.string.ym_file_provider),
+                            photoFile);
+                } else {
+                    photoURI = Uri.fromFile(photoFile);
+
+                }
+                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+
+            } else {
+                takePictureIntent = null;
+            }
+        }
+        return takePictureIntent;
+    }
+
+
+    private boolean hasCameraPermissionInManifest(Context context) {
+
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+            String[] permissions = packageInfo.requestedPermissions;
+
+            if (permissions == null || permissions.length == 0) {
+                return false;
+            }
+
+            for (String perm : permissions) {
+                if (perm.equals(Manifest.permission.CAMERA))
+                    return true;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            //Exception occurred
+            return false;
+        }
+        return false;
+    }
+
+    private boolean checkForCameraPermission(Context context) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.CAMERA
+        )
+                == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true;
+        } else {
+            if (!isCameraPermissionDenied) {
+                requestedPermission = Manifest.permission.CAMERA;
+                requestPermissionLauncher.launch(Manifest.permission.CAMERA);
+            }
+            return false;
         }
     }
 
@@ -312,6 +392,7 @@ public class WebviewOverlay extends Fragment {
         ) {
             return true;
         } else {
+            requestedPermission = Manifest.permission.READ_EXTERNAL_STORAGE;
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
             return false;
         }

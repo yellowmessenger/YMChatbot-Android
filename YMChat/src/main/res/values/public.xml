@@ -3,4 +3,6 @@
     <!-- mandatory key -->
     <!-- Required to create a unique private file provider for your app exam "your.application.id.fileprovider"-->
     <public name ="application_id_for_provider" type="string">com.yellowmessenger.ymchat.fileprovider</public>
+
+    <public name ="ym_mic_color" type="color">@color/ym_mic_color</public>
 </resources>

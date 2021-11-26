@@ -8,4 +8,6 @@
     <dimen name="ym_margin_normal">16dp</dimen>
     <dimen name="ym_margin_small">8dp</dimen>
     <dimen name="ym_margin_large">36dp</dimen>
+    <dimen name="ym_custom_fab_size">18dp</dimen>
+    <dimen name="ym_negative_margin">-4dp</dimen>
 </resources>

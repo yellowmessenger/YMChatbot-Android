@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#006491</color>
     <color name="colorPrimaryDark">#033F58</color>
     <color name="colorAccent">#E31837</color>
@@ -8,6 +8,6 @@
     <color name="ymTransparent">#00FFFFFF</color>
     <color name="ymTranslucent">#80000000</color>
     <color name="ymAccentBlue">#FF4384f5</color>
-
+    <color name="ym_mic_color">#FF000000</color>
     <color name="black_overlay">#66000000</color>
 </resources>
