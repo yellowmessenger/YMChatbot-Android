@@ -24,7 +24,7 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.Toast;
+import android.widget.LinearLayout;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -34,6 +34,7 @@ import androidx.core.content.ContextCompat;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.JavaScriptInterface;
 
@@ -46,39 +47,44 @@ import java.util.Locale;
 public class WebviewOverlay extends Fragment {
     private final String TAG = "YMChat";
     private WebView myWebView;
-    private ValueCallback<Uri> mUploadMessage;
-    private Uri mCapturedImageURI = null;
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
     private static final int INPUT_FILE_REQUEST_CODE = 1;
-    private boolean isCameraPermissionDenied = false;
     private String requestedPermission = null;
+    private View parentLayout = null;
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (!TextUtils.isEmpty(requestedPermission)) {
                     if (requestedPermission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
                         if (isGranted) {
-                            showFileChooser();
+                            launchFileIntent();
                         } else {
-                            if (mFilePathCallback != null) {
-                                mFilePathCallback.onReceiveValue(null);
-                                mFilePathCallback = null;
+                            resetFilePathCallback();
+                            if (getContext() != null) {
+                                YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_storgae_permission));
                             }
-                            Toast.makeText(getContext(), "Read storage permission required to complete this operation.", Toast.LENGTH_LONG).show();
                         }
                     } else if (requestedPermission.equals(Manifest.permission.CAMERA)) {
-                        if (!isGranted) {
-                            isCameraPermissionDenied = true;
+                        if (isGranted) {
+                            launchCameraIntent();
+                        } else {
+                            resetFilePathCallback();
+                            if (getContext() != null) {
+                                YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_camera_permission));
+                            }
                         }
-                        showFileChooser();
                     } else {
-                        if (mFilePathCallback != null) {
-                            mFilePathCallback.onReceiveValue(null);
-                            mFilePathCallback = null;
-                        }
+                        resetFilePathCallback();
                     }
                 }
             });
+
+    private void resetFilePathCallback() {
+        if (mFilePathCallback != null) {
+            mFilePathCallback.onReceiveValue(null);
+            mFilePathCallback = null;
+        }
+    }
 
 
     @Nullable
@@ -86,6 +92,12 @@ public class WebviewOverlay extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         myWebView = (WebView) preLoadWebView();
         return myWebView;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        parentLayout = view;
     }
 
     //File picker activity result
@@ -111,33 +123,17 @@ public class WebviewOverlay extends Fragment {
             }
 
         }
-
         mFilePathCallback.onReceiveValue(results);
         mFilePathCallback = null;
 
     }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
 
     public View preLoadWebView() {
         // Preload start
         final Context context = getActivity();
 
         myWebView = new WebView(context);
+        myWebView.clearCache(true);
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setDomStorageEnabled(true);
         myWebView.getSettings().setSupportMultipleWindows(true);
@@ -239,32 +235,62 @@ public class WebviewOverlay extends Fragment {
 
     private void showFileChooser() {
         boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
-        if (checkForStoragePermission(getContext())) {
-            Intent takePictureIntent = null;
-            if (!hideCameraForUpload) {
-                //Check if Camera Permission is used in Parent App
-                //if true ,
-                if (hasCameraPermissionInManifest(getContext())) {
-                    // check if app is granted permission for Camera
-                    // If true show Camera option else ask for permission
-                    if (checkForCameraPermission(getContext())) {
-                        takePictureIntent = getPictureIntent();
-                        showContentPicker(takePictureIntent);
-                    } else if (isCameraPermissionDenied) {
-                        showContentPicker(takePictureIntent);
-                    }
-                } else {
-                    takePictureIntent = getPictureIntent();
-                    showContentPicker(takePictureIntent);
-                }
-            } else {
-                showContentPicker(takePictureIntent);
+        if (hideCameraForUpload) {
+            if (checkForStoragePermission(getContext())) {
+                launchFileIntent();
             }
+        } else {
+            showBottomSheet();
         }
-
     }
 
-    private Intent getPictureIntent() {
+    private void showBottomSheet() {
+        if (getContext() != null) {
+            final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
+            bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_attachment);
+            LinearLayout cameraLayout = bottomSheetDialog.findViewById(R.id.camera_layout);
+            LinearLayout fileLayout = bottomSheetDialog.findViewById(R.id.file_layout);
+
+            if (cameraLayout != null) {
+                cameraLayout.setOnClickListener(v -> {
+                    checkAndLaunchCamera();
+                    bottomSheetDialog.dismiss();
+                });
+            }
+
+            if (fileLayout != null) {
+                fileLayout.setOnClickListener(v -> {
+                    checkAndLaunchFilePicker();
+                    bottomSheetDialog.dismiss();
+                });
+
+            }
+
+            bottomSheetDialog.show();
+        }
+    }
+
+    private void checkAndLaunchFilePicker() {
+        if (getContext() != null) {
+            if (checkForStoragePermission(getContext())) {
+                launchFileIntent();
+            }
+        }
+    }
+
+    private void checkAndLaunchCamera() {
+        if (getContext() != null) {
+            if (hasCameraPermissionInManifest(getContext())) {
+                if (checkForCameraPermission(getContext())) {
+                    launchCameraIntent();
+                }
+            } else {
+                launchCameraIntent();
+            }
+        }
+    }
+
+    private void launchCameraIntent() {
         Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         if (getActivity() != null && takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
             // Create the File where the photo should go
@@ -289,12 +315,12 @@ public class WebviewOverlay extends Fragment {
 
                 }
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                getActivity().startActivityForResult(takePictureIntent, INPUT_FILE_REQUEST_CODE);
 
             } else {
-                takePictureIntent = null;
+                YmHelper.showMessageInSnackBar(parentLayout, getActivity().getApplicationContext().getString(R.string.ym_message_camera_error));
             }
         }
-        return takePictureIntent;
     }
 
 
@@ -330,30 +356,19 @@ public class WebviewOverlay extends Fragment {
         ) {
             return true;
         } else {
-            if (!isCameraPermissionDenied) {
-                requestedPermission = Manifest.permission.CAMERA;
-                requestPermissionLauncher.launch(Manifest.permission.CAMERA);
-            }
+            requestedPermission = Manifest.permission.CAMERA;
+            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
             return false;
         }
     }
 
-    private void showContentPicker(Intent takePictureIntent) {
+    private void launchFileIntent() {
         Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
         contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
         contentSelectionIntent.setType("*/*");
-
-        Intent[] intentArray;
-        if (takePictureIntent != null) {
-            intentArray = new Intent[]{takePictureIntent};
-        } else {
-            intentArray = new Intent[0];
+        if (getActivity() != null) {
+            getActivity().startActivityForResult(contentSelectionIntent, INPUT_FILE_REQUEST_CODE);
         }
-        Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
-        chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
-        chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
-        chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
-        getActivity().startActivityForResult(chooserIntent, INPUT_FILE_REQUEST_CODE);
     }
 
     // Sending messages to bot

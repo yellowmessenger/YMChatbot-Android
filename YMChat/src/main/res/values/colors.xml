@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <color name="colorPrimary">#006491</color>
     <color name="colorPrimaryDark">#033F58</color>
     <color name="colorAccent">#E31837</color>
+    <color name="ymIconColor">#505862</color>
     <color name="ymColorWhite">#FFFFFF</color>
     <color name="ymColorDark">#2C2B2B</color>
     <color name="ymTransparent">#00FFFFFF</color>
     <color name="ymTranslucent">#80000000</color>
     <color name="ymAccentBlue">#FF4384f5</color>
-
+    <color name="ym_mic_color">@color/ymIconColor</color>
     <color name="black_overlay">#66000000</color>
+    <color name="ym_icon_color">@color/ymIconColor</color>
 </resources>

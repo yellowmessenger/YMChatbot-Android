@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -73,13 +74,7 @@ public class BotWebView extends AppCompatActivity {
                 if (isGranted) {
                     toggleBottomSheet();
                 } else {
-                    //if(ActivityCompat.shouldShowRequestPermissionRationale())
-                    Snackbar.make(parentLayout,
-                            "To use speech to text feature Record Audio permission is required. Please enable it from settings.",
-                            Snackbar.LENGTH_LONG)
-                            .setAction("Settings", v -> startInstalledAppDetailsActivity(BotWebView.this))
-                            .show();
-                    //  Toast.makeText(this, "Record audio permission required for voice input", Toast.LENGTH_SHORT).show();
+                    YmHelper.showSnackBarWithSettingAction(BotWebView.this, parentLayout, getString(R.string.ym_message_mic_permission));
                 }
             });
 
@@ -226,6 +221,21 @@ public class BotWebView extends AppCompatActivity {
             this.finish();
         });
         showCloseButton();
+        setKeyboardListener();
+    }
+
+    private void setKeyboardListener() {
+        parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
+            Rect r = new Rect();
+            parentLayout.getWindowVisibleDisplayFrame(r);
+            int screenHeight = parentLayout.getRootView().getHeight();
+            int keypadHeight = screenHeight - r.bottom;
+            if (keypadHeight > screenHeight * 0.15) {
+                hideMic();
+            } else {
+                showMic();
+            }
+        });
     }
 
     // Adjust view of FAB based on version
@@ -233,9 +243,9 @@ public class BotWebView extends AppCompatActivity {
         int version = ConfigService.getInstance().getConfig().version;
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) micButton.getLayoutParams();
         if (version == 1) {
-            params.setMargins(0, 0, 4, 96);
+            params.setMargins(0, 0, 4, 200);
         } else {
-            params.setMargins(0, 0, 4, 40);
+            params.setMargins(0, 0, 0, 144);
         }
         micButton.setLayoutParams(params);
     }
@@ -399,7 +409,7 @@ public class BotWebView extends AppCompatActivity {
             micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_back_button_ym));
         } else {
             voiceArea.setVisibility(View.INVISIBLE);
-            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_button_ym));
+            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_ym_small));
             if (sr != null) {
                 sr.stopListening();
             }
@@ -414,7 +424,7 @@ public class BotWebView extends AppCompatActivity {
         TextView textView = findViewById(R.id.speechTranscription);
 
         voiceArea.setVisibility(View.INVISIBLE);
-        micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_button_ym));
+        micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_ym_small));
         if (sr != null) {
             sr.stopListening();
             sr.destroy();
