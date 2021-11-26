@@ -133,7 +133,6 @@ public class WebviewOverlay extends Fragment {
         final Context context = getActivity();
 
         myWebView = new WebView(context);
-        myWebView.clearCache(true);
         myWebView.getSettings().setJavaScriptEnabled(true);
         myWebView.getSettings().setDomStorageEnabled(true);
         myWebView.getSettings().setSupportMultipleWindows(true);
