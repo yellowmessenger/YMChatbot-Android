@@ -61,8 +61,6 @@ public class ConfigService {
         StringBuilder sb = new StringBuilder();
         sb.append("?botId=");
         sb.append(botId);
-        sb.append("&enableHistory=");
-        sb.append(config.enableHistory);
         sb.append("&ymAuthenticationToken=");
         sb.append(config.ymAuthenticationToken != null ? config.ymAuthenticationToken : "");
         sb.append("&deviceToken=");
