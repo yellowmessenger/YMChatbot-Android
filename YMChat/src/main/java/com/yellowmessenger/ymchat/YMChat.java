@@ -17,6 +17,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLEncoder;
 
 import okhttp3.Call;
@@ -94,6 +95,11 @@ public class YMChat {
         if (config.customBaseUrl == null || config.customBaseUrl.isEmpty()) {
             throw new Exception("customBaseUrl cannot be null or empty.");
         }
+
+        if (config.customLoaderUrl == null || config.customLoaderUrl.isEmpty() || !isValidUrl(config.customLoaderUrl)) {
+            throw new Exception("Please provide valid customLoaderUrl");
+        }
+
         if (config.payload != null) {
             try {
                 URLEncoder.encode(new Gson().toJson(config.payload), "UTF-8");
@@ -106,6 +112,20 @@ public class YMChat {
             throw new Exception("version can be either 1 or 2");
         }
         return true;
+    }
+
+    private boolean isValidUrl(String url) {
+        /* Try creating a valid URL */
+        try {
+            new URL(url).toURI();
+            return true;
+        }
+
+        // If there was an Exception
+        // while creating URL object
+        catch (Exception e) {
+            return false;
+        }
     }
 
     public void closeBot() {

@@ -1,5 +1,3 @@
-
-
 <!doctype html>
 <html>
 <head>
@@ -18,7 +16,8 @@
          width: 100%;
          height: 100%;
          z-index: 9999;
-         background: url(https://thumbs.gfycat.com/ImpoliteLivelyGenet-max-1mb.gif) center no-repeat #fff;
+         background-repeat: no-repeat;
+         background-position: center;
          }
       </style>
     <script>
@@ -47,6 +46,9 @@
         var deviceToken = getParams(window.location.href)["deviceToken"];
         var customBaseUrl = getParams(window.location.href)["customBaseUrl"];
         var version = getParams(window.location.href)["version"];
+        var customLoaderUrl = getParams(window.location.href)["customLoaderUrl"];
+        var imageLink = "url(" + customLoaderUrl + ")";
+        document.getElementById("se-pre-con").style.backgroundImage = imageLink;
 
 
         var payloadJSON = {};

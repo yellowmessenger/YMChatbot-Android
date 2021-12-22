@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
         //To enable speach to text
         //ymChat.config.enableSpeech = true;
-        
+
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
@@ -48,6 +48,10 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config.statusBarColor = R.color.colorPrimaryDark;
         // To Change the color of close button, default color is white
         ymChat.config.closeButtonColor = R.color.white;
+
+        // Set custom loader url , it should be a valid, light weight and public image url
+        // This is an optional parameter
+        ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -69,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
                 ymChat.startChatbot(this);
             } catch (Exception e) {
                 //Catch and handle the exception
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
         });
