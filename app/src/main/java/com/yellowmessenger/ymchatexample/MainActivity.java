@@ -50,7 +50,6 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config.closeButtonColor = R.color.white;
 
         // Set custom loader url , it should be a valid, light weight and public image url
-        // Supported format - svg, png, jpg, gif,
         // This is an optional parameter
         ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
 
