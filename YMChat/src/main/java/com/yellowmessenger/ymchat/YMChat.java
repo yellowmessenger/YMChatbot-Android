@@ -2,6 +2,7 @@ package com.yellowmessenger.ymchat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.media.Image;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -17,7 +18,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.net.URL;
 import java.net.URLEncoder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -94,6 +98,11 @@ public class YMChat {
         if (config.customBaseUrl == null || config.customBaseUrl.isEmpty()) {
             throw new Exception("customBaseUrl cannot be null or empty.");
         }
+
+        if (config.customLoaderUrl == null || config.customLoaderUrl.isEmpty() || !isImageUrl(config.customLoaderUrl)) {
+            throw new Exception("Please provide valid customLoaderUrl");
+        }
+
         if (config.payload != null) {
             try {
                 URLEncoder.encode(new Gson().toJson(config.payload), "UTF-8");
@@ -106,6 +115,40 @@ public class YMChat {
             throw new Exception("version can be either 1 or 2");
         }
         return true;
+    }
+
+    private boolean isImageUrl(String customLoaderUrl) {
+        if(isValid(customLoaderUrl)){
+            String regex = "([^\\s]+(\\.(?i)(jpe?g|png|gif|svg))$)";
+
+            // Compile the ReGex
+            Pattern p = Pattern.compile(regex);
+
+            // Pattern class contains matcher() method
+            // to find matching between given string
+            // and regular expression.
+            Matcher m = p.matcher(customLoaderUrl);
+
+            // Return if the string
+            // matched the ReGex
+            return m.matches();
+        }
+        return false;
+    }
+
+    private boolean isValid(String url)
+    {
+        /* Try creating a valid URL */
+        try {
+            new URL(url).toURI();
+            return true;
+        }
+
+        // If there was an Exception
+        // while creating URL object
+        catch (Exception e) {
+            return false;
+        }
     }
 
     public void closeBot() {

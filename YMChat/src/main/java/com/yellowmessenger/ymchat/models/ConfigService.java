@@ -71,6 +71,8 @@ public class ConfigService {
         sb.append(payloadJSON);
         sb.append("&version=");
         sb.append(config.version);
+        sb.append("&customLoaderUrl=");
+        sb.append(config.customLoaderUrl);
 
         return sb.toString();
 
