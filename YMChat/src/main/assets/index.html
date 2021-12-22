@@ -1,141 +1,149 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head>
-    <title></title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width">
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
-    <style>
-        .no-js #loader { display: none;  }
-        .js #loader { display: block; position: absolute; left: 100px; top: 0; }
-        .se-pre-con {
-            position: fixed;
-            left: 0px;
-            top: 0px;
-            width: 100%;
-            height: 100%;
-            z-index: 9999;
-            background-repeat: no-repeat;
-            background-position: center;
-        }
-
-    </style>
-    <script>
-        document.addEventListener("DOMContentLoaded", function(){
-        });
-
-    </script>
-</head>
-<body>
-<div id="se-pre-con" class="se-pre-con"></div>
-<script type="text/javascript">
-    var getParams = function (url) {
-        var params = {};
-        var parser = document.createElement('a');
-        parser.href = url;
-        var query = parser.search.substring(1);
-        var vars = query.split('&');
-        for (var i = 0; i < vars.length; i++) {
-            var pair = vars[i].split('=');
-            params[pair[0]] = decodeURIComponent(pair[1]);
-        }
-        return params;
-    };
-    var payload = getParams(window.location.href)["ym.payload"];
-    var botId = getParams(window.location.href)["botId"];
-    var ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
-    var deviceToken = getParams(window.location.href)["deviceToken"];
-    var customBaseUrl = getParams(window.location.href)["customBaseUrl"];
-    var version = getParams(window.location.href)["version"];
-    var customLoaderUrl = getParams(window.location.href)["customLoaderUrl"];
-    var imageLink = "url(" + customLoaderUrl + ")";
-    document.getElementById("se-pre-con").style.backgroundImage = imageLink;
-    var payloadJSON = {};
-    try{
-        payloadJSON = JSON.parse(payload);
-    }catch(e){
-    }
-    var scriptUrl = customBaseUrl+"/widget/mobile.js"
-    if(version == '2'){
-        scriptUrl = customBaseUrl+"/widget/v2/mobile.js"
-    }
-    window.ymConfig = {
-        bot: botId || '',
-        pwa: true,
-        sdk: true,
-        ymAuthenticationToken: ymAuthenticationToken,
-        deviceToken: deviceToken,
-        logging: true,
-        handlers: {
-            sendIOSEvent: function (data) {
-                console.log(data);
-                try {
-                    window.webkit.messageHandlers.ymHandler.postMessage(data);
-                } catch (e) { }
-                try {
-                    window.YMHandler.receiveMessage(JSON.stringify(data));
-                } catch (e) { }
-                try {
-                    window.ReactNativeWebView.postMessage(JSON.stringify(data));
-                } catch (e) { }
+    <head>
+        <title></title>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+        <style>
+            .no-js #loader {
+                display: none;
             }
-        },
-        payload: payload,
-        triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
-        triggerJourney: payloadJSON.JourneySlug
-    };
-    if(version == '2') {
-        window.ymConfig.host = customBaseUrl;
-    }
-    if(payloadJSON.UserId) {
-        window.ymConfig.userId = payloadJSON.UserId;
-    }
-    function sendEvent(s) {
-        var iframe = document.getElementById('ymIframe');
-        iframe.contentWindow.postMessage(JSON.stringify({
-            event_code: 'send-voice-text',
-            data: s
-        }));
-        try {
-            window.YMHandler.receiveMessage(JSON.stringify({ code: "Message Received", data: s }));
-        } catch (e) { }
-        try {
-            window.webkit.messageHandlers.ymHandler.postMessage({ code: "Message Received", data: s });
-        } catch (e) { }
-    }
-    (function () {
-        var w = window, ic = w.YellowMessenger;
-        if ("function" === typeof ic)
-            ic("reattach_activator"), ic("update", ymConfig);
-        else {
-            var d = document, i = function () {
-                i.c(arguments)
+            .js #loader {
+                display: block;
+                position: absolute;
+                left: 100px;
+                top: 0;
+            }
+            .se-pre-con {
+                position: fixed;
+                left: 0px;
+                top: 0px;
+                width: 100%;
+                height: 100%;
+                z-index: 9999;
+                background-repeat: no-repeat;
+                background-position: center;
+            }
+        </style>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {});
+        </script>
+    </head>
+    <body>
+        <div id="se-pre-con" class="se-pre-con"></div>
+        <script type="text/javascript">
+            var getParams = function (url) {
+                var params = {};
+                var parser = document.createElement("a");
+                parser.href = url;
+                var query = parser.search.substring(1);
+                var vars = query.split("&");
+                for (var i = 0; i < vars.length; i++) {
+                    var pair = vars[i].split("=");
+                    params[pair[0]] = decodeURIComponent(pair[1]);
+                }
+                return params;
             };
-            function l() {
-                var e = d.createElement("script");
-                e.type = "text/javascript", e.async = !0, e.src = scriptUrl;
-                var t = d.getElementsByTagName("script")[0];
-                t.parentNode.insertBefore(e, t)
+            var payload = getParams(window.location.href)["ym.payload"];
+            var botId = getParams(window.location.href)["botId"];
+            var ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
+            var deviceToken = getParams(window.location.href)["deviceToken"];
+            var customBaseUrl = getParams(window.location.href)["customBaseUrl"];
+            var version = getParams(window.location.href)["version"];
+            var customLoaderUrl = getParams(window.location.href)["customLoaderUrl"];
+            var imageLink = "url(" + customLoaderUrl + ")";
+            document.getElementById("se-pre-con").style.backgroundImage = imageLink;
+            var payloadJSON = {};
+            try {
+                payloadJSON = JSON.parse(payload);
+            } catch (e) {}
+            var scriptUrl = customBaseUrl + "/widget/mobile.js";
+            if (version == "2") {
+                scriptUrl = customBaseUrl + "/widget/v2/mobile.js";
             }
-            i.q = [], i.c = function (e) {
-                i.q.push(e)
-            }, w.YellowMessenger = i, w.attachEvent ? w.attachEvent("onload", l) : w.addEventListener("load", l, !1)
-        }
-        if ('serviceWorker' in window.navigator) {
-            window.navigator.serviceWorker.register('https://app.yellowmessenger.com/pwa/service-worker',
-                {
-                    'scope': '/pwa/mobile/'+botId
-                })
-                .then(function (reg) {
-                    console.log("Service worker registered.", reg);
-                }).catch(function (err) {
-                console.log("No it didn't. This happened:", err)
-            });
-        }
-    })();
-
-</script>
-</body>
+            window.ymConfig = {
+                bot: botId || "",
+                pwa: true,
+                sdk: true,
+                ymAuthenticationToken: ymAuthenticationToken,
+                deviceToken: deviceToken,
+                logging: true,
+                handlers: {
+                    sendIOSEvent: function (data) {
+                        console.log(data);
+                        try {
+                            window.webkit.messageHandlers.ymHandler.postMessage(data);
+                        } catch (e) {}
+                        try {
+                            window.YMHandler.receiveMessage(JSON.stringify(data));
+                        } catch (e) {}
+                        try {
+                            window.ReactNativeWebView.postMessage(JSON.stringify(data));
+                        } catch (e) {}
+                    },
+                },
+                payload: payload,
+                triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true : false,
+                triggerJourney: payloadJSON.JourneySlug,
+            };
+            if (version == "2") {
+                window.ymConfig.host = customBaseUrl;
+            }
+            if (payloadJSON.UserId) {
+                window.ymConfig.userId = payloadJSON.UserId;
+            }
+            function sendEvent(s) {
+                var iframe = document.getElementById("ymIframe");
+                iframe.contentWindow.postMessage(
+                    JSON.stringify({
+                        event_code: "send-voice-text",
+                        data: s,
+                    })
+                );
+                try {
+                    window.YMHandler.receiveMessage(JSON.stringify({ code: "Message Received", data: s }));
+                } catch (e) {}
+                try {
+                    window.webkit.messageHandlers.ymHandler.postMessage({ code: "Message Received", data: s });
+                } catch (e) {}
+            }
+            (function () {
+                var w = window,
+                    ic = w.YellowMessenger;
+                if ("function" === typeof ic) ic("reattach_activator"), ic("update", ymConfig);
+                else {
+                    var d = document,
+                        i = function () {
+                            i.c(arguments);
+                        };
+                    function l() {
+                        var e = d.createElement("script");
+                        (e.type = "text/javascript"), (e.async = !0), (e.src = scriptUrl);
+                        var t = d.getElementsByTagName("script")[0];
+                        t.parentNode.insertBefore(e, t);
+                    }
+                    (i.q = []),
+                        (i.c = function (e) {
+                            i.q.push(e);
+                        }),
+                        (w.YellowMessenger = i),
+                        w.attachEvent ? w.attachEvent("onload", l) : w.addEventListener("load", l, !1);
+                }
+                if ("serviceWorker" in window.navigator) {
+                    window.navigator.serviceWorker
+                        .register("https://app.yellowmessenger.com/pwa/service-worker", {
+                            scope: "/pwa/mobile/" + botId,
+                        })
+                        .then(function (reg) {
+                            console.log("Service worker registered.", reg);
+                        })
+                        .catch(function (err) {
+                            console.log("No it didn't. This happened:", err);
+                        });
+                }
+            })();
+        </script>
+    </body>
 </html>
