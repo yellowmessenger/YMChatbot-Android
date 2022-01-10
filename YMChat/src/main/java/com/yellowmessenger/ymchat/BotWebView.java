@@ -1,37 +1,25 @@
 package com.yellowmessenger.ymchat;
 
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
-import android.speech.SpeechRecognizer;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yellowmessenger.ymchat.models.ConfigService;
@@ -56,7 +44,6 @@ import okhttp3.Response;
 public class BotWebView extends AppCompatActivity {
     private final String TAG = "YMChat";
     WebviewOverlay fh;
-    private boolean willStartMic = false;
     public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
 
     private ImageView closeButton;
@@ -66,31 +53,6 @@ public class BotWebView extends AppCompatActivity {
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
-    private ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (isGranted) {
-                    toggleBottomSheet();
-                } else {
-                    YmHelper.showSnackBarWithSettingAction(BotWebView.this, parentLayout, getString(R.string.ym_message_mic_permission));
-                }
-            });
-
-    public void startMic(long countdown_time) {
-        RelativeLayout voiceArea = findViewById(R.id.voiceArea);
-        if (!willStartMic) {
-            willStartMic = true;
-            new CountDownTimer(countdown_time, 1000) {
-                public void onTick(long millisUntilFinished) {
-                }
-
-                public void onFinish() {
-                    if (voiceArea.getVisibility() == View.INVISIBLE && willStartMic) {
-                        showVoiceOption();
-                    }
-                }
-            }.start();
-        }
-    }
 
     public void closeBot() {
         fh.closeBot();
@@ -157,16 +119,10 @@ public class BotWebView extends AppCompatActivity {
                     }
                     break;
                 case "image-opened":
-                    runOnUiThread(() -> {
-                        hideMic();
-                        hideCloseButton();
-                    });
+                    runOnUiThread(this::hideCloseButton);
                     break;
                 case "image-closed":
-                    runOnUiThread(() -> {
-                        showCloseButton();
-                        showMic();
-                    });
+                    runOnUiThread(this::showCloseButton);
                     break;
 
             }
@@ -188,13 +144,6 @@ public class BotWebView extends AppCompatActivity {
         fragManager.beginTransaction()
                 .add(R.id.container, fh)
                 .commit();
-        boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
-        micButton = findViewById(R.id.floatingActionButton);
-        if (enableSpeech) {
-            micButton.setVisibility(View.VISIBLE);
-            micButton.setOnClickListener(view -> showVoiceOption());
-            alignMicButton();
-        }
 
         closeButton = findViewById(R.id.backButton);
         closeButton.setOnClickListener(view -> {
@@ -203,43 +152,11 @@ public class BotWebView extends AppCompatActivity {
             this.finish();
         });
         showCloseButton();
-        setKeyboardListener();
-    }
-
-    private void setKeyboardListener() {
-        parentLayout.getViewTreeObserver().addOnGlobalLayoutListener(() -> {
-            Rect r = new Rect();
-            parentLayout.getWindowVisibleDisplayFrame(r);
-            int screenHeight = parentLayout.getRootView().getHeight();
-            int keypadHeight = screenHeight - r.bottom;
-            if (keypadHeight > screenHeight * 0.15) {
-                hideMic();
-            } else {
-                showMic();
-            }
-        });
-    }
-
-    // Adjust view of FAB based on version
-    private void alignMicButton() {
-        int version = ConfigService.getInstance().getConfig().version;
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) micButton.getLayoutParams();
-        if (version == 1) {
-            params.setMargins(0, 0, 4, 200);
-        } else {
-            params.setMargins(0, 0, 0, 144);
-        }
-        micButton.setLayoutParams(params);
     }
 
     private void hideCloseButton() {
         closeButton.setVisibility(View.GONE);
     }
-
-    private void hideMic() {
-        micButton.hide();
-    }
-
 
     private void showCloseButton() {
         boolean showCloseButton = ConfigService.getInstance().getConfig().showCloseButton;
@@ -249,31 +166,6 @@ public class BotWebView extends AppCompatActivity {
         } else {
             closeButton.setVisibility(View.GONE);
         }
-    }
-
-    private void showMic() {
-        boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
-        if (enableSpeech) {
-            micButton.show();
-        } else {
-            micButton.hide();
-        }
-    }
-
-    private void showVoiceOption() {
-        if (ContextCompat.checkSelfPermission(
-                this, Manifest.permission.RECORD_AUDIO) ==
-                PackageManager.PERMISSION_GRANTED) {
-            toggleBottomSheet();
-        } else {
-            requestPermissionLauncher.launch(
-                    Manifest.permission.RECORD_AUDIO);
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
     }
 
 
@@ -334,77 +226,6 @@ public class BotWebView extends AppCompatActivity {
         this.finish();
     }
 
-    SpeechRecognizer sr;
-
-    public void startListeningWithoutDialog() {
-        // Intent to listen to user vocal input and return the result to the same activity.
-        Context appContext = getApplicationContext();
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-
-        // Use a language model based on free-form speech recognition.
-        Map<String, Object> payload = ConfigService.getInstance().getConfig().payload;
-        String defaultLanguage = payload != null ? (String) payload.get("defaultLanguage") : null;
-        if (defaultLanguage == null) {
-            defaultLanguage = "en";
-        }
-        String languagePref = defaultLanguage;
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, languagePref);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_PREFERENCE, languagePref);
-        intent.putExtra(RecognizerIntent.EXTRA_ONLY_RETURN_LANGUAGE_PREFERENCE, languagePref);
-
-
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
-                RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
-        intent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,
-                appContext.getPackageName());
-
-        // Add custom listeners.
-
-        sr = SpeechRecognizer.createSpeechRecognizer(appContext);
-        CustomRecognitionListener listener = new CustomRecognitionListener();
-        sr.setRecognitionListener(listener);
-        sr.startListening(intent);
-    }
-
-
-    public void toggleBottomSheet() {
-        RelativeLayout voiceArea = findViewById(R.id.voiceArea);
-        FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
-        TextView textView = findViewById(R.id.speechTranscription);
-
-        if (voiceArea.getVisibility() == View.INVISIBLE) {
-            textView.setText(R.string.ym_msg_listening);
-            willStartMic = false;
-            voiceArea.setVisibility(View.VISIBLE);
-            startListeningWithoutDialog();
-
-            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_back_button_ym));
-        } else {
-            voiceArea.setVisibility(View.INVISIBLE);
-            micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_ym_small));
-            if (sr != null) {
-                sr.stopListening();
-            }
-        }
-
-
-    }
-
-    public void closeVoiceArea() {
-        RelativeLayout voiceArea = findViewById(R.id.voiceArea);
-        FloatingActionButton micButton = findViewById(R.id.floatingActionButton);
-        TextView textView = findViewById(R.id.speechTranscription);
-
-        voiceArea.setVisibility(View.INVISIBLE);
-        micButton.setImageDrawable(AppCompatResources.getDrawable(this, R.drawable.ic_mic_ym_small));
-        if (sr != null) {
-            sr.stopListening();
-            sr.destroy();
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -422,74 +243,6 @@ public class BotWebView extends AppCompatActivity {
             }
         }
     }
-
-    private String speech_result = "";
-
-
-    class CustomRecognitionListener implements RecognitionListener {
-        boolean singleResult = true;
-
-        private static final String TAG = "RecognitionListener";
-
-
-        public void onReadyForSpeech(Bundle params) {
-        }
-
-        public void onBeginningOfSpeech() {
-        }
-
-        public void onRmsChanged(float rmsdB) {
-        }
-
-        public void onBufferReceived(byte[] buffer) {
-        }
-
-        public void onEndOfSpeech() {
-        }
-
-        public void onError(int error) {
-            closeVoiceArea();
-            View parentLayout = findViewById(android.R.id.content);
-            Snackbar snackbar = Snackbar
-                    .make(parentLayout, "We've encountered an error. Please press Mic to continue with voice input.", Snackbar.LENGTH_LONG);
-            snackbar.show();
-
-        }
-
-        public void onResults(Bundle results) {
-            ArrayList<String> result = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
-            TextView textView = findViewById(R.id.speechTranscription);
-            textView.setText(result != null && result.size() > 0 ? result.get(0) : "");
-
-            if (singleResult) {
-                if (result != null && result.size() > 0) {
-                    speech_result = result.get(0);
-                    if (sr != null)
-                        sr.cancel();
-
-                    if (fh != null)
-                        fh.sendEvent(result.get(0));
-                }
-                closeVoiceArea();
-                singleResult = false;
-            }
-
-
-        }
-
-        public void onPartialResults(Bundle partialResults) {
-            String value = partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION) != null
-                    && partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).size() > 0
-                    ? partialResults.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION).get(0)
-                    : "";
-            TextView textView = findViewById(R.id.speechTranscription);
-            textView.setText(value);
-        }
-
-        public void onEvent(int eventType, Bundle params) {
-        }
-    }
-
 
 }
 

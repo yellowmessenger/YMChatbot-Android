@@ -34,9 +34,6 @@ public class JavaScriptInterface {
     public void receiveMessage(String s) {
         YMBotEventResponse incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
         Log.d("Event from Bot", "receiveMessage: " + incomingEvent.getCode());
-        if (incomingEvent.getCode().equals("start-mic")) {
-            parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(incomingEvent.getCode()) * 1000));
-        }
 
         if ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode())) {
             incomingEvent.setInternal(true);

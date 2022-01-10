@@ -1,19 +1,17 @@
 package com.yellowmessenger.ymchat;
 
-import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Message;
+import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,17 +22,12 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
+import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
-import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.JavaScriptInterface;
 
@@ -42,49 +35,18 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
+
+import static android.app.Activity.RESULT_OK;
 
 public class WebviewOverlay extends Fragment {
     private final String TAG = "YMChat";
     private WebView myWebView;
+    private ValueCallback<Uri> mUploadMessage;
+    private Uri mCapturedImageURI = null;
     private ValueCallback<Uri[]> mFilePathCallback;
     private String mCameraPhotoPath;
     private static final int INPUT_FILE_REQUEST_CODE = 1;
-    private String requestedPermission = null;
-    private View parentLayout = null;
-    private ActivityResultLauncher<String> requestPermissionLauncher =
-            registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
-                if (!TextUtils.isEmpty(requestedPermission)) {
-                    if (requestedPermission.equals(Manifest.permission.READ_EXTERNAL_STORAGE)) {
-                        if (isGranted) {
-                            launchFileIntent();
-                        } else {
-                            resetFilePathCallback();
-                            if (getContext() != null) {
-                                YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_storgae_permission));
-                            }
-                        }
-                    } else if (requestedPermission.equals(Manifest.permission.CAMERA)) {
-                        if (isGranted) {
-                            launchCameraIntent();
-                        } else {
-                            resetFilePathCallback();
-                            if (getContext() != null) {
-                                YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_camera_permission));
-                            }
-                        }
-                    } else {
-                        resetFilePathCallback();
-                    }
-                }
-            });
-
-    private void resetFilePathCallback() {
-        if (mFilePathCallback != null) {
-            mFilePathCallback.onReceiveValue(null);
-            mFilePathCallback = null;
-        }
-    }
+    private static final int FILECHOOSER_RESULTCODE = 1;
 
 
     @Nullable
@@ -94,39 +56,79 @@ public class WebviewOverlay extends Fragment {
         return myWebView;
     }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        parentLayout = view;
-    }
-
     //File picker activity result
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode != INPUT_FILE_REQUEST_CODE || mFilePathCallback == null) {
-            super.onActivityResult(requestCode, resultCode, data);
-            return;
-        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
 
-        Uri[] results = null;
 
-        // Check that the response is a good one
-        if (resultCode == Activity.RESULT_OK) {
-            if (data != null && data.getDataString() != null) {
-                String dataString = data.getDataString();
-                results = new Uri[]{Uri.parse(dataString)};
-            } else {
-                // If there is no data, then we may have taken a photo
-                if (mCameraPhotoPath != null) {
-                    results = new Uri[]{Uri.parse(mCameraPhotoPath)};
-                }
+            if (requestCode != INPUT_FILE_REQUEST_CODE || mFilePathCallback == null) {
+                super.onActivityResult(requestCode, resultCode, data);
+                return;
             }
 
-        }
-        mFilePathCallback.onReceiveValue(results);
-        mFilePathCallback = null;
+            Uri[] results = null;
 
+            // Check that the response is a good one
+            if (resultCode == Activity.RESULT_OK) {
+                if (data == null || data.getDataString() == null) {
+                    // If there is no data, then we may have taken a photo
+                    if (mCameraPhotoPath != null) {
+                        results = new Uri[]{Uri.parse(mCameraPhotoPath)};
+                    }
+                } else {
+                    String dataString = data.getDataString();
+                    if (dataString != null) {
+                        results = new Uri[]{Uri.parse(dataString)};
+                    }
+                }
+
+            }
+
+            mFilePathCallback.onReceiveValue(results);
+            mFilePathCallback = null;
+
+        } else if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.KITKAT) {
+            if (requestCode != FILECHOOSER_RESULTCODE || mUploadMessage == null) {
+                super.onActivityResult(requestCode, resultCode, data);
+                return;
+            }
+            if (requestCode == FILECHOOSER_RESULTCODE) {
+
+                if (null == this.mUploadMessage) {
+                    return;
+                }
+                Uri result = null;
+                try {
+                    if (resultCode == RESULT_OK) {
+                        // retrieve from the private variable if the intent is null
+                        result = data == null ? mCapturedImageURI : data.getData();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "activity :" + e,
+                            Toast.LENGTH_LONG).show();
+                }
+                mUploadMessage.onReceiveValue(result);
+                mUploadMessage = null;
+            }
+        }
     }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+    }
+
 
     public View preLoadWebView() {
         // Preload start
@@ -139,6 +141,8 @@ public class WebviewOverlay extends Fragment {
         myWebView.getSettings().setJavaScriptCanOpenWindowsAutomatically(true);
         myWebView.getSettings().setAllowFileAccess(true);
         myWebView.getSettings().setGeolocationDatabasePath(context.getFilesDir().getPath());
+
+
         myWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
         myWebView.addJavascriptInterface(new JavaScriptInterface((BotWebView) getActivity(), myWebView), "YMHandler");
 
@@ -160,13 +164,120 @@ public class WebviewOverlay extends Fragment {
 
             // For Android 5.0
             public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> filePath, FileChooserParams fileChooserParams) {
+                Log.d(TAG, "openFileChooser: Opening file picker");
                 // Double check that we don't have any existing callbacks
                 if (mFilePathCallback != null) {
                     mFilePathCallback.onReceiveValue(null);
                 }
                 mFilePathCallback = filePath;
-                showFileChooser();
+
+                Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                if (getActivity() != null && takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
+                    // Create the File where the photo should go
+                    File photoFile = null;
+                    try {
+                        photoFile = createImageFile();
+                        takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
+                    } catch (IOException ex) {
+                        // Error occurred while creating the File
+                        Log.e("ErrorCreatingFile", "Unable to create Image File", ex);
+                    }
+
+                    // Continue only if the File was successfully created
+                    if (photoFile != null) {
+                        mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
+                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT,
+                                Uri.fromFile(photoFile));
+                    } else {
+                        takePictureIntent = null;
+                    }
+                }
+
+                Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
+                contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
+                contentSelectionIntent.setType("*/*");
+
+                boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
+                if (hideCameraForUpload) {
+                    takePictureIntent = null;
+                }
+
+                Intent[] intentArray;
+                if (takePictureIntent != null) {
+                    intentArray = new Intent[]{takePictureIntent};
+                } else {
+                    intentArray = new Intent[0];
+                }
+                Intent chooserIntent = new Intent(Intent.ACTION_CHOOSER);
+                chooserIntent.putExtra(Intent.EXTRA_INTENT, contentSelectionIntent);
+                chooserIntent.putExtra(Intent.EXTRA_TITLE, "Image Chooser");
+                chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, intentArray);
+                getActivity().startActivityForResult(chooserIntent, INPUT_FILE_REQUEST_CODE);
                 return true;
+            }
+
+            // openFileChooser for Android 3.0+
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType) {
+                Log.d(TAG, "openFileChooser: Opening file picker");
+
+                mUploadMessage = uploadMsg;
+                // Create YM_Chatbot_Folder at sdcard
+
+                File imageStorageDir = new File(
+                        Environment.getExternalStoragePublicDirectory(
+                                Environment.DIRECTORY_PICTURES)
+                        , "YM_Chatbot_Folder");
+
+                if (!imageStorageDir.exists()) {
+                    // Create YM_Chatbot_Folder at sdcard
+                    imageStorageDir.mkdirs();
+                }
+
+                // Create camera captured image file path and name
+                File file = new File(
+                        imageStorageDir + File.separator + "IMG_"
+                                + String.valueOf(System.currentTimeMillis())
+                                + ".jpg");
+
+                mCapturedImageURI = Uri.fromFile(file);
+
+                // Camera capture image intent
+                final Intent captureIntent = new Intent(
+                        MediaStore.ACTION_IMAGE_CAPTURE);
+
+                captureIntent.putExtra(MediaStore.EXTRA_OUTPUT, mCapturedImageURI);
+
+                Intent i = new Intent(Intent.ACTION_GET_CONTENT);
+                i.addCategory(Intent.CATEGORY_OPENABLE);
+                i.setType("image/*");
+
+                // Create file chooser intent
+                Intent chooserIntent = Intent.createChooser(i, "Image Chooser");
+
+                boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
+                if (!hideCameraForUpload) {
+                    // Set camera intent to file chooser
+                    chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS
+                            , new Parcelable[]{captureIntent});
+                }
+
+
+                // On select image call onActivityResult method of activity
+                if (getActivity() != null) {
+                    getActivity().startActivityForResult(chooserIntent, FILECHOOSER_RESULTCODE);
+                }
+            }
+
+            // openFileChooser for Android < 3.0
+            public void openFileChooser(ValueCallback<Uri> uploadMsg) {
+                openFileChooser(uploadMsg, "");
+            }
+
+            //openFileChooser for other Android versions
+            public void openFileChooser(ValueCallback<Uri> uploadMsg, String acceptType, String capture) {
+                Log.d(TAG, "openFileChooser: Opening file picker");
+
+                openFileChooser(uploadMsg, acceptType);
             }
 
             public Bitmap getDefaultVideoPoster() {
@@ -206,6 +317,7 @@ public class WebviewOverlay extends Fragment {
 
             @Override
             public boolean onCreateWindow(WebView view, boolean isDialog, boolean isUserGesture, Message resultMsg) {
+//                AdvancedWebView newWebView = new AdvancedWebView(context);
                 WebView newWebView = new WebView(context);
                 WebView.WebViewTransport transport = (WebView.WebViewTransport) resultMsg.obj;
                 transport.setWebView(newWebView);
@@ -228,146 +340,10 @@ public class WebviewOverlay extends Fragment {
         botUrlBuilder.append(getString(R.string.ym_chatbot_base_url));
         botUrlBuilder.append(ConfigService.getInstance().getBotURLParams());
         String botUrl = botUrlBuilder.toString();
+        Log.d(TAG, "botURL: " +
+                botUrl);
         myWebView.loadUrl(botUrl);
         return myWebView;
-    }
-
-    private void showFileChooser() {
-        boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
-        if (hideCameraForUpload) {
-            if (checkForStoragePermission(getContext())) {
-                launchFileIntent();
-            }
-        } else {
-            showBottomSheet();
-        }
-    }
-
-    private void showBottomSheet() {
-        if (getContext() != null) {
-            final BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(getContext());
-            bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_attachment);
-            LinearLayout cameraLayout = bottomSheetDialog.findViewById(R.id.camera_layout);
-            LinearLayout fileLayout = bottomSheetDialog.findViewById(R.id.file_layout);
-
-            if (cameraLayout != null) {
-                cameraLayout.setOnClickListener(v -> {
-                    checkAndLaunchCamera();
-                    bottomSheetDialog.dismiss();
-                });
-            }
-
-            if (fileLayout != null) {
-                fileLayout.setOnClickListener(v -> {
-                    checkAndLaunchFilePicker();
-                    bottomSheetDialog.dismiss();
-                });
-
-            }
-
-            bottomSheetDialog.show();
-        }
-    }
-
-    private void checkAndLaunchFilePicker() {
-        if (getContext() != null) {
-            if (checkForStoragePermission(getContext())) {
-                launchFileIntent();
-            }
-        }
-    }
-
-    private void checkAndLaunchCamera() {
-        if (getContext() != null) {
-            if (hasCameraPermissionInManifest(getContext())) {
-                if (checkForCameraPermission(getContext())) {
-                    launchCameraIntent();
-                }
-            } else {
-                launchCameraIntent();
-            }
-        }
-    }
-
-    private void launchCameraIntent() {
-        Intent takePictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        if (getActivity() != null && takePictureIntent.resolveActivity(getActivity().getPackageManager()) != null) {
-            // Create the File where the photo should go
-            File photoFile = null;
-            try {
-                photoFile = createImageFile();
-                takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
-            } catch (IOException ex) {
-                //IO exception occcurred
-            }
-
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                mCameraPhotoPath = "file:" + photoFile.getAbsolutePath();
-                Uri photoURI;
-                if (Build.VERSION.SDK_INT >= 24 && getContext() != null) {
-                    photoURI = FileProvider.getUriForFile(getContext(),
-                            getString(R.string.ym_file_provider),
-                            photoFile);
-                } else {
-                    photoURI = Uri.fromFile(photoFile);
-
-                }
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                getActivity().startActivityForResult(takePictureIntent, INPUT_FILE_REQUEST_CODE);
-
-            } else {
-                YmHelper.showMessageInSnackBar(parentLayout, getActivity().getApplicationContext().getString(R.string.ym_message_camera_error));
-            }
-        }
-    }
-
-
-    private boolean hasCameraPermissionInManifest(Context context) {
-
-        PackageInfo packageInfo = null;
-        try {
-            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
-
-            String[] permissions = packageInfo.requestedPermissions;
-
-            if (permissions == null || permissions.length == 0) {
-                return false;
-            }
-
-            for (String perm : permissions) {
-                if (perm.equals(Manifest.permission.CAMERA))
-                    return true;
-            }
-        } catch (PackageManager.NameNotFoundException e) {
-            //Exception occurred
-            return false;
-        }
-        return false;
-    }
-
-    private boolean checkForCameraPermission(Context context) {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.CAMERA
-        )
-                == PackageManager.PERMISSION_GRANTED
-        ) {
-            return true;
-        } else {
-            requestedPermission = Manifest.permission.CAMERA;
-            requestPermissionLauncher.launch(Manifest.permission.CAMERA);
-            return false;
-        }
-    }
-
-    private void launchFileIntent() {
-        Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
-        contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
-        contentSelectionIntent.setType("*/*");
-        if (getActivity() != null) {
-            getActivity().startActivityForResult(contentSelectionIntent, INPUT_FILE_REQUEST_CODE);
-        }
     }
 
     // Sending messages to bot
@@ -382,32 +358,17 @@ public class WebviewOverlay extends Fragment {
 
     // creating image filename
     private File createImageFile() throws IOException {
-
         // Create an image file name
-        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.getDefault()).format(new Date());
+        String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
         String imageFileName = "JPEG_" + timeStamp + "_";
-        File storageDir = getContext().getExternalCacheDir();
-        File image = File.createTempFile(
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        return File.createTempFile(
                 imageFileName,  /* prefix */
                 ".jpg",  /* suffix */
                 storageDir      /* directory */
         );
-        return image;
     }
 
 
-    private boolean checkForStoragePermission(Context context) {
-        if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-        )
-                == PackageManager.PERMISSION_GRANTED
-        ) {
-            return true;
-        } else {
-            requestedPermission = Manifest.permission.READ_EXTERNAL_STORAGE;
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
-            return false;
-        }
-    }
 }
