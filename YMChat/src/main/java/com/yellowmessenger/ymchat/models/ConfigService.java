@@ -61,8 +61,6 @@ public class ConfigService {
         StringBuilder sb = new StringBuilder();
         sb.append("?botId=");
         sb.append(botId);
-        sb.append("&enableHistory=");
-        sb.append(config.enableHistory);
         sb.append("&ymAuthenticationToken=");
         sb.append(config.ymAuthenticationToken != null ? config.ymAuthenticationToken : "");
         sb.append("&deviceToken=");
@@ -73,6 +71,8 @@ public class ConfigService {
         sb.append(payloadJSON);
         sb.append("&version=");
         sb.append(config.version);
+        sb.append("&customLoaderUrl=");
+        sb.append(config.customLoaderUrl);
 
         return sb.toString();
 
