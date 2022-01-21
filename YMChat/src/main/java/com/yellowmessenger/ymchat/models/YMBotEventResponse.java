@@ -1,9 +1,11 @@
 package com.yellowmessenger.ymchat.models;
 
 
+import androidx.annotation.Nullable;
+
 public class YMBotEventResponse {
 
-    private String code, data;
+    private @Nullable String code, data;
     private boolean internal;
 
     public YMBotEventResponse(String code, String data, boolean internal) {
