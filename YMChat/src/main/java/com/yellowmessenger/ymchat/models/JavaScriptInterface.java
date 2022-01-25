@@ -33,12 +33,17 @@ public class JavaScriptInterface {
     @JavascriptInterface
     public void receiveMessage(String s) {
         YMBotEventResponse incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
-        Log.d("Event from Bot", "receiveMessage: " + incomingEvent.getCode());
+        Log.d("Event from Bot", "receiveMessage: " + incomingEvent.getCode()+": "+incomingEvent.getData());
         if (incomingEvent.getCode().equals("start-mic")) {
             parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(incomingEvent.getCode()) * 1000));
         }
 
         if ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode())) {
+            incomingEvent.setInternal(true);
+        }
+
+        if("yellowai_uid".equals(incomingEvent.getCode()))
+        {
             incomingEvent.setInternal(true);
         }
 

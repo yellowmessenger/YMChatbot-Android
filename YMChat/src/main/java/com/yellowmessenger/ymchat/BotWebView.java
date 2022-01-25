@@ -12,6 +12,7 @@ import android.os.CountDownTimer;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -45,6 +46,7 @@ import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -58,6 +60,7 @@ public class BotWebView extends AppCompatActivity {
     WebviewOverlay fh;
     private boolean willStartMic = false;
     public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
+    private String updateUserStatusUrl = "https://staging.yellowmessenger.com/api/presence/usersPresence/log_user_profile";
 
     private ImageView closeButton;
     private FloatingActionButton micButton;
@@ -96,6 +99,7 @@ public class BotWebView extends AppCompatActivity {
         fh.closeBot();
     }
 
+
     public void setStatusBarColor() {
         try {
             int color = ConfigService.getInstance().getConfig().statusBarColor;
@@ -111,7 +115,7 @@ public class BotWebView extends AppCompatActivity {
                 }
             }
         } catch (Exception e) {
-            //Exception occurred
+            //Exception occurred`
         }
     }
 
@@ -130,6 +134,7 @@ public class BotWebView extends AppCompatActivity {
             //Exception occurred
         }
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -167,6 +172,10 @@ public class BotWebView extends AppCompatActivity {
                         showCloseButton();
                         showMic();
                     });
+                case "yellowai_uid":
+                    runOnUiThread(() -> {
+                        ConfigService.getInstance().getConfig().yellowai_uid = botEvent.getData();
+                    });
                     break;
 
             }
@@ -198,7 +207,7 @@ public class BotWebView extends AppCompatActivity {
 
         closeButton = findViewById(R.id.backButton);
         closeButton.setOnClickListener(view -> {
-            YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "", false));
+            YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "`", false));
             fh.closeBot();
             this.finish();
         });
@@ -273,9 +282,42 @@ public class BotWebView extends AppCompatActivity {
 
     @Override
     public void onResume() {
+        fh.reloadWebView();
         super.onResume();
     }
 
+    @Override
+    protected void onPause() {
+        // Calling API to set agent status offline on XMPP
+        UpdateAgentStatus("offline");
+        super.onPause();
+    }
+
+    private void UpdateAgentStatus(String status) {
+        OkHttpClient client = new OkHttpClient();
+        Log.i("yellow_uid","Setting user status offline");
+        RequestBody formBody = new FormBody.Builder()
+                .add("user", ConfigService.getInstance().getConfig().yellowai_uid)
+                .add("resource", "bot_" + ConfigService.getInstance().getConfig().botId)
+                .add("status", status)
+                .build();
+
+        Request request = new Request.Builder()
+                .url(updateUserStatusUrl)
+                .post(formBody)
+                .build();
+
+        client.newCall(request).enqueue(new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                call.cancel();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+            }
+        });
+    }
 
     public void runUpload(String uid) {
         try {

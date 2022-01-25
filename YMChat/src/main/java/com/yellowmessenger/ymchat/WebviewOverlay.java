@@ -410,4 +410,9 @@ public class WebviewOverlay extends Fragment {
             return false;
         }
     }
+
+    public void reloadWebView()
+    {
+        myWebView.reload();
+    }
 }
