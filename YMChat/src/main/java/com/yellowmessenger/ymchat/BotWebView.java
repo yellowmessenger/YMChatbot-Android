@@ -114,7 +114,7 @@ public class BotWebView extends AppCompatActivity {
                 }
             }
         } catch (Exception e) {
-            //Exception occurred`
+            //Exception occurred
         }
     }
 
@@ -191,7 +191,6 @@ public class BotWebView extends AppCompatActivity {
 
         parentLayout = findViewById(R.id.parentView);
 
-
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
         micButton = findViewById(R.id.floatingActionButton);
         if (enableSpeech) {
@@ -202,7 +201,7 @@ public class BotWebView extends AppCompatActivity {
 
         closeButton = findViewById(R.id.backButton);
         closeButton.setOnClickListener(view -> {
-            YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "`", false));
+            YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "", false));
             fh.closeBot();
             this.finish();
         });
@@ -288,7 +287,14 @@ public class BotWebView extends AppCompatActivity {
     @Override
     protected void onStop() {
         updateAgentStatus("offline");
-        getSupportFragmentManager().beginTransaction().remove(fh).commitAllowingStateLoss();
+        try{
+            // trying to remove fragment
+            getSupportFragmentManager().beginTransaction().remove(fh).commit();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
         super.onStop();
     }
 
