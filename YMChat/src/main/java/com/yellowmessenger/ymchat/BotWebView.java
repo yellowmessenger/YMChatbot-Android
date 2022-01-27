@@ -28,6 +28,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -59,7 +60,7 @@ public class BotWebView extends AppCompatActivity {
     WebviewOverlay fh;
     private boolean willStartMic = false;
     public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
-    private String updateUserStatusUrl = "https://app.yellowmessenger.com/api/presence/usersPresence/log_user_profile";
+    private String updateUserStatusUrlEndPoint = "/api/presence/usersPresence/log_user_profile";
     private String uid;
     private ImageView closeButton;
     private FloatingActionButton micButton;
@@ -288,12 +289,13 @@ public class BotWebView extends AppCompatActivity {
     @Override
     protected void onStop() {
         UpdateAgentStatus("offline");
-        fh.onDestroy();
+        getSupportFragmentManager().beginTransaction().remove(fh).commitAllowingStateLoss();
         super.onStop();
     }
 
     private void UpdateAgentStatus(String status) {
         OkHttpClient client = new OkHttpClient();
+        String url = ConfigService.getInstance().getConfig().customBaseUrl+updateUserStatusUrlEndPoint;
         if (uid != null) {
             RequestBody formBody = new FormBody.Builder()
                     .add("user", this.uid)
@@ -302,7 +304,7 @@ public class BotWebView extends AppCompatActivity {
                     .build();
 
             Request request = new Request.Builder()
-                    .url(updateUserStatusUrl)
+                    .url(url)
                     .post(formBody)
                     .build();
 
