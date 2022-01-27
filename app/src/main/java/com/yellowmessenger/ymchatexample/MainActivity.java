@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1589521906227";
+    String botId = "x1587041004122";
     String deviceToken = "your device token";
     String apiKey = "your api key";
 
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config.payload = payloadData;
 
         // Choose version(1 or 2), default is 1
-        ymChat.config.version = 1;
+        ymChat.config.version = 2;
 
         //To enable notifications
         ymChat.config.deviceToken = deviceToken;
@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         ymChat.onBotClose(() -> {
-//            Log.i("yellow_uid",ymChat.config.yellowai_uid);
             Log.d("Example App", "Bot Was closed");
         });
 
