@@ -192,11 +192,7 @@ public class BotWebView extends AppCompatActivity {
 
         parentLayout = findViewById(R.id.parentView);
 
-        fh = new WebviewOverlay();
-        FragmentManager fragManager = getSupportFragmentManager();
-        fragManager.beginTransaction()
-                .add(R.id.container, fh)
-                .commit();
+
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
         micButton = findViewById(R.id.floatingActionButton);
         if (enableSpeech) {
@@ -281,16 +277,20 @@ public class BotWebView extends AppCompatActivity {
     }
 
     @Override
-    public void onResume() {
-        fh.reloadWebView();
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
+        fh = new WebviewOverlay();
+        FragmentManager fragManager = getSupportFragmentManager();
+        fragManager.beginTransaction()
+                .add(R.id.container, fh)
+                .commit();
     }
 
     @Override
-    protected void onPause() {
-        // Calling API to set agent status offline on XMPP
+    protected void onStop() {
         UpdateAgentStatus("offline");
-        super.onPause();
+        fh.onDestroy();
+        super.onStop();
     }
 
     private void UpdateAgentStatus(String status) {
