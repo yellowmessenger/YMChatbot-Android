@@ -45,6 +45,7 @@ import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -58,7 +59,8 @@ public class BotWebView extends AppCompatActivity {
     WebviewOverlay fh;
     private boolean willStartMic = false;
     public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
-
+    private String updateUserStatusUrlEndPoint = "/api/presence/usersPresence/log_user_profile";
+    private String uid;
     private ImageView closeButton;
     private FloatingActionButton micButton;
     private RelativeLayout parentLayout;
@@ -96,6 +98,7 @@ public class BotWebView extends AppCompatActivity {
         fh.closeBot();
     }
 
+
     public void setStatusBarColor() {
         try {
             int color = ConfigService.getInstance().getConfig().statusBarColor;
@@ -130,6 +133,7 @@ public class BotWebView extends AppCompatActivity {
             //Exception occurred
         }
     }
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -167,6 +171,10 @@ public class BotWebView extends AppCompatActivity {
                         showCloseButton();
                         showMic();
                     });
+                case "yellowai-uid":
+                    runOnUiThread(() -> {
+                        this.uid = botEvent.getData();
+                    });
                     break;
 
             }
@@ -183,11 +191,6 @@ public class BotWebView extends AppCompatActivity {
 
         parentLayout = findViewById(R.id.parentView);
 
-        fh = new WebviewOverlay();
-        FragmentManager fragManager = getSupportFragmentManager();
-        fragManager.beginTransaction()
-                .add(R.id.container, fh)
-                .commit();
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
         micButton = findViewById(R.id.floatingActionButton);
         if (enableSpeech) {
@@ -272,10 +275,56 @@ public class BotWebView extends AppCompatActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void onStart() {
+        super.onStart();
+        fh = new WebviewOverlay();
+        FragmentManager fragManager = getSupportFragmentManager();
+        fragManager.beginTransaction()
+                .add(R.id.container, fh)
+                .commit();
     }
 
+    @Override
+    protected void onStop() {
+        updateAgentStatus("offline");
+        try{
+            // trying to remove fragment
+            getSupportFragmentManager().beginTransaction().remove(fh).commit();
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+        super.onStop();
+    }
+
+    private void updateAgentStatus(String status) {
+        OkHttpClient client = new OkHttpClient();
+        String url = ConfigService.getInstance().getConfig().customBaseUrl+updateUserStatusUrlEndPoint;
+        if (uid != null) {
+            RequestBody formBody = new FormBody.Builder()
+                    .add("user", this.uid)
+                    .add("resource", "bot_" + ConfigService.getInstance().getConfig().botId)
+                    .add("status", status)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                }
+            });
+        }
+    }
 
     public void runUpload(String uid) {
         try {
