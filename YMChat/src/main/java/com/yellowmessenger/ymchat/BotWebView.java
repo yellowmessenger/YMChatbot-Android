@@ -28,7 +28,6 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -288,12 +287,12 @@ public class BotWebView extends AppCompatActivity {
 
     @Override
     protected void onStop() {
-        UpdateAgentStatus("offline");
+        updateAgentStatus("offline");
         getSupportFragmentManager().beginTransaction().remove(fh).commitAllowingStateLoss();
         super.onStop();
     }
 
-    private void UpdateAgentStatus(String status) {
+    private void updateAgentStatus(String status) {
         OkHttpClient client = new OkHttpClient();
         String url = ConfigService.getInstance().getConfig().customBaseUrl+updateUserStatusUrlEndPoint;
         if (uid != null) {
