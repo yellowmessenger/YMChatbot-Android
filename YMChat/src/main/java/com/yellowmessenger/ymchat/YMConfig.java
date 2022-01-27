@@ -11,7 +11,7 @@ public class YMConfig {
     public boolean showConsoleLogs = false;
     public String ymAuthenticationToken = "";
     public String deviceToken = "";
-    public String customBaseUrl = "https://staging.yellowmessenger.com/";
+    public String customBaseUrl = "https://app.yellowmessenger.com/";
     public int statusBarColor = -1;
     public boolean hideCameraForUpload = false;
     public boolean showCloseButton = true;
@@ -20,7 +20,6 @@ public class YMConfig {
     public String customLoaderUrl = "https://thumbs.gfycat.com/ImpoliteLivelyGenet-max-1mb.gif";
     public HashMap<String, Object> payload = new HashMap<>(); // For payload key-values
     public HashMap<String, String> customData = new HashMap<>(); // other data key-values
-    public String yellowai_uid = "";
 
     public YMConfig(@NonNull String botId) {
         this.botId = botId;

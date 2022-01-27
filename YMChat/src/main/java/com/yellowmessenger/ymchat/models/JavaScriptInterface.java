@@ -42,11 +42,6 @@ public class JavaScriptInterface {
             incomingEvent.setInternal(true);
         }
 
-        if("yellowai_uid".equals(incomingEvent.getCode()))
-        {
-            incomingEvent.setInternal(true);
-        }
-
         if (incomingEvent.isInternal()) {
             YMChat.getInstance().emitLocalEvent(incomingEvent);
         } else {

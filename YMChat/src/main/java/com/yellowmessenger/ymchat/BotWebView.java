@@ -12,7 +12,6 @@ import android.os.CountDownTimer;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
@@ -60,8 +59,8 @@ public class BotWebView extends AppCompatActivity {
     WebviewOverlay fh;
     private boolean willStartMic = false;
     public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
-    private String updateUserStatusUrl = "https://staging.yellowmessenger.com/api/presence/usersPresence/log_user_profile";
-
+    private String updateUserStatusUrl = "https://app.yellowmessenger.com/api/presence/usersPresence/log_user_profile";
+    private String uid;
     private ImageView closeButton;
     private FloatingActionButton micButton;
     private RelativeLayout parentLayout;
@@ -172,9 +171,9 @@ public class BotWebView extends AppCompatActivity {
                         showCloseButton();
                         showMic();
                     });
-                case "yellowai_uid":
+                case "yellowai-uid":
                     runOnUiThread(() -> {
-                        ConfigService.getInstance().getConfig().yellowai_uid = botEvent.getData();
+                        this.uid = botEvent.getData();
                     });
                     break;
 
@@ -295,28 +294,29 @@ public class BotWebView extends AppCompatActivity {
 
     private void UpdateAgentStatus(String status) {
         OkHttpClient client = new OkHttpClient();
-        Log.i("yellow_uid","Setting user status offline");
-        RequestBody formBody = new FormBody.Builder()
-                .add("user", ConfigService.getInstance().getConfig().yellowai_uid)
-                .add("resource", "bot_" + ConfigService.getInstance().getConfig().botId)
-                .add("status", status)
-                .build();
+        if (uid != null) {
+            RequestBody formBody = new FormBody.Builder()
+                    .add("user", this.uid)
+                    .add("resource", "bot_" + ConfigService.getInstance().getConfig().botId)
+                    .add("status", status)
+                    .build();
 
-        Request request = new Request.Builder()
-                .url(updateUserStatusUrl)
-                .post(formBody)
-                .build();
+            Request request = new Request.Builder()
+                    .url(updateUserStatusUrl)
+                    .post(formBody)
+                    .build();
 
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                call.cancel();
-            }
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                }
 
-            @Override
-            public void onResponse(Call call, Response response) throws IOException {
-            }
-        });
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                }
+            });
+        }
     }
 
     public void runUpload(String uid) {
