@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -118,6 +119,25 @@ public class BotWebView extends AppCompatActivity {
         }
     }
 
+    public void setStatusBarColorFromHex() {
+        try {
+            String color = ConfigService.getInstance().getConfig().statusBarColorFromHex;
+            if (!color.isEmpty() && color != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Window window = BotWebView.this.getWindow();
+                    // clear FLAG_TRANSLUCENT_STATUS flag:
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                    // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    // finally change the color
+                    window.setStatusBarColor(Color.parseColor(color));
+                }
+            }
+        } catch (Exception e) {
+            //Exception occurred
+        }
+    }
+
     public void setCloseButtonColor() {
         try {
             int color = ConfigService.getInstance().getConfig().closeButtonColor;
@@ -134,6 +154,21 @@ public class BotWebView extends AppCompatActivity {
         }
     }
 
+    public void setCloseButtonColorFromHex() {
+        try {
+            String color = ConfigService.getInstance().getConfig().closeButtonColorHex;
+            if (!color.isEmpty() && color != null) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    DrawableCompat.setTint(
+                            DrawableCompat.wrap(closeButton.getDrawable()),
+                            Color.parseColor(color)
+                    );
+                }
+            }
+        } catch (Exception e) {
+            //Exception occurred
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -206,6 +241,8 @@ public class BotWebView extends AppCompatActivity {
             this.finish();
         });
         showCloseButton();
+        setStatusBarColorFromHex();
+        setCloseButtonColorFromHex();
         setKeyboardListener();
     }
 
@@ -287,12 +324,10 @@ public class BotWebView extends AppCompatActivity {
     @Override
     protected void onStop() {
         updateAgentStatus("offline");
-        try{
+        try {
             // trying to remove fragment
             getSupportFragmentManager().beginTransaction().remove(fh).commit();
-        }
-        catch(Exception e)
-        {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         super.onStop();
@@ -300,7 +335,7 @@ public class BotWebView extends AppCompatActivity {
 
     private void updateAgentStatus(String status) {
         OkHttpClient client = new OkHttpClient();
-        String url = ConfigService.getInstance().getConfig().customBaseUrl+updateUserStatusUrlEndPoint;
+        String url = ConfigService.getInstance().getConfig().customBaseUrl + updateUserStatusUrlEndPoint;
         if (uid != null) {
             RequestBody formBody = new FormBody.Builder()
                     .add("user", this.uid)

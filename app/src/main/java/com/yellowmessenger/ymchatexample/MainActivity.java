@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1587041004122";
+    String botId = "x1638341502652";
     String deviceToken = "your device token";
     String apiKey = "your api key";
 
@@ -48,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config.statusBarColor = R.color.colorPrimaryDark;
         // To Change the color of close button, default color is white
         ymChat.config.closeButtonColor = R.color.white;
+
+        ymChat.config.statusBarColorFromHex = "#49c656";
+        ymChat.config.closeButtonColorHex = "#b72a2a";
 
         // Set custom loader url , it should be a valid, light weight and public image url
         // This is an optional parameter
