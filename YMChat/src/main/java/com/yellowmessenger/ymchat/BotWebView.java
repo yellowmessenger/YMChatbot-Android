@@ -122,7 +122,7 @@ public class BotWebView extends AppCompatActivity {
     public void setStatusBarColorFromHex() {
         try {
             String color = ConfigService.getInstance().getConfig().statusBarColorFromHex;
-            if (!color.isEmpty() && color != null) {
+            if (color != null && !color.isEmpty()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     Window window = BotWebView.this.getWindow();
                     // clear FLAG_TRANSLUCENT_STATUS flag:
@@ -157,7 +157,7 @@ public class BotWebView extends AppCompatActivity {
     public void setCloseButtonColorFromHex() {
         try {
             String color = ConfigService.getInstance().getConfig().closeButtonColorHex;
-            if (!color.isEmpty() && color != null) {
+            if (color != null && !color.isEmpty()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     DrawableCompat.setTint(
                             DrawableCompat.wrap(closeButton.getDrawable()),

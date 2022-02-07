@@ -49,7 +49,16 @@ public class MainActivity extends AppCompatActivity {
         // To Change the color of close button, default color is white
         ymChat.config.closeButtonColor = R.color.white;
 
+        /* Note: if color is set from both setStatusBarColor and statusBarColorFromHex,
+         * statusBarColorFromHex will take priority
+         * */
+        // To set statusBarColor from hexadecimal color code
         ymChat.config.statusBarColorFromHex = "#49c656";
+        
+        /* Note: if color is set from both closeButtonColor and closeButtonColorHex,
+         * closeButtonColorHex will take priority
+         * */
+        // To set closeButtonColor from hexadecimal color code
         ymChat.config.closeButtonColorHex = "#b72a2a";
 
         // Set custom loader url , it should be a valid, light weight and public image url
