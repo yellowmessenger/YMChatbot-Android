@@ -2,6 +2,7 @@ package com.yellowmessenger.ymchat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -375,9 +376,13 @@ public class WebviewOverlay extends Fragment {
         myWebView.loadUrl("javascript:sendEvent(\"" + s + "\");");
     }
 
-    //Empty url string on bot-close
     public void closeBot() {
-        myWebView.loadUrl("");
+        myWebView.post(new Runnable() {
+            @Override
+            public void run() {
+                myWebView.loadUrl("");
+            }
+        });
     }
 
     // creating image filename
