@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class WebviewOverlay extends Fragment {
     private final String TAG = "YMChat";
@@ -375,9 +376,17 @@ public class WebviewOverlay extends Fragment {
         myWebView.loadUrl("javascript:sendEvent(\"" + s + "\");");
     }
 
-    //Empty url string on bot-close
     public void closeBot() {
-        myWebView.loadUrl("");
+        try{
+            requireActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    myWebView.loadUrl("");
+                }
+            });
+        }
+        catch (Exception e){
+//            e.printStackTrace();
+        }
     }
 
     // creating image filename
