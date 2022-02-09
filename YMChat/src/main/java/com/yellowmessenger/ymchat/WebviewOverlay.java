@@ -2,7 +2,6 @@ package com.yellowmessenger.ymchat;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -44,6 +43,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
+import java.util.Objects;
 
 public class WebviewOverlay extends Fragment {
     private final String TAG = "YMChat";
@@ -377,12 +377,16 @@ public class WebviewOverlay extends Fragment {
     }
 
     public void closeBot() {
-        myWebView.post(new Runnable() {
-            @Override
-            public void run() {
-                myWebView.loadUrl("");
-            }
-        });
+        try{
+            requireActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    myWebView.loadUrl("");
+                }
+            });
+        }
+        catch (Exception e){
+//            e.printStackTrace();
+        }
     }
 
     // creating image filename
