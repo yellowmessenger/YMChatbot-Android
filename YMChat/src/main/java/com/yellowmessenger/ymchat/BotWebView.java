@@ -156,7 +156,7 @@ public class BotWebView extends AppCompatActivity {
 
     public void setCloseButtonColorFromHex() {
         try {
-            String color = ConfigService.getInstance().getConfig().closeButtonColorHex;
+            String color = ConfigService.getInstance().getConfig().closeButtonColorFromHex;
             if (color != null && !color.isEmpty()) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                     DrawableCompat.setTint(
