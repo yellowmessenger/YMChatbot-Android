@@ -17,7 +17,7 @@ public class YMConfig {
     public boolean hideCameraForUpload = false;
     public boolean showCloseButton = true;
     public int closeButtonColor = -1;
-    public String closeButtonColorHex = "";
+    public String closeButtonColorFromHex = "";
     public int version = 1;
     public String customLoaderUrl = "https://thumbs.gfycat.com/ImpoliteLivelyGenet-max-1mb.gif";
     public HashMap<String, Object> payload = new HashMap<>(); // For payload key-values
