@@ -65,6 +65,7 @@ public class BotWebView extends AppCompatActivity {
     private ImageView closeButton;
     private FloatingActionButton micButton;
     private RelativeLayout parentLayout;
+    private Boolean shouldKeepApplicationInBackground = true;
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -244,6 +245,12 @@ public class BotWebView extends AppCompatActivity {
         setStatusBarColorFromHex();
         setCloseButtonColorFromHex();
         setKeyboardListener();
+
+        fh = new WebviewOverlay();
+        FragmentManager fragManager = getSupportFragmentManager();
+        fragManager.beginTransaction()
+                .add(R.id.container, fh)
+                .commit();
     }
 
     private void setKeyboardListener() {
@@ -313,22 +320,31 @@ public class BotWebView extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        if(shouldKeepApplicationInBackground)
+        {
+            fh.reload();
+        }
+        else{
+            enableShouldKeepApplicationInBackground();
+        }
         super.onStart();
-        fh = new WebviewOverlay();
-        FragmentManager fragManager = getSupportFragmentManager();
-        fragManager.beginTransaction()
-                .add(R.id.container, fh)
-                .commit();
+    }
+
+    public void enableShouldKeepApplicationInBackground()
+    {
+        shouldKeepApplicationInBackground = true;
+    }
+
+    public void disableShouldKeepApplicationInBackground()
+    {
+        shouldKeepApplicationInBackground = false;
     }
 
     @Override
     protected void onStop() {
-        updateAgentStatus("offline");
-        try {
-            // trying to remove fragment
-            getSupportFragmentManager().beginTransaction().remove(fh).commit();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if(shouldKeepApplicationInBackground)
+        {
+            updateAgentStatus("offline");
         }
         super.onStop();
     }
@@ -492,7 +508,6 @@ public class BotWebView extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         super.onActivityResult(requestCode, resultCode, data);
         if (fh != null) {
             fh.onActivityResult(requestCode, resultCode, data);

@@ -265,7 +265,6 @@ public class WebviewOverlay extends Fragment {
                 });
 
             }
-
             bottomSheetDialog.show();
         }
     }
@@ -315,6 +314,7 @@ public class WebviewOverlay extends Fragment {
 
                 }
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
                 getActivity().startActivityForResult(takePictureIntent, INPUT_FILE_REQUEST_CODE);
 
             } else {
@@ -367,6 +367,7 @@ public class WebviewOverlay extends Fragment {
         contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
         contentSelectionIntent.setType("*/*");
         if (getActivity() != null) {
+            ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
             getActivity().startActivityForResult(contentSelectionIntent, INPUT_FILE_REQUEST_CODE);
         }
     }
@@ -418,5 +419,14 @@ public class WebviewOverlay extends Fragment {
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
             return false;
         }
+    }
+
+
+    void reload()
+    {
+       if(myWebView != null)
+       {
+           myWebView.reload();
+       }
     }
 }
