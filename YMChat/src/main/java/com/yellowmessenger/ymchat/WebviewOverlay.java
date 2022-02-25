@@ -166,6 +166,7 @@ public class WebviewOverlay extends Fragment {
                     mFilePathCallback.onReceiveValue(null);
                 }
                 mFilePathCallback = filePath;
+                isMediaUploadOptionSelected = false;
                 showFileChooser();
                 return true;
             }
