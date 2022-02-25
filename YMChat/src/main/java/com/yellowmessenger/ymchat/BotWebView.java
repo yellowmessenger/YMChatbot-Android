@@ -65,7 +65,7 @@ public class BotWebView extends AppCompatActivity {
     private ImageView closeButton;
     private FloatingActionButton micButton;
     private RelativeLayout parentLayout;
-    private Boolean shouldKeepApplicationInBackground = true;
+    private boolean shouldKeepApplicationInBackground = true;
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
