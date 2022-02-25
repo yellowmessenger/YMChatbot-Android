@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Objects;
 
 public class WebviewOverlay extends Fragment {
     private final String TAG = "YMChat";
@@ -79,6 +78,7 @@ public class WebviewOverlay extends Fragment {
                     }
                 }
             });
+    private boolean isMediaUploadOptionSelected = false;
 
     private void resetFilePathCallback() {
         if (mFilePathCallback != null) {
@@ -166,6 +166,7 @@ public class WebviewOverlay extends Fragment {
                     mFilePathCallback.onReceiveValue(null);
                 }
                 mFilePathCallback = filePath;
+                isMediaUploadOptionSelected = false;
                 showFileChooser();
                 return true;
             }
@@ -253,6 +254,7 @@ public class WebviewOverlay extends Fragment {
 
             if (cameraLayout != null) {
                 cameraLayout.setOnClickListener(v -> {
+                    isMediaUploadOptionSelected = true;
                     checkAndLaunchCamera();
                     bottomSheetDialog.dismiss();
                 });
@@ -260,12 +262,18 @@ public class WebviewOverlay extends Fragment {
 
             if (fileLayout != null) {
                 fileLayout.setOnClickListener(v -> {
+                    isMediaUploadOptionSelected = true;
                     checkAndLaunchFilePicker();
                     bottomSheetDialog.dismiss();
                 });
 
             }
-
+            bottomSheetDialog.setOnDismissListener(dialogInterface -> {
+                if(!isMediaUploadOptionSelected)
+                {
+                    resetFilePathCallback();
+                }
+            });
             bottomSheetDialog.show();
         }
     }
@@ -315,6 +323,7 @@ public class WebviewOverlay extends Fragment {
 
                 }
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
                 getActivity().startActivityForResult(takePictureIntent, INPUT_FILE_REQUEST_CODE);
 
             } else {
@@ -367,6 +376,7 @@ public class WebviewOverlay extends Fragment {
         contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
         contentSelectionIntent.setType("*/*");
         if (getActivity() != null) {
+            ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
             getActivity().startActivityForResult(contentSelectionIntent, INPUT_FILE_REQUEST_CODE);
         }
     }
@@ -418,5 +428,14 @@ public class WebviewOverlay extends Fragment {
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
             return false;
         }
+    }
+
+
+    void reload()
+    {
+       if(myWebView != null)
+       {
+           myWebView.reload();
+       }
     }
 }
