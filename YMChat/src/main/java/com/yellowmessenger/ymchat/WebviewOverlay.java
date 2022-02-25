@@ -226,11 +226,8 @@ public class WebviewOverlay extends Fragment {
             }
         });
 
-        StringBuilder botUrlBuilder = new StringBuilder();
-        botUrlBuilder.append(getString(R.string.ym_chatbot_base_url));
-        botUrlBuilder.append(ConfigService.getInstance().getBotURLParams());
-        String botUrl = botUrlBuilder.toString();
-        myWebView.loadUrl(botUrl);
+        String newUrl = ConfigService.getInstance().getUrl(getString(R.string.ym_chatbot_base_url));
+        myWebView.loadUrl(newUrl);
         return myWebView;
     }
 
@@ -387,14 +384,13 @@ public class WebviewOverlay extends Fragment {
     }
 
     public void closeBot() {
-        try{
+        try {
             requireActivity().runOnUiThread(new Runnable() {
                 public void run() {
                     myWebView.loadUrl("");
                 }
             });
-        }
-        catch (Exception e){
+        } catch (Exception e) {
 //            e.printStackTrace();
         }
     }

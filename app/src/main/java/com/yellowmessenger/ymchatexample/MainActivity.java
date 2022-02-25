@@ -54,12 +54,12 @@ public class MainActivity extends AppCompatActivity {
          * */
         // To set statusBarColor from hexadecimal color code
         ymChat.config.statusBarColorFromHex = "#49c656";
-        
+
         /* Note: if color is set from both closeButtonColor and closeButtonColorHex,
          * closeButtonColorHex will take priority
          * */
         // To set closeButtonColor from hexadecimal color code
-        ymChat.config.closeButtonColorHex = "#b72a2a";
+        ymChat.config.closeButtonColorFromHex = "#b72a2a";
 
         // Set custom loader url , it should be a valid, light weight and public image url
         // This is an optional parameter
