@@ -66,6 +66,7 @@ public class BotWebView extends AppCompatActivity {
     private FloatingActionButton micButton;
     private RelativeLayout parentLayout;
     private boolean shouldKeepApplicationInBackground = true;
+    private boolean isAgentConnected = false;
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -212,6 +213,12 @@ public class BotWebView extends AppCompatActivity {
                         this.uid = botEvent.getData();
                     });
                     break;
+                case "agent-ticket-connected":
+                    isAgentConnected = true;
+                    break;
+                case "agent-ticket-closed":
+                    isAgentConnected = false;
+                    break;
 
             }
         });
@@ -320,30 +327,25 @@ public class BotWebView extends AppCompatActivity {
 
     @Override
     protected void onStart() {
-        if(shouldKeepApplicationInBackground)
-        {
+        if (shouldKeepApplicationInBackground && isAgentConnected) {
             fh.reload();
-        }
-        else{
+        } else {
             enableShouldKeepApplicationInBackground();
         }
         super.onStart();
     }
 
-    public void enableShouldKeepApplicationInBackground()
-    {
+    public void enableShouldKeepApplicationInBackground() {
         shouldKeepApplicationInBackground = true;
     }
 
-    public void disableShouldKeepApplicationInBackground()
-    {
+    public void disableShouldKeepApplicationInBackground() {
         shouldKeepApplicationInBackground = false;
     }
 
     @Override
     protected void onStop() {
-        if(shouldKeepApplicationInBackground)
-        {
+        if (shouldKeepApplicationInBackground && isAgentConnected) {
             updateAgentStatus("offline");
         }
         super.onStop();
