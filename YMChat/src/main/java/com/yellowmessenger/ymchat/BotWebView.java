@@ -5,6 +5,7 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,6 +46,7 @@ import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
+import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.MultipartBody;
 import okhttp3.OkHttpClient;
@@ -58,10 +60,13 @@ public class BotWebView extends AppCompatActivity {
     WebviewOverlay fh;
     private boolean willStartMic = false;
     public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
-
+    private String updateUserStatusUrlEndPoint = "/api/presence/usersPresence/log_user_profile";
+    private String uid;
     private ImageView closeButton;
     private FloatingActionButton micButton;
     private RelativeLayout parentLayout;
+    private boolean shouldKeepApplicationInBackground = true;
+    private boolean isAgentConnected = false;
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -96,6 +101,7 @@ public class BotWebView extends AppCompatActivity {
         fh.closeBot();
     }
 
+
     public void setStatusBarColor() {
         try {
             int color = ConfigService.getInstance().getConfig().statusBarColor;
@@ -115,6 +121,25 @@ public class BotWebView extends AppCompatActivity {
         }
     }
 
+    public void setStatusBarColorFromHex() {
+        try {
+            String color = ConfigService.getInstance().getConfig().statusBarColorFromHex;
+            if (color != null && !color.isEmpty()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    Window window = BotWebView.this.getWindow();
+                    // clear FLAG_TRANSLUCENT_STATUS flag:
+                    window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+                    // add FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS flag to the window
+                    window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+                    // finally change the color
+                    window.setStatusBarColor(Color.parseColor(color));
+                }
+            }
+        } catch (Exception e) {
+            //Exception occurred
+        }
+    }
+
     public void setCloseButtonColor() {
         try {
             int color = ConfigService.getInstance().getConfig().closeButtonColor;
@@ -123,6 +148,22 @@ public class BotWebView extends AppCompatActivity {
                     DrawableCompat.setTint(
                             DrawableCompat.wrap(closeButton.getDrawable()),
                             ContextCompat.getColor(this, color)
+                    );
+                }
+            }
+        } catch (Exception e) {
+            //Exception occurred
+        }
+    }
+
+    public void setCloseButtonColorFromHex() {
+        try {
+            String color = ConfigService.getInstance().getConfig().closeButtonColorFromHex;
+            if (color != null && !color.isEmpty()) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    DrawableCompat.setTint(
+                            DrawableCompat.wrap(closeButton.getDrawable()),
+                            Color.parseColor(color)
                     );
                 }
             }
@@ -167,6 +208,16 @@ public class BotWebView extends AppCompatActivity {
                         showCloseButton();
                         showMic();
                     });
+                case "yellowai-uid":
+                    runOnUiThread(() -> {
+                        this.uid = botEvent.getData();
+                    });
+                    break;
+                case "agent-ticket-connected":
+                    isAgentConnected = true;
+                    break;
+                case "agent-ticket-closed":
+                    isAgentConnected = false;
                     break;
 
             }
@@ -183,11 +234,6 @@ public class BotWebView extends AppCompatActivity {
 
         parentLayout = findViewById(R.id.parentView);
 
-        fh = new WebviewOverlay();
-        FragmentManager fragManager = getSupportFragmentManager();
-        fragManager.beginTransaction()
-                .add(R.id.container, fh)
-                .commit();
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
         micButton = findViewById(R.id.floatingActionButton);
         if (enableSpeech) {
@@ -203,7 +249,15 @@ public class BotWebView extends AppCompatActivity {
             this.finish();
         });
         showCloseButton();
+        setStatusBarColorFromHex();
+        setCloseButtonColorFromHex();
         setKeyboardListener();
+
+        fh = new WebviewOverlay();
+        FragmentManager fragManager = getSupportFragmentManager();
+        fragManager.beginTransaction()
+                .add(R.id.container, fh)
+                .commit();
     }
 
     private void setKeyboardListener() {
@@ -272,10 +326,58 @@ public class BotWebView extends AppCompatActivity {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    protected void onStart() {
+        if (shouldKeepApplicationInBackground && isAgentConnected) {
+            fh.reload();
+        } else {
+            enableShouldKeepApplicationInBackground();
+        }
+        super.onStart();
     }
 
+    public void enableShouldKeepApplicationInBackground() {
+        shouldKeepApplicationInBackground = true;
+    }
+
+    public void disableShouldKeepApplicationInBackground() {
+        shouldKeepApplicationInBackground = false;
+    }
+
+    @Override
+    protected void onStop() {
+        if (shouldKeepApplicationInBackground && isAgentConnected) {
+            updateAgentStatus("offline");
+        }
+        super.onStop();
+    }
+
+    private void updateAgentStatus(String status) {
+        OkHttpClient client = new OkHttpClient();
+        String url = ConfigService.getInstance().getConfig().customBaseUrl + updateUserStatusUrlEndPoint;
+        if (uid != null) {
+            RequestBody formBody = new FormBody.Builder()
+                    .add("user", this.uid)
+                    .add("resource", "bot_" + ConfigService.getInstance().getConfig().botId)
+                    .add("status", status)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                }
+            });
+        }
+    }
 
     public void runUpload(String uid) {
         try {
@@ -408,7 +510,6 @@ public class BotWebView extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         super.onActivityResult(requestCode, resultCode, data);
         if (fh != null) {
             fh.onActivityResult(requestCode, resultCode, data);

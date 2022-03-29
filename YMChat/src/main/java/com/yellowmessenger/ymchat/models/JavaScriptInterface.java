@@ -32,13 +32,21 @@ public class JavaScriptInterface {
 
     @JavascriptInterface
     public void receiveMessage(String s) {
-        YMBotEventResponse incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
-        Log.d("Event from Bot", "receiveMessage: " + incomingEvent.getCode());
-        if (incomingEvent.getCode().equals("start-mic")) {
-            parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(incomingEvent.getCode()) * 1000));
+        YMBotEventResponse incomingEvent;
+
+        try {
+            incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
+        } catch (Exception e) {
+            incomingEvent = new YMBotEventResponse(null, null, false);
         }
 
-        if ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode())) {
+        if (incomingEvent.getCode() != null && incomingEvent.getCode().equals("start-mic")) {
+            // For lambda expression only final variables is allowed
+            final YMBotEventResponse finalIncomingEvent = incomingEvent;
+            parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(finalIncomingEvent.getCode()) * 1000));
+        }
+
+        if (incomingEvent.getCode() != null && ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode()))) {
             incomingEvent.setInternal(true);
         }
 

@@ -13,9 +13,11 @@ public class YMConfig {
     public String deviceToken = "";
     public String customBaseUrl = "https://app.yellowmessenger.com";
     public int statusBarColor = -1;
+    public String statusBarColorFromHex = "";
     public boolean hideCameraForUpload = false;
     public boolean showCloseButton = true;
     public int closeButtonColor = -1;
+    public String closeButtonColorFromHex = "";
     public int version = 1;
     public String customLoaderUrl = "https://thumbs.gfycat.com/ImpoliteLivelyGenet-max-1mb.gif";
     public HashMap<String, Object> payload = new HashMap<>(); // For payload key-values

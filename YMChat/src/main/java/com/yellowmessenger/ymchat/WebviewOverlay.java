@@ -78,6 +78,7 @@ public class WebviewOverlay extends Fragment {
                     }
                 }
             });
+    private boolean isMediaUploadOptionSelected = false;
 
     private void resetFilePathCallback() {
         if (mFilePathCallback != null) {
@@ -165,6 +166,7 @@ public class WebviewOverlay extends Fragment {
                     mFilePathCallback.onReceiveValue(null);
                 }
                 mFilePathCallback = filePath;
+                isMediaUploadOptionSelected = false;
                 showFileChooser();
                 return true;
             }
@@ -224,11 +226,8 @@ public class WebviewOverlay extends Fragment {
             }
         });
 
-        StringBuilder botUrlBuilder = new StringBuilder();
-        botUrlBuilder.append(getString(R.string.ym_chatbot_base_url));
-        botUrlBuilder.append(ConfigService.getInstance().getBotURLParams());
-        String botUrl = botUrlBuilder.toString();
-        myWebView.loadUrl(botUrl);
+        String newUrl = ConfigService.getInstance().getUrl(getString(R.string.ym_chatbot_base_url));
+        myWebView.loadUrl(newUrl);
         return myWebView;
     }
 
@@ -252,6 +251,7 @@ public class WebviewOverlay extends Fragment {
 
             if (cameraLayout != null) {
                 cameraLayout.setOnClickListener(v -> {
+                    isMediaUploadOptionSelected = true;
                     checkAndLaunchCamera();
                     bottomSheetDialog.dismiss();
                 });
@@ -259,12 +259,18 @@ public class WebviewOverlay extends Fragment {
 
             if (fileLayout != null) {
                 fileLayout.setOnClickListener(v -> {
+                    isMediaUploadOptionSelected = true;
                     checkAndLaunchFilePicker();
                     bottomSheetDialog.dismiss();
                 });
 
             }
-
+            bottomSheetDialog.setOnDismissListener(dialogInterface -> {
+                if(!isMediaUploadOptionSelected)
+                {
+                    resetFilePathCallback();
+                }
+            });
             bottomSheetDialog.show();
         }
     }
@@ -314,6 +320,7 @@ public class WebviewOverlay extends Fragment {
 
                 }
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
+                ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
                 getActivity().startActivityForResult(takePictureIntent, INPUT_FILE_REQUEST_CODE);
 
             } else {
@@ -366,6 +373,7 @@ public class WebviewOverlay extends Fragment {
         contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
         contentSelectionIntent.setType("*/*");
         if (getActivity() != null) {
+            ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
             getActivity().startActivityForResult(contentSelectionIntent, INPUT_FILE_REQUEST_CODE);
         }
     }
@@ -375,9 +383,16 @@ public class WebviewOverlay extends Fragment {
         myWebView.loadUrl("javascript:sendEvent(\"" + s + "\");");
     }
 
-    //Empty url string on bot-close
     public void closeBot() {
-        myWebView.loadUrl("");
+        try {
+            requireActivity().runOnUiThread(new Runnable() {
+                public void run() {
+                    myWebView.loadUrl("");
+                }
+            });
+        } catch (Exception e) {
+//            e.printStackTrace();
+        }
     }
 
     // creating image filename
@@ -409,5 +424,14 @@ public class WebviewOverlay extends Fragment {
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE);
             return false;
         }
+    }
+
+
+    void reload()
+    {
+       if(myWebView != null)
+       {
+           myWebView.reload();
+       }
     }
 }

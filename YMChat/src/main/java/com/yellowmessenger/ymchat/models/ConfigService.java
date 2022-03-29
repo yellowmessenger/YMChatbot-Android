@@ -1,10 +1,11 @@
 package com.yellowmessenger.ymchat.models;
 
 
+import android.net.Uri;
+
 import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.YMConfig;
 
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -46,36 +47,25 @@ public class ConfigService {
         return config;
     }
 
-    public String getBotURLParams() {
-        String botId = config.botId;
+    public String getUrl(String baseUrl) {
+        Uri builtUri = Uri.parse(baseUrl)
+                .buildUpon()
+                .appendQueryParameter("botId", config.botId)
+                .appendQueryParameter("ym.payload", getPayload())
+                .appendQueryParameter("ymAuthenticationToken", config.ymAuthenticationToken)
+                .appendQueryParameter("deviceToken", config.deviceToken)
+                .appendQueryParameter("customBaseUrl", config.customBaseUrl)
+                .appendQueryParameter("version", Integer.toString(config.version))
+                .appendQueryParameter("customLoaderUrl", config.customLoaderUrl)
+                .build();
+
+        return builtUri.toString();
+    }
+
+    private String getPayload() {
         payload = config.payload != null ? config.payload : new HashMap<>();
         payload.put("Platform", "Android-App");
-        String payloadJSON = null;
-        try {
-            payloadJSON = URLEncoder.encode(new Gson().toJson(payload), "UTF-8");
-            payloadJSON = payloadJSON.replaceAll("\\+", "%20");
-        } catch (Exception e) {
-            //Exception
-        }
-
-        StringBuilder sb = new StringBuilder();
-        sb.append("?botId=");
-        sb.append(botId);
-        sb.append("&ymAuthenticationToken=");
-        sb.append(config.ymAuthenticationToken != null ? config.ymAuthenticationToken : "");
-        sb.append("&deviceToken=");
-        sb.append(config.deviceToken != null ? config.deviceToken : "");
-        sb.append("&customBaseUrl=");
-        sb.append(config.customBaseUrl);
-        sb.append("&ym.payload=");
-        sb.append(payloadJSON);
-        sb.append("&version=");
-        sb.append(config.version);
-        sb.append("&customLoaderUrl=");
-        sb.append(config.customLoaderUrl);
-
-        return sb.toString();
-
+        return new Gson().toJson(payload);
     }
 
     public String getCustomDataByKey(String key) {
