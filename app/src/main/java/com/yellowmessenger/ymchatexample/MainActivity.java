@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1638341502652";
+    String botId = "x1636460057313";
     String deviceToken = "your device token";
     String apiKey = "your api key";
 
@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config.payload = payloadData;
 
         // Choose version(1 or 2), default is 1
-        ymChat.config.version = 2;
+        ymChat.config.version = 1;
 
         //To enable notifications
         ymChat.config.deviceToken = deviceToken;

@@ -15,5 +15,7 @@
     <string name="ym_message_mic_permission">To use speech to text feature Record Audio permission is required. Please enable it from app settings.</string>
     <string name="ym_message_storgae_permission">Read storage permission required to complete this operation. Please enable it from app settings.</string>
     <string name="ym_message_camera_permission">Camera permission is required by the app to complete this operation. Please enable it from app settings.</string>
+    <string name="ym_message_camera_permission_video_Call">Camera permission is required by the app for video call. Please enable it from app settings.</string>
+    <string name="ym_message_mic_permission_video_call">Microphone permission is required by the app to complete this operation. Please enable it from app settings.</string>
     <string name="ym_message_camera_error">Not able to launch camera please use file option to pick image</string>
 </resources>

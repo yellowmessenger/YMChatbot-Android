@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -51,6 +52,9 @@ public class WebviewOverlay extends Fragment {
     private String mCameraPhotoPath;
     private static final int INPUT_FILE_REQUEST_CODE = 1;
     private String requestedPermission = null;
+    private boolean isMicPermissionForWebview = false;
+    private boolean isCameraPermissionForWebview = false;
+    private PermissionRequest webPermissionRequest;
     private View parentLayout = null;
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -65,12 +69,37 @@ public class WebviewOverlay extends Fragment {
                             }
                         }
                     } else if (requestedPermission.equals(Manifest.permission.CAMERA)) {
-                        if (isGranted) {
-                            launchCameraIntent();
+                        if (isCameraPermissionForWebview) {
+                            isCameraPermissionForWebview = false;
+                            if (isGranted) {
+                                webPermissionRequest.grant(webPermissionRequest.getResources());
+                            } else {
+                                webPermissionRequest.deny();
+                                if (getContext() != null) {
+                                    YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_camera_permission_video_Call));
+                                }
+                            }
+
                         } else {
-                            resetFilePathCallback();
-                            if (getContext() != null) {
-                                YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_camera_permission));
+                            if (isGranted) {
+                                launchCameraIntent();
+                            } else {
+                                resetFilePathCallback();
+                                if (getContext() != null) {
+                                    YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_camera_permission));
+                                }
+                            }
+                        }
+                    } else if (requestedPermission.equals(Manifest.permission.RECORD_AUDIO)) {
+                        if (isMicPermissionForWebview) {
+                            isMicPermissionForWebview = false;
+                            if (isGranted) {
+                                webPermissionRequest.grant(webPermissionRequest.getResources());
+                            } else {
+                                webPermissionRequest.deny();
+                                if (getContext() != null) {
+                                    YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_mic_permission_video_call));
+                                }
                             }
                         }
                     } else {
@@ -224,6 +253,34 @@ public class WebviewOverlay extends Fragment {
                 return true;
 
             }
+
+            @Override
+            public void onPermissionRequest(PermissionRequest request) {
+                webPermissionRequest = request;
+                String[] resources = request.getResources();
+
+                switch (resources[0]) {
+                    case PermissionRequest.RESOURCE_AUDIO_CAPTURE:
+                        isMicPermissionForWebview = true;
+                        if (hasCameraPermissionInManifest(getContext()) || checkForAudioPermission(getContext())) {
+                            request.grant(new String[]{PermissionRequest.RESOURCE_AUDIO_CAPTURE});
+                            isMicPermissionForWebview = false;
+                        }
+                        break;
+                    case PermissionRequest.RESOURCE_VIDEO_CAPTURE:
+                        isCameraPermissionForWebview = true;
+                        if (checkForCameraPermission(getContext())) {
+                            request.grant(new String[]{PermissionRequest.RESOURCE_VIDEO_CAPTURE});
+                            isCameraPermissionForWebview = false;
+                        }
+                        break;
+                }
+            }
+
+            @Override
+            public void onPermissionRequestCanceled(PermissionRequest request) {
+                super.onPermissionRequestCanceled(request);
+            }
         });
 
         String newUrl = ConfigService.getInstance().getUrl(getString(R.string.ym_chatbot_base_url));
@@ -266,8 +323,7 @@ public class WebviewOverlay extends Fragment {
 
             }
             bottomSheetDialog.setOnDismissListener(dialogInterface -> {
-                if(!isMediaUploadOptionSelected)
-                {
+                if (!isMediaUploadOptionSelected) {
                     resetFilePathCallback();
                 }
             });
@@ -368,6 +424,21 @@ public class WebviewOverlay extends Fragment {
         }
     }
 
+    private boolean checkForAudioPermission(Context context) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.RECORD_AUDIO
+        )
+                == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true;
+        } else {
+            requestedPermission = Manifest.permission.RECORD_AUDIO;
+            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO);
+            return false;
+        }
+    }
+
     private void launchFileIntent() {
         Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
         contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
@@ -427,11 +498,9 @@ public class WebviewOverlay extends Fragment {
     }
 
 
-    void reload()
-    {
-       if(myWebView != null)
-       {
-           myWebView.reload();
-       }
+    void reload() {
+        if (myWebView != null) {
+            myWebView.reload();
+        }
     }
 }
