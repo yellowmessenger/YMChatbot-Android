@@ -89,7 +89,7 @@ public class YMChat {
             throw new Exception("Please initialise config, it cannot be null.");
         }
 
-        if (config.botId == null || config.botId.isEmpty()) {
+        if (config.botId == null || config.botId.trim().isEmpty()) {
             throw new Exception("botId is not configured. Please set botId before calling startChatbot()");
         }
         if (config.customBaseUrl == null || config.customBaseUrl.isEmpty()) {
