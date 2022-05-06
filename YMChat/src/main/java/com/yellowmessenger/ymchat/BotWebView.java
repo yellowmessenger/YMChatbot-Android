@@ -327,6 +327,10 @@ public class BotWebView extends AppCompatActivity {
 
     @Override
     protected void onStart() {
+        if (ConfigService.getInstance().getConfig().botId == null || ConfigService.getInstance().getConfig().botId.trim().isEmpty()) {
+            finish();
+        }
+
         if (shouldKeepApplicationInBackground && isAgentConnected) {
             fh.reload();
         } else {
