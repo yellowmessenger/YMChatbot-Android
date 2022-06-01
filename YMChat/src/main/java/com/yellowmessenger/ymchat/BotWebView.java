@@ -258,6 +258,7 @@ public class BotWebView extends AppCompatActivity {
         fragManager.beginTransaction()
                 .add(R.id.container, fh)
                 .commit();
+        
     }
 
     private void setKeyboardListener() {

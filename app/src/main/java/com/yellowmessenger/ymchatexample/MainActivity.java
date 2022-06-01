@@ -17,9 +17,9 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1636460057313";
-    String deviceToken = "your device token";
-    String apiKey = "your api key";
+    String botId = "x1622800346254"; //"x1645602443989";
+    String deviceToken = "d_mttnooRyaYdAJAM6fMxr:APA91bHrhtFn6hhA6C_Imvi3tDjtuhaR9lW6ZCCVMLnStOrq6klyqQBBp4WEsWq_KCVm59KsSlz0WVhdvyyt4F7P78F401BBTdWH2NwFaRzDprtZhvduQJRK0P9qyBxe6aZRfsDuAJwf";
+    String apiKey = "11c4083d8b6b22dde45ed855e2e5869a82259293e2fabf2cc543eadc28349acf"; //"your api key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Choose version(1 or 2), default is 1
         ymChat.config.version = 1;
+
+        ymChat.config.ymAuthenticationToken = "123456";
 
         //To enable notifications
         ymChat.config.deviceToken = deviceToken;

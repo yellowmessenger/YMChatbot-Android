@@ -19,6 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
+import android.webkit.GeolocationPermissions;
 import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -56,6 +57,8 @@ public class WebviewOverlay extends Fragment {
     private boolean isCameraPermissionForWebview = false;
     private PermissionRequest webPermissionRequest;
     private View parentLayout = null;
+    private GeolocationPermissions.Callback geoCallback = null;
+    private String geoOrigin;
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (!TextUtils.isEmpty(requestedPermission)) {
@@ -73,8 +76,10 @@ public class WebviewOverlay extends Fragment {
                             isCameraPermissionForWebview = false;
                             if (isGranted) {
                                 webPermissionRequest.grant(webPermissionRequest.getResources());
+                                webPermissionRequest = null;
                             } else {
                                 webPermissionRequest.deny();
+                                webPermissionRequest = null;
                                 if (getContext() != null) {
                                     YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_camera_permission_video_Call));
                                 }
@@ -95,13 +100,28 @@ public class WebviewOverlay extends Fragment {
                             isMicPermissionForWebview = false;
                             if (isGranted) {
                                 webPermissionRequest.grant(webPermissionRequest.getResources());
+                                webPermissionRequest = null;
                             } else {
                                 webPermissionRequest.deny();
+                                webPermissionRequest = null;
                                 if (getContext() != null) {
                                     YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_mic_permission_video_call));
                                 }
                             }
                         }
+                    } else if(requestedPermission.equals(Manifest.permission.ACCESS_FINE_LOCATION)){
+                            if (isGranted && geoCallback != null && geoOrigin != null) {
+                                geoCallback.invoke(geoOrigin,true,false);
+                                geoCallback = null;
+                                geoOrigin = null;
+                            } else {
+                                geoCallback.invoke(geoOrigin,false,false);
+                                geoCallback = null;
+                                geoOrigin = null;
+                                if (getContext() != null) {
+                                    YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, "Location Permission required for this operation.");
+                                }
+                            }
                     } else {
                         resetFilePathCallback();
                     }
@@ -281,6 +301,17 @@ public class WebviewOverlay extends Fragment {
             public void onPermissionRequestCanceled(PermissionRequest request) {
                 super.onPermissionRequestCanceled(request);
             }
+
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                if(checkForLocationPermission(getContext())){
+                    callback.invoke(origin,true,false);
+                } else {
+                    geoOrigin = origin;
+                    geoCallback = callback;
+                }
+
+            }
         });
 
         String newUrl = ConfigService.getInstance().getUrl(getString(R.string.ym_chatbot_base_url));
@@ -407,6 +438,21 @@ public class WebviewOverlay extends Fragment {
             return false;
         }
         return false;
+    }
+
+    private boolean checkForLocationPermission(Context context) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        )
+                == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true;
+        } else {
+            requestedPermission = Manifest.permission.ACCESS_FINE_LOCATION;
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            return false;
+        }
     }
 
     private boolean checkForCameraPermission(Context context) {
