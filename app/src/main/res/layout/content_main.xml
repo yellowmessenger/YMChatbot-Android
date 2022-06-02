@@ -11,6 +11,12 @@
     >
 
     <Button
+        android:id="@+id/startbtnnew"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Launch new view" />
+
+    <Button
         android:id="@+id/startbtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

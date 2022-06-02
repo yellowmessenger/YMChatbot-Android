@@ -4,6 +4,7 @@ package com.yellowmessenger.ymchat.models;
 import android.net.Uri;
 
 import com.google.gson.Gson;
+import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
 
 import java.util.HashMap;
@@ -15,6 +16,7 @@ public class ConfigService {
     private YMConfig config; // For configurations
     private Map<String, Object> payload; // For payload key-values
     private Map<String, String> customData; // other data key-values
+    private static Map<String,ConfigService> mapConfigInstance;
 
     private ConfigService() {
         config = new YMConfig("");
@@ -31,6 +33,19 @@ public class ConfigService {
             }
         }
         return configInstance;
+    }
+
+    public static ConfigService getInstance(String ymAuthToken){
+        if(mapConfigInstance == null){
+            mapConfigInstance = new HashMap<>();
+        }
+        if(mapConfigInstance.containsKey(ymAuthToken)){
+            return mapConfigInstance.get(ymAuthToken);
+        }else{
+            ConfigService instance = new ConfigService();
+            mapConfigInstance.put(ymAuthToken,instance);
+            return instance;
+        }
     }
 
     public boolean setConfigData(YMConfig config) {

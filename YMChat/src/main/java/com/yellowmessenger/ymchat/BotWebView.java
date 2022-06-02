@@ -59,17 +59,9 @@ public class BotWebView extends AppCompatActivity {
     private final String TAG = "YMChat";
     WebviewOverlay fh;
     private boolean willStartMic = false;
-    public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
-    private String updateUserStatusUrlEndPoint = "/api/presence/usersPresence/log_user_profile";
-    private String uid;
     private ImageView closeButton;
     private FloatingActionButton micButton;
     private RelativeLayout parentLayout;
-    private boolean shouldKeepApplicationInBackground = true;
-    private boolean isAgentConnected = false;
-
-
-    public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
 
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -97,9 +89,6 @@ public class BotWebView extends AppCompatActivity {
         }
     }
 
-    public void closeBot() {
-        fh.closeBot();
-    }
 
 
     public void setStatusBarColor() {
@@ -176,54 +165,6 @@ public class BotWebView extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarColor();
-
-        // setting up local listener
-        YMChat.getInstance().setLocalListener(botEvent -> {
-            switch (botEvent.getCode()) {
-                case "close-bot":
-                    closeBot();
-                    YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "", false));
-                    this.finish();
-                    break;
-                case "upload-image":
-                    Map<String, Object> retMap = new Gson().fromJson(
-                            botEvent.getData(), new TypeToken<HashMap<String, Object>>() {
-                            }.getType());
-                    if (retMap != null && retMap.containsKey("uid")) {
-                        Object uid = retMap.get("uid");
-                        if (uid instanceof String) {
-                            String uId = (String) retMap.get("uid");
-                            runUpload(uId);
-                        }
-                    }
-                    break;
-                case "image-opened":
-                    runOnUiThread(() -> {
-                        hideMic();
-                        hideCloseButton();
-                    });
-                    break;
-                case "image-closed":
-                    runOnUiThread(() -> {
-                        showCloseButton();
-                        showMic();
-                    });
-                case "yellowai-uid":
-                    runOnUiThread(() -> {
-                        this.uid = botEvent.getData();
-                    });
-                    break;
-                case "agent-ticket-connected":
-                    isAgentConnected = true;
-                    break;
-                case "agent-ticket-closed":
-                    isAgentConnected = false;
-                    break;
-
-            }
-        });
-
-
         ViewCompat.setOnApplyWindowInsetsListener(
                 findViewById(android.R.id.content), (v, insets) -> {
                     ViewGroup.MarginLayoutParams params = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
@@ -258,6 +199,7 @@ public class BotWebView extends AppCompatActivity {
         fragManager.beginTransaction()
                 .add(R.id.container, fh)
                 .commit();
+
     }
 
     private void setKeyboardListener() {
@@ -325,109 +267,7 @@ public class BotWebView extends AppCompatActivity {
         }
     }
 
-    @Override
-    protected void onStart() {
-        if (ConfigService.getInstance().getConfig().botId == null || ConfigService.getInstance().getConfig().botId.trim().isEmpty()) {
-            finish();
-        }
 
-        if (shouldKeepApplicationInBackground && isAgentConnected) {
-            fh.reload();
-        } else {
-            enableShouldKeepApplicationInBackground();
-        }
-        super.onStart();
-    }
-
-    public void enableShouldKeepApplicationInBackground() {
-        shouldKeepApplicationInBackground = true;
-    }
-
-    public void disableShouldKeepApplicationInBackground() {
-        shouldKeepApplicationInBackground = false;
-    }
-
-    @Override
-    protected void onStop() {
-        if (shouldKeepApplicationInBackground && isAgentConnected) {
-            updateAgentStatus("offline");
-        }
-        super.onStop();
-    }
-
-    private void updateAgentStatus(String status) {
-        OkHttpClient client = new OkHttpClient();
-        String url = ConfigService.getInstance().getConfig().customBaseUrl + updateUserStatusUrlEndPoint;
-        if (uid != null) {
-            RequestBody formBody = new FormBody.Builder()
-                    .add("user", this.uid)
-                    .add("resource", "bot_" + ConfigService.getInstance().getConfig().botId)
-                    .add("status", status)
-                    .build();
-
-            Request request = new Request.Builder()
-                    .url(url)
-                    .post(formBody)
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    call.cancel();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                }
-            });
-        }
-    }
-
-    public void runUpload(String uid) {
-        try {
-            if (uid == null) {
-                return;
-            }
-            String botId = ConfigService.getInstance().getConfig().botId;
-            postUrl = postUrl + botId + "&uid=" + uid + "&secure=false";
-            run();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    void run() throws IOException {
-
-        OkHttpClient client = new OkHttpClient();
-
-        String imagePath = ConfigService.getInstance().getCustomDataByKey("imagePath");
-        if (imagePath != null && !imagePath.isEmpty()) {
-
-            File sourceFile = new File(imagePath);
-            final MediaType MEDIA_TYPE = imagePath.endsWith("png") ?
-                    MediaType.parse("image/png") : MediaType.parse("image/jpeg");
-            RequestBody requestBody = new MultipartBody.Builder()
-                    .setType(MultipartBody.FORM)
-                    .addFormDataPart("images", sourceFile.getName(), RequestBody.create(MEDIA_TYPE, sourceFile))
-                    .build();
-
-            Request request = new Request.Builder()
-                    .url(postUrl)
-                    .post(requestBody)
-                    .build();
-
-            client.newCall(request).enqueue(new Callback() {
-                @Override
-                public void onFailure(Call call, IOException e) {
-                    call.cancel();
-                }
-
-                @Override
-                public void onResponse(Call call, Response response) throws IOException {
-                }
-            });
-        }
-    }
 
 
     @Override
@@ -513,7 +353,6 @@ public class BotWebView extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
         super.onActivityResult(requestCode, resultCode, data);
         if (fh != null) {
             fh.onActivityResult(requestCode, resultCode, data);

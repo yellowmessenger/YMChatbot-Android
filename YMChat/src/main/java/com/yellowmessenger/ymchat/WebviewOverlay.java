@@ -1,5 +1,7 @@
 package com.yellowmessenger.ymchat;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
@@ -13,6 +15,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.speech.RecognizerIntent;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -35,14 +38,30 @@ import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomsheet.BottomSheetDialog;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.JavaScriptInterface;
+import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
 import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
+import okhttp3.Call;
+import okhttp3.Callback;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.MultipartBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 
 public class WebviewOverlay extends Fragment {
     private final String TAG = "YMChat";
@@ -52,6 +71,13 @@ public class WebviewOverlay extends Fragment {
     private static final int INPUT_FILE_REQUEST_CODE = 1;
     private String requestedPermission = null;
     private View parentLayout = null;
+    private String uid;
+    public String postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot=";
+    private String updateUserStatusUrlEndPoint = "/api/presence/usersPresence/log_user_profile";
+    private boolean isAgentConnected = false;
+    private boolean shouldKeepApplicationInBackground = true;
+    private String ymAuthKey;
+
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (!TextUtils.isEmpty(requestedPermission)) {
@@ -87,6 +113,130 @@ public class WebviewOverlay extends Fragment {
         }
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
+        ymAuthKey = getArguments().getString("KEY");
+        // setting up local listener
+        YMChat.getInstance(ymAuthKey).setLocalListener(botEvent -> {
+            switch (botEvent.getCode()) {
+                case "close-bot":
+                    closeBot();
+                    YMChat.getInstance(ymAuthKey).emitEvent(new YMBotEventResponse("bot-closed", "", false));
+                    break;
+                case "upload-image":
+                    Map<String, Object> retMap = new Gson().fromJson(
+                            botEvent.getData(), new TypeToken<HashMap<String, Object>>() {
+                            }.getType());
+                    if (retMap != null && retMap.containsKey("uid")) {
+                        Object uid = retMap.get("uid");
+                        if (uid instanceof String) {
+                            String uId = (String) retMap.get("uid");
+                            runUpload(uId);
+                        }
+                    }
+                    break;
+                case "image-opened":
+                    getActivity().runOnUiThread(() -> {
+                        // hideMic();
+                        // hideCloseButton();
+                    });
+                    break;
+                case "image-closed":
+                    getActivity().runOnUiThread(() -> {
+                        // showCloseButton();
+                        // showMic();
+                    });
+                case "yellowai-uid":
+                    getActivity().runOnUiThread(() -> {
+                        this.uid = botEvent.getData();
+                    });
+                    break;
+                case "agent-ticket-connected":
+                    isAgentConnected = true;
+                    break;
+                case "agent-ticket-closed":
+                    isAgentConnected = false;
+                    break;
+
+            }
+        });
+    }
+
+    private void updateAgentStatus(String status) {
+        OkHttpClient client = new OkHttpClient();
+        String url = ConfigService.getInstance(ymAuthKey).getConfig().customBaseUrl + updateUserStatusUrlEndPoint;
+        if (uid != null) {
+            RequestBody formBody = new FormBody.Builder()
+                    .add("user", this.uid)
+                    .add("resource", "bot_" + ConfigService.getInstance(ymAuthKey).getConfig().botId)
+                    .add("status", status)
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(url)
+                    .post(formBody)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                }
+            });
+        }
+    }
+
+    public void runUpload(String uid) {
+        try {
+            if (uid == null) {
+                return;
+            }
+            String botId = ConfigService.getInstance(ymAuthKey).getConfig().botId;
+            postUrl = postUrl + botId + "&uid=" + uid + "&secure=false";
+            run();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    void run() throws IOException {
+
+        OkHttpClient client = new OkHttpClient();
+
+        String imagePath = ConfigService.getInstance(ymAuthKey).getCustomDataByKey("imagePath");
+        if (imagePath != null && !imagePath.isEmpty()) {
+
+            File sourceFile = new File(imagePath);
+            final MediaType MEDIA_TYPE = imagePath.endsWith("png") ?
+                    MediaType.parse("image/png") : MediaType.parse("image/jpeg");
+            RequestBody requestBody = new MultipartBody.Builder()
+                    .setType(MultipartBody.FORM)
+                    .addFormDataPart("images", sourceFile.getName(), RequestBody.create(MEDIA_TYPE, sourceFile))
+                    .build();
+
+            Request request = new Request.Builder()
+                    .url(postUrl)
+                    .post(requestBody)
+                    .build();
+
+            client.newCall(request).enqueue(new Callback() {
+                @Override
+                public void onFailure(Call call, IOException e) {
+                    call.cancel();
+                }
+
+                @Override
+                public void onResponse(Call call, Response response) throws IOException {
+                }
+            });
+        }
+    }
 
     @Nullable
     @Override
@@ -99,6 +249,17 @@ public class WebviewOverlay extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         parentLayout = view;
+
+        if (ConfigService.getInstance(ymAuthKey).getConfig().botId == null || ConfigService.getInstance(ymAuthKey).getConfig().botId.trim().isEmpty()) {
+            //finish();
+        }
+
+        if (shouldKeepApplicationInBackground && isAgentConnected) {
+            reload();
+        } else {
+            enableShouldKeepApplicationInBackground();
+        }
+
     }
 
     //File picker activity result
@@ -109,10 +270,17 @@ public class WebviewOverlay extends Fragment {
             return;
         }
 
+        if (resultCode == RESULT_OK && data != null) {
+            if (requestCode == 100) {
+                ArrayList<String> result = data.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS);
+                sendEvent(result.get(0));
+            }
+        }
+
         Uri[] results = null;
 
         // Check that the response is a good one
-        if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == RESULT_OK) {
             if (data != null && data.getDataString() != null) {
                 String dataString = data.getDataString();
                 results = new Uri[]{Uri.parse(dataString)};
@@ -141,7 +309,7 @@ public class WebviewOverlay extends Fragment {
         myWebView.getSettings().setAllowFileAccess(true);
         myWebView.getSettings().setGeolocationDatabasePath(context.getFilesDir().getPath());
         myWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-        myWebView.addJavascriptInterface(new JavaScriptInterface((BotWebView) getActivity(), myWebView), "YMHandler");
+        myWebView.addJavascriptInterface(new JavaScriptInterface((Activity) getActivity(), myWebView,ymAuthKey), "YMHandler");
 
         myWebView.setWebViewClient(new WebViewClient());
 
@@ -154,7 +322,7 @@ public class WebviewOverlay extends Fragment {
 
             @Override
             public boolean onConsoleMessage(ConsoleMessage consoleMessage) {
-                if (ConfigService.getInstance().getConfig().showConsoleLogs)
+                if (ConfigService.getInstance(ymAuthKey).getConfig().showConsoleLogs)
                     Log.d("WebView", consoleMessage.message());
                 return true;
             }
@@ -226,13 +394,13 @@ public class WebviewOverlay extends Fragment {
             }
         });
 
-        String newUrl = ConfigService.getInstance().getUrl(getString(R.string.ym_chatbot_base_url));
+        String newUrl = ConfigService.getInstance(ymAuthKey).getUrl(getString(R.string.ym_chatbot_base_url));
         myWebView.loadUrl(newUrl);
         return myWebView;
     }
 
     private void showFileChooser() {
-        boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
+        boolean hideCameraForUpload = ConfigService.getInstance(ymAuthKey).getConfig().hideCameraForUpload;
         if (hideCameraForUpload) {
             if (checkForStoragePermission(getContext())) {
                 launchFileIntent();
@@ -266,8 +434,7 @@ public class WebviewOverlay extends Fragment {
 
             }
             bottomSheetDialog.setOnDismissListener(dialogInterface -> {
-                if(!isMediaUploadOptionSelected)
-                {
+                if (!isMediaUploadOptionSelected) {
                     resetFilePathCallback();
                 }
             });
@@ -320,8 +487,8 @@ public class WebviewOverlay extends Fragment {
 
                 }
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI);
-                ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
-                getActivity().startActivityForResult(takePictureIntent, INPUT_FILE_REQUEST_CODE);
+                disableShouldKeepApplicationInBackground();
+                startActivityForResult(takePictureIntent, INPUT_FILE_REQUEST_CODE);
 
             } else {
                 YmHelper.showMessageInSnackBar(parentLayout, getActivity().getApplicationContext().getString(R.string.ym_message_camera_error));
@@ -373,8 +540,8 @@ public class WebviewOverlay extends Fragment {
         contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
         contentSelectionIntent.setType("*/*");
         if (getActivity() != null) {
-            ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
-            getActivity().startActivityForResult(contentSelectionIntent, INPUT_FILE_REQUEST_CODE);
+            disableShouldKeepApplicationInBackground();
+            startActivityForResult(contentSelectionIntent, INPUT_FILE_REQUEST_CODE);
         }
     }
 
@@ -426,12 +593,41 @@ public class WebviewOverlay extends Fragment {
         }
     }
 
+    public void enableShouldKeepApplicationInBackground() {
+        shouldKeepApplicationInBackground = true;
+    }
 
-    void reload()
-    {
-       if(myWebView != null)
-       {
-           myWebView.reload();
-       }
+    public void disableShouldKeepApplicationInBackground() {
+        shouldKeepApplicationInBackground = false;
+    }
+
+    @Override
+    public void onPause() {
+        if (shouldKeepApplicationInBackground && isAgentConnected) {
+            updateAgentStatus("offline");
+        }
+        super.onPause();
+    }
+
+    @Override
+    public void onStop() {
+        if (shouldKeepApplicationInBackground && isAgentConnected) {
+            updateAgentStatus("offline");
+        }
+        super.onStop();
+    }
+
+    void reload() {
+        if (myWebView != null) {
+            myWebView.reload();
+        }
+    }
+
+    public static WebviewOverlay newInstance(String ymAuthenticationToken) {
+        Bundle args = new Bundle();
+        args.putString("KEY",ymAuthenticationToken);
+        WebviewOverlay fragment = new WebviewOverlay();
+        fragment.setArguments(args);
+        return fragment;
     }
 }

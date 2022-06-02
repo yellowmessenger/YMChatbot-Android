@@ -1,5 +1,6 @@
 package com.yellowmessenger.ymchatexample;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -17,15 +18,16 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1638341502652";
+    String botId = "x1647948549855";
     String deviceToken = "your device token";
     String apiKey = "your api key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        //Get YMChat instance
+      /*  //Get YMChat instance
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
 
@@ -49,15 +51,15 @@ public class MainActivity extends AppCompatActivity {
         // To Change the color of close button, default color is white
         ymChat.config.closeButtonColor = R.color.white;
 
-        /* Note: if color is set from both setStatusBarColor and statusBarColorFromHex,
+        *//* Note: if color is set from both setStatusBarColor and statusBarColorFromHex,
          * statusBarColorFromHex will take priority
-         * */
+         * *//*
         // To set statusBarColor from hexadecimal color code
         ymChat.config.statusBarColorFromHex = "#49c656";
 
-        /* Note: if color is set from both closeButtonColor and closeButtonColorHex,
+        *//* Note: if color is set from both closeButtonColor and closeButtonColorHex,
          * closeButtonColorHex will take priority
-         * */
+         * *//*
         // To set closeButtonColor from hexadecimal color code
         ymChat.config.closeButtonColorFromHex = "#b72a2a";
 
@@ -74,17 +76,26 @@ public class MainActivity extends AppCompatActivity {
         });
         ymChat.onBotClose(() -> {
             Log.d("Example App", "Bot Was closed");
-        });
+        });*/
 
-        setContentView(R.layout.activity_main);
-
-        Button startBtn = findViewById(R.id.startbtn);
+     /*   Button startBtn = findViewById(R.id.startbtn);
         startBtn.setOnClickListener(view -> {
             //Starting the bot activity
             try {
                 ymChat.startChatbot(this);
             } catch (Exception e) {
                 //Catch and handle the exception
+                Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
+                e.printStackTrace();
+            }
+        });*/
+
+        Button startBtnNew = findViewById(R.id.startbtnnew);
+        startBtnNew.setOnClickListener(view -> {
+            //Starting the bot activity
+            try {
+                startActivity(new Intent(MainActivity.this,TestActivity.class));
+            } catch (Exception e) {
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
@@ -99,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void unlinkDevice() {
         try {
-            YMChat ymChat = YMChat.getInstance();
+            YMChat ymChat = YMChat.getInstance("1234");
             ymChat.unlinkDeviceToken(botId, apiKey, deviceToken, new YellowCallback() {
                 @Override
                 public void success() {

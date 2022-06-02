@@ -10,6 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.YMChatExample">
         <activity
+            android:name=".TestActivity"
+            android:exported="false"
+            android:theme="@style/Theme.YMChatExample.NoActionBar"/>
+        <activity
             android:name=".MainActivity"
             android:label="@string/ym_app_name"
             android:theme="@style/Theme.YMChatExample.NoActionBar">

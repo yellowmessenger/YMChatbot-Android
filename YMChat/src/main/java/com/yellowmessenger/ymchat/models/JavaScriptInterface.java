@@ -1,5 +1,6 @@
 package com.yellowmessenger.ymchat.models;
 
+import android.app.Activity;
 import android.util.Log;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
@@ -9,12 +10,14 @@ import com.yellowmessenger.ymchat.BotWebView;
 import com.yellowmessenger.ymchat.YMChat;
 
 public class JavaScriptInterface {
-    protected BotWebView parentActivity;
+    protected Activity parentActivity;
     protected WebView mWebView;
+    private String key;
 
-    public JavaScriptInterface(BotWebView _activity, WebView _webView) {
+    public JavaScriptInterface(Activity _activity, WebView _webView, String ymAuthKey) {
         parentActivity = _activity;
         mWebView = _webView;
+        key = ymAuthKey;
 
     }
 
@@ -43,7 +46,7 @@ public class JavaScriptInterface {
         if (incomingEvent.getCode() != null && incomingEvent.getCode().equals("start-mic")) {
             // For lambda expression only final variables is allowed
             final YMBotEventResponse finalIncomingEvent = incomingEvent;
-            parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(finalIncomingEvent.getCode()) * 1000));
+           // parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(finalIncomingEvent.getCode()) * 1000));
         }
 
         if (incomingEvent.getCode() != null && ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode()))) {
@@ -51,9 +54,9 @@ public class JavaScriptInterface {
         }
 
         if (incomingEvent.isInternal()) {
-            YMChat.getInstance().emitLocalEvent(incomingEvent);
+            YMChat.getInstance(key).emitLocalEvent(incomingEvent);
         } else {
-            YMChat.getInstance().emitEvent(incomingEvent);
+            YMChat.getInstance(key).emitEvent(incomingEvent);
         }
     }
 

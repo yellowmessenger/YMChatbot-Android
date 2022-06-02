@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.models.ConfigService;
@@ -19,6 +20,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 import okhttp3.Call;
 import okhttp3.Callback;
@@ -37,13 +40,14 @@ public class YMChat {
     private static YMChat botPluginInstance;
     public YMConfig config;
     private String unlinkNotificationUrl = "https://app.yellow.ai/api/plugin/removeDeviceToken?bot=";
+    private static Map<String,YMChat> instanceMap = null;
 
     private YMChat() {
         this.listener = botEvent -> {
         };
     }
 
-    public static YMChat getInstance() {
+    static YMChat getInstance() {
         if (botPluginInstance == null) {
             synchronized (YMChat.class) {
                 if (botPluginInstance == null) {
@@ -52,6 +56,19 @@ public class YMChat {
             }
         }
         return botPluginInstance;
+    }
+
+    public static YMChat getInstance(String ymAuthToken){
+        if(instanceMap == null){
+            instanceMap = new HashMap<>();
+        }
+        if(instanceMap.containsKey(ymAuthToken)){
+            return instanceMap.get(ymAuthToken);
+        }else{
+            YMChat instance = new YMChat();
+            instanceMap.put(ymAuthToken,instance);
+            return instance;
+        }
     }
 
     public void setLocalListener(BotEventListener localListener) {
@@ -66,11 +83,23 @@ public class YMChat {
         this.botCloseEventListener = listener;
     }
 
+    public Fragment getChatBotView(@NonNull Context context) throws Exception {
+        try {
+            if (validate(context)) {
+                ConfigService.getInstance(config.ymAuthenticationToken).setConfigData(config);
+                return WebviewOverlay.newInstance(config.ymAuthenticationToken);
+            }
+        } catch (Exception e) {
+            throw new Exception(("Exception in staring chat bot ::\nException message :: " + e.getMessage()));
+        }
+        return null;
+    }
 
+/*
     public void startChatbot(@NonNull Context context) throws Exception {
         try {
             if (validate(context)) {
-                ConfigService.getInstance().setConfigData(config);
+                ConfigService.getInstance(config.ymAuthenticationToken).setConfigData(config);
                 Intent _intent = new Intent(context, BotWebView.class);
                 _intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(_intent);
@@ -78,7 +107,7 @@ public class YMChat {
         } catch (Exception e) {
             throw new Exception(("Exception in staring chat bot ::\nException message :: " + e.getMessage()));
         }
-    }
+    }*/
 
     private boolean validate(Context context) throws Exception {
         if (context == null) {
