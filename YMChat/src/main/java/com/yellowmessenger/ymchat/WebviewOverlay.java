@@ -304,6 +304,12 @@ public class WebviewOverlay extends Fragment {
 
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                if(getContext() == null)
+                    return;
+                if(!hasLocationPermissionInManifest(getContext())){
+                    YmHelper.showMessageInSnackBar(parentLayout,getString(R.string.ym_no_location_permission_declared));
+                    return;
+                }
                 if(checkForLocationPermission(getContext())){
                     callback.invoke(origin,true,false);
                 } else {
@@ -431,6 +437,29 @@ public class WebviewOverlay extends Fragment {
 
             for (String perm : permissions) {
                 if (perm.equals(Manifest.permission.CAMERA))
+                    return true;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            //Exception occurred
+            return false;
+        }
+        return false;
+    }
+
+    private boolean hasLocationPermissionInManifest(Context context) {
+
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+            String[] permissions = packageInfo.requestedPermissions;
+
+            if (permissions == null || permissions.length == 0) {
+                return false;
+            }
+
+            for (String perm : permissions) {
+                if (perm.equals(Manifest.permission.ACCESS_FINE_LOCATION))
                     return true;
             }
         } catch (PackageManager.NameNotFoundException e) {

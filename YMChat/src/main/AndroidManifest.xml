@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <queries>
         <!-- Camera -->
         <intent>
@@ -16,7 +17,6 @@
             <action android:name="android.intent.action.GET_CONTENT" />
         </intent>
     </queries>
-
     <queries>
         <intent>
             <action android:name="android.speech.RecognitionService" />
