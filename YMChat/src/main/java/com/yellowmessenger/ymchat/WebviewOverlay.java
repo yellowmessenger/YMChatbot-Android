@@ -309,7 +309,7 @@ public class WebviewOverlay extends Fragment {
         myWebView.getSettings().setAllowFileAccess(true);
         myWebView.getSettings().setGeolocationDatabasePath(context.getFilesDir().getPath());
         myWebView.getSettings().setMediaPlaybackRequiresUserGesture(false);
-        myWebView.addJavascriptInterface(new JavaScriptInterface((Activity) getActivity(), myWebView,ymAuthKey), "YMHandler");
+        myWebView.addJavascriptInterface(new JavaScriptInterface((Activity) getActivity(), myWebView, ymAuthKey), "YMHandler");
 
         myWebView.setWebViewClient(new WebViewClient());
 
@@ -625,7 +625,7 @@ public class WebviewOverlay extends Fragment {
 
     public static WebviewOverlay newInstance(String ymAuthenticationToken) {
         Bundle args = new Bundle();
-        args.putString("KEY",ymAuthenticationToken);
+        args.putString("KEY", ymAuthenticationToken);
         WebviewOverlay fragment = new WebviewOverlay();
         fragment.setArguments(args);
         return fragment;

@@ -4,6 +4,7 @@ package com.yellowmessenger.ymchat;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -33,26 +34,11 @@ import androidx.fragment.app.FragmentManager;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Map;
-
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.FormBody;
-import okhttp3.MediaType;
-import okhttp3.MultipartBody;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.Response;
 
 
 public class BotWebView extends AppCompatActivity {
@@ -62,6 +48,7 @@ public class BotWebView extends AppCompatActivity {
     private ImageView closeButton;
     private FloatingActionButton micButton;
     private RelativeLayout parentLayout;
+    private boolean hasAudioPermissionInManifest;
 
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
@@ -88,7 +75,6 @@ public class BotWebView extends AppCompatActivity {
             }.start();
         }
     }
-
 
 
     public void setStatusBarColor() {
@@ -177,7 +163,8 @@ public class BotWebView extends AppCompatActivity {
 
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
         micButton = findViewById(R.id.floatingActionButton);
-        if (enableSpeech) {
+        hasAudioPermissionInManifest = hasAudioPermissionInManifest(this);
+        if (enableSpeech && hasAudioPermissionInManifest) {
             micButton.setVisibility(View.VISIBLE);
             micButton.setOnClickListener(view -> showVoiceOption());
             alignMicButton();
@@ -249,11 +236,34 @@ public class BotWebView extends AppCompatActivity {
 
     private void showMic() {
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
-        if (enableSpeech) {
+        if (enableSpeech && hasAudioPermissionInManifest) {
             micButton.show();
         } else {
             micButton.hide();
         }
+    }
+
+    private boolean hasAudioPermissionInManifest(Context context) {
+
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+            String[] permissions = packageInfo.requestedPermissions;
+
+            if (permissions == null || permissions.length == 0) {
+                return false;
+            }
+
+            for (String perm : permissions) {
+                if (perm.equals(Manifest.permission.RECORD_AUDIO))
+                    return true;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            //Exception occurred
+            return false;
+        }
+        return false;
     }
 
     private void showVoiceOption() {
@@ -266,8 +276,6 @@ public class BotWebView extends AppCompatActivity {
                     Manifest.permission.RECORD_AUDIO);
         }
     }
-
-
 
 
     @Override

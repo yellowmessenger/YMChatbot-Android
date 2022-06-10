@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.Settings;
 import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
@@ -24,18 +25,25 @@ public class YmHelper {
     }
 
     public static void showSnackBarWithSettingAction(@NonNull final Context context, @NonNull final View view, @NonNull final String message) {
-        Snackbar.make(view,
+        Snackbar snackbar = Snackbar.make(view,
                 message,
-                Snackbar.LENGTH_LONG)
-                .setAction(context.getString(R.string.ym_text_settings), v -> startInstalledAppDetailsActivity(context))
+                Snackbar.LENGTH_LONG);
+        TextView textView =
+                (TextView) snackbar.getView().findViewById(R.id.snackbar_text);
+        textView.setSingleLine(false);
+
+        snackbar.setAction(context.getString(R.string.ym_text_settings), v -> startInstalledAppDetailsActivity(context))
                 .show();
     }
 
     public static void showMessageInSnackBar(@NonNull final View view, @NonNull final String message) {
-        Snackbar.make(view,
+        Snackbar snackbar = Snackbar.make(view,
                 message,
-                Snackbar.LENGTH_LONG)
-                .setAction("", v -> {
+                Snackbar.LENGTH_LONG);
+        TextView textView =
+                (TextView) snackbar.getView().findViewById(R.id.snackbar_text);
+        textView.setSingleLine(false);
+        snackbar.setAction("", v -> {
                 })
                 .show();
     }
