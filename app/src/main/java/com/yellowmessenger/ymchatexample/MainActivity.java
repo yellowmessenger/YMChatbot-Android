@@ -30,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config = new YMConfig(botId);
 
         //To enable speach to text
-        //ymChat.config.enableSpeech = true;
+        // ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();

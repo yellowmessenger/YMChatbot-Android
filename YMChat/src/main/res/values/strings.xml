@@ -16,6 +16,7 @@
     <string name="ym_message_storgae_permission">Read storage permission required to complete this operation. Please enable it from app settings.</string>
     <string name="ym_message_camera_permission">Camera permission is required by the app to complete this operation. Please enable it from app settings.</string>
     <string name="ym_message_camera_error">Not able to launch camera please use file option to pick image</string>
-    <string name="ym_no_location_permission_declared">Location permission is not declared in manifest.</string>
+    <string name="ym_no_location_permission_declared">Please declare ACCESS_FINE_LOCATION permission in application manifest</string>
     <string name="ym_message_location_permission">Location permission is required to complete this operation.</string>
+    <string name="ym_declare_audio_permission">To use enable speech to text feature, please declare RECORD_AUDIO permission in application manifest.</string>
 </resources>
