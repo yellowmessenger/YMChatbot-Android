@@ -19,6 +19,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
+import android.webkit.GeolocationPermissions;
+import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -52,6 +54,8 @@ public class WebviewOverlay extends Fragment {
     private static final int INPUT_FILE_REQUEST_CODE = 1;
     private String requestedPermission = null;
     private View parentLayout = null;
+    private GeolocationPermissions.Callback geoCallback = null;
+    private String geoOrigin;
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (!TextUtils.isEmpty(requestedPermission)) {
@@ -71,6 +75,19 @@ public class WebviewOverlay extends Fragment {
                             resetFilePathCallback();
                             if (getContext() != null) {
                                 YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_camera_permission));
+                            }
+                        }
+                    } else if(requestedPermission.equals(Manifest.permission.ACCESS_FINE_LOCATION)){
+                        if (isGranted && geoCallback != null && geoOrigin != null) {
+                            geoCallback.invoke(geoOrigin,true,false);
+                            geoCallback = null;
+                            geoOrigin = null;
+                        } else {
+                            geoCallback.invoke(geoOrigin,false,false);
+                            geoCallback = null;
+                            geoOrigin = null;
+                            if (getContext() != null) {
+                                YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_location_permission));
                             }
                         }
                     } else {
@@ -224,6 +241,23 @@ public class WebviewOverlay extends Fragment {
                 return true;
 
             }
+
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                if(getContext() == null)
+                    return;
+                if(!hasLocationPermissionInManifest(getContext())){
+                    YmHelper.showMessageInSnackBar(parentLayout,getString(R.string.ym_no_location_permission_declared));
+                    return;
+                }
+                if(checkForLocationPermission(getContext())){
+                    callback.invoke(origin,true,false);
+                } else {
+                    geoOrigin = origin;
+                    geoCallback = callback;
+                }
+
+            }
         });
 
         String newUrl = ConfigService.getInstance().getUrl(getString(R.string.ym_chatbot_base_url));
@@ -351,6 +385,44 @@ public class WebviewOverlay extends Fragment {
             return false;
         }
         return false;
+    }
+
+    private boolean hasLocationPermissionInManifest(Context context) {
+
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+            String[] permissions = packageInfo.requestedPermissions;
+
+            if (permissions == null || permissions.length == 0) {
+                return false;
+            }
+
+            for (String perm : permissions) {
+                if (perm.equals(Manifest.permission.ACCESS_FINE_LOCATION))
+                    return true;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            //Exception occurred
+            return false;
+        }
+        return false;
+    }
+
+    private boolean checkForLocationPermission(Context context) {
+        if (ContextCompat.checkSelfPermission(
+                context,
+                Manifest.permission.ACCESS_FINE_LOCATION
+        )
+                == PackageManager.PERMISSION_GRANTED
+        ) {
+            return true;
+        } else {
+            requestedPermission = Manifest.permission.ACCESS_FINE_LOCATION;
+            requestPermissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
+            return false;
+        }
     }
 
     private boolean checkForCameraPermission(Context context) {

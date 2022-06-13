@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1638341502652";
+    String botId = "x1645602443989";
     String deviceToken = "your device token";
     String apiKey = "your api key";
 
