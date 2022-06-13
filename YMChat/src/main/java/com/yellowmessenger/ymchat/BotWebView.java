@@ -4,6 +4,7 @@ package com.yellowmessenger.ymchat;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Rect;
@@ -67,6 +68,7 @@ public class BotWebView extends AppCompatActivity {
     private RelativeLayout parentLayout;
     private boolean shouldKeepApplicationInBackground = true;
     private boolean isAgentConnected = false;
+    private boolean hasAudioPermissionInManifest;
 
 
     public static final MediaType JSON = MediaType.parse("application/json; charset=utf-8");
@@ -176,7 +178,7 @@ public class BotWebView extends AppCompatActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setStatusBarColor();
-
+        hasAudioPermissionInManifest = hasAudioPermissionInManifest(this);
         // setting up local listener
         YMChat.getInstance().setLocalListener(botEvent -> {
             switch (botEvent.getCode()) {
@@ -237,9 +239,13 @@ public class BotWebView extends AppCompatActivity {
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
         micButton = findViewById(R.id.floatingActionButton);
         if (enableSpeech) {
-            micButton.setVisibility(View.VISIBLE);
-            micButton.setOnClickListener(view -> showVoiceOption());
-            alignMicButton();
+            if (hasAudioPermissionInManifest) {
+                micButton.setVisibility(View.VISIBLE);
+                micButton.setOnClickListener(view -> showVoiceOption());
+                alignMicButton();
+            } else {
+                YmHelper.showMessageInSnackBar(parentLayout, getString(R.string.ym_declare_audio_permission));
+            }
         }
 
         closeButton = findViewById(R.id.backButton);
@@ -307,14 +313,41 @@ public class BotWebView extends AppCompatActivity {
 
     private void showMic() {
         boolean enableSpeech = ConfigService.getInstance().getConfig().enableSpeech;
-        if (enableSpeech) {
+        if (enableSpeech && hasAudioPermissionInManifest) {
             micButton.show();
         } else {
             micButton.hide();
         }
     }
 
+    private boolean hasAudioPermissionInManifest(Context context) {
+
+        PackageInfo packageInfo = null;
+        try {
+            packageInfo = context.getPackageManager().getPackageInfo(context.getPackageName(), PackageManager.GET_PERMISSIONS);
+
+            String[] permissions = packageInfo.requestedPermissions;
+
+            if (permissions == null || permissions.length == 0) {
+                return false;
+            }
+
+            for (String perm : permissions) {
+                if (perm.equals(Manifest.permission.RECORD_AUDIO))
+                    return true;
+            }
+        } catch (PackageManager.NameNotFoundException e) {
+            //Exception occurred
+            return false;
+        }
+        return false;
+    }
+
     private void showVoiceOption() {
+        if (!hasAudioPermissionInManifest) {
+            YmHelper.showMessageInSnackBar(parentLayout, getString(R.string.ym_declare_audio_permission));
+            return;
+        }
         if (ContextCompat.checkSelfPermission(
                 this, Manifest.permission.RECORD_AUDIO) ==
                 PackageManager.PERMISSION_GRANTED) {
