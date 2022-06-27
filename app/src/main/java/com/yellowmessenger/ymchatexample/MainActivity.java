@@ -2,6 +2,7 @@ package com.yellowmessenger.ymchatexample;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -17,14 +18,13 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1645602443989";
+    String botId = "x1608615889375";
     String deviceToken = "your device token";
     String apiKey = "your api key";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //Get YMChat instance
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
@@ -65,6 +65,8 @@ public class MainActivity extends AppCompatActivity {
         // This is an optional parameter
         ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
 
+       // ymChat.config.customBaseUrl = "https://r2.cloud.yellow.ai";
+
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
             switch (botEvent.getCode()) {
@@ -95,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
                     unlinkDevice();
                 }
         );
+        WebView.setWebContentsDebuggingEnabled(true);
     }
 
     private void unlinkDevice() {
