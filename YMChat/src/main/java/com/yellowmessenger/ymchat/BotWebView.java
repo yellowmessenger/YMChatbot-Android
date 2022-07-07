@@ -222,6 +222,11 @@ public class BotWebView extends AppCompatActivity {
                 case "agent-ticket-closed":
                     isAgentConnected = false;
                     break;
+                case "multi-upload":
+                    if(fh != null){
+                        fh.setMultiFileUpload(true);
+                    }
+                    break;
 
             }
         });

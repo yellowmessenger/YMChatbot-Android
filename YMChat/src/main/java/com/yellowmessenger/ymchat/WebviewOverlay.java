@@ -55,6 +55,7 @@ public class WebviewOverlay extends Fragment {
     private View parentLayout = null;
     private GeolocationPermissions.Callback geoCallback = null;
     private String geoOrigin;
+    private boolean isMultiFileUpload = false;
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (!TextUtils.isEmpty(requestedPermission)) {
@@ -82,7 +83,9 @@ public class WebviewOverlay extends Fragment {
                             geoCallback = null;
                             geoOrigin = null;
                         } else {
-                            geoCallback.invoke(geoOrigin, false, false);
+                            if(geoCallback != null && geoOrigin != null) {
+                                geoCallback.invoke(geoOrigin, false, false);
+                            }
                             geoCallback = null;
                             geoOrigin = null;
                             if (getContext() != null) {
@@ -450,7 +453,9 @@ public class WebviewOverlay extends Fragment {
         Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
         contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
         contentSelectionIntent.setType("*/*");
-        contentSelectionIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        if (isMultiFileUpload()) {
+            contentSelectionIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
         if (getActivity() != null) {
             ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
             getActivity().startActivityForResult(contentSelectionIntent, INPUT_FILE_REQUEST_CODE);
@@ -510,5 +515,13 @@ public class WebviewOverlay extends Fragment {
         if (myWebView != null) {
             myWebView.reload();
         }
+    }
+
+    public boolean isMultiFileUpload() {
+        return isMultiFileUpload;
+    }
+
+    public void setMultiFileUpload(boolean multiFileUpload) {
+        isMultiFileUpload = multiFileUpload;
     }
 }
