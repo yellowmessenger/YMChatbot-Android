@@ -180,7 +180,7 @@ public class YMChat {
 
                         Request request = new Request.Builder()
                                 .url(postUrl)
-                                .addHeader("x-auth-token", apiKey)
+                                .addHeader("x-api-key", apiKey)
                                 .addHeader("Content-Type", "application/json")
                                 .post(requestBody)
                                 .build();
