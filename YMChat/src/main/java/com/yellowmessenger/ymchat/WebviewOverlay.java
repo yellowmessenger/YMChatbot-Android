@@ -83,7 +83,7 @@ public class WebviewOverlay extends Fragment {
                             geoCallback = null;
                             geoOrigin = null;
                         } else {
-                            if(geoCallback != null && geoOrigin != null) {
+                            if (geoCallback != null && geoOrigin != null) {
                                 geoCallback.invoke(geoOrigin, false, false);
                             }
                             geoCallback = null;
@@ -277,7 +277,7 @@ public class WebviewOverlay extends Fragment {
 
     private void showFileChooser() {
         boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
-        if (hideCameraForUpload) {
+        if (hideCameraForUpload || isMultiFileUpload()) {
             if (checkForStoragePermission(getContext())) {
                 launchFileIntent();
             }
@@ -347,7 +347,7 @@ public class WebviewOverlay extends Fragment {
                 photoFile = createImageFile();
                 takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
             } catch (IOException ex) {
-                //IO exception occcurred
+                //IO exception occurred
             }
 
             // Continue only if the File was successfully created
