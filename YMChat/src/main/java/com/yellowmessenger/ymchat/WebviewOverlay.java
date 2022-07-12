@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.ConsoleMessage;
 import android.webkit.GeolocationPermissions;
-import android.webkit.PermissionRequest;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
 import android.webkit.WebView;
@@ -56,6 +55,7 @@ public class WebviewOverlay extends Fragment {
     private View parentLayout = null;
     private GeolocationPermissions.Callback geoCallback = null;
     private String geoOrigin;
+    private boolean isMultiFileUpload = false;
     private ActivityResultLauncher<String> requestPermissionLauncher =
             registerForActivityResult(new ActivityResultContracts.RequestPermission(), isGranted -> {
                 if (!TextUtils.isEmpty(requestedPermission)) {
@@ -77,13 +77,15 @@ public class WebviewOverlay extends Fragment {
                                 YmHelper.showSnackBarWithSettingAction(getContext(), parentLayout, getString(R.string.ym_message_camera_permission));
                             }
                         }
-                    } else if(requestedPermission.equals(Manifest.permission.ACCESS_FINE_LOCATION)){
+                    } else if (requestedPermission.equals(Manifest.permission.ACCESS_FINE_LOCATION)) {
                         if (isGranted && geoCallback != null && geoOrigin != null) {
-                            geoCallback.invoke(geoOrigin,true,false);
+                            geoCallback.invoke(geoOrigin, true, false);
                             geoCallback = null;
                             geoOrigin = null;
                         } else {
-                            geoCallback.invoke(geoOrigin,false,false);
+                            if (geoCallback != null && geoOrigin != null) {
+                                geoCallback.invoke(geoOrigin, false, false);
+                            }
                             geoCallback = null;
                             geoOrigin = null;
                             if (getContext() != null) {
@@ -133,6 +135,14 @@ public class WebviewOverlay extends Fragment {
             if (data != null && data.getDataString() != null) {
                 String dataString = data.getDataString();
                 results = new Uri[]{Uri.parse(dataString)};
+            } else if (data != null && data.getClipData() != null) {
+                int count = data.getClipData().getItemCount();
+                if (count > 0) {
+                    results = new Uri[count];
+                    for (int i = 0; i < count; i++) {
+                        results[i] = data.getClipData().getItemAt(i).getUri();
+                    }
+                }
             } else {
                 // If there is no data, then we may have taken a photo
                 if (mCameraPhotoPath != null) {
@@ -244,14 +254,14 @@ public class WebviewOverlay extends Fragment {
 
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                if(getContext() == null)
+                if (getContext() == null)
                     return;
-                if(!hasLocationPermissionInManifest(getContext())){
-                    YmHelper.showMessageInSnackBar(parentLayout,getString(R.string.ym_no_location_permission_declared));
+                if (!hasLocationPermissionInManifest(getContext())) {
+                    YmHelper.showMessageInSnackBar(parentLayout, getString(R.string.ym_no_location_permission_declared));
                     return;
                 }
-                if(checkForLocationPermission(getContext())){
-                    callback.invoke(origin,true,false);
+                if (checkForLocationPermission(getContext())) {
+                    callback.invoke(origin, true, false);
                 } else {
                     geoOrigin = origin;
                     geoCallback = callback;
@@ -267,7 +277,7 @@ public class WebviewOverlay extends Fragment {
 
     private void showFileChooser() {
         boolean hideCameraForUpload = ConfigService.getInstance().getConfig().hideCameraForUpload;
-        if (hideCameraForUpload) {
+        if (hideCameraForUpload || isMultiFileUpload()) {
             if (checkForStoragePermission(getContext())) {
                 launchFileIntent();
             }
@@ -300,8 +310,7 @@ public class WebviewOverlay extends Fragment {
 
             }
             bottomSheetDialog.setOnDismissListener(dialogInterface -> {
-                if(!isMediaUploadOptionSelected)
-                {
+                if (!isMediaUploadOptionSelected) {
                     resetFilePathCallback();
                 }
             });
@@ -338,7 +347,7 @@ public class WebviewOverlay extends Fragment {
                 photoFile = createImageFile();
                 takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath);
             } catch (IOException ex) {
-                //IO exception occcurred
+                //IO exception occurred
             }
 
             // Continue only if the File was successfully created
@@ -444,6 +453,9 @@ public class WebviewOverlay extends Fragment {
         Intent contentSelectionIntent = new Intent(Intent.ACTION_GET_CONTENT);
         contentSelectionIntent.addCategory(Intent.CATEGORY_OPENABLE);
         contentSelectionIntent.setType("*/*");
+        if (isMultiFileUpload()) {
+            contentSelectionIntent.putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
+        }
         if (getActivity() != null) {
             ((BotWebView) getActivity()).disableShouldKeepApplicationInBackground();
             getActivity().startActivityForResult(contentSelectionIntent, INPUT_FILE_REQUEST_CODE);
@@ -499,11 +511,17 @@ public class WebviewOverlay extends Fragment {
     }
 
 
-    void reload()
-    {
-       if(myWebView != null)
-       {
-           myWebView.reload();
-       }
+    void reload() {
+        if (myWebView != null) {
+            myWebView.reload();
+        }
+    }
+
+    public boolean isMultiFileUpload() {
+        return isMultiFileUpload;
+    }
+
+    public void setMultiFileUpload(boolean multiFileUpload) {
+        isMultiFileUpload = multiFileUpload;
     }
 }

@@ -181,11 +181,20 @@ public class BotWebView extends AppCompatActivity {
         hasAudioPermissionInManifest = hasAudioPermissionInManifest(this);
         // setting up local listener
         YMChat.getInstance().setLocalListener(botEvent -> {
+            if (botEvent.getCode() == null)
+                return;
+
             switch (botEvent.getCode()) {
                 case "close-bot":
-                    closeBot();
-                    YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "", false));
-                    this.finish();
+                    try {
+                        runOnUiThread(() -> {
+                            closeBot();
+                            YMChat.getInstance().emitEvent(new YMBotEventResponse("bot-closed", "", false));
+                            this.finish();
+                        });
+                    } catch (Exception e) {
+                        //Exception Occurred
+                    }
                     break;
                 case "upload-image":
                     Map<String, Object> retMap = new Gson().fromJson(
@@ -200,26 +209,72 @@ public class BotWebView extends AppCompatActivity {
                     }
                     break;
                 case "image-opened":
-                    runOnUiThread(() -> {
-                        hideMic();
-                        hideCloseButton();
-                    });
+                    try {
+                        runOnUiThread(() -> {
+                            hideMic();
+                            hideCloseButton();
+                        });
+                    } catch (Exception e) {
+                        //Exception Occurred
+                    }
                     break;
                 case "image-closed":
-                    runOnUiThread(() -> {
-                        showCloseButton();
-                        showMic();
-                    });
+                    try {
+                        runOnUiThread(() -> {
+                            showCloseButton();
+                            showMic();
+                        });
+                    } catch (Exception e) {
+                        //Exception Occurred
+                    }
+                    break;
                 case "yellowai-uid":
-                    runOnUiThread(() -> {
-                        this.uid = botEvent.getData();
-                    });
+                    try {
+                        runOnUiThread(() -> {
+                            this.uid = botEvent.getData();
+                        });
+                    } catch (Exception e) {
+                        //Exception Occurred
+                    }
                     break;
                 case "agent-ticket-connected":
-                    isAgentConnected = true;
+                    try {
+                        runOnUiThread(() -> {
+                            isAgentConnected = true;
+                        });
+                    } catch (Exception e) {
+                        //Exception Occurred
+                    }
+
                     break;
                 case "agent-ticket-closed":
-                    isAgentConnected = false;
+                    try {
+                        runOnUiThread(() -> isAgentConnected = false);
+                    } catch (Exception e) {
+                        //Exception Occurred
+                    }
+                    break;
+                case "multi-upload":
+                    try {
+                        runOnUiThread(() -> {
+                            if (fh != null) {
+                                fh.setMultiFileUpload(true);
+                            }
+                        });
+                    } catch (Exception e) {
+                        //Exception Occurred
+                    }
+                    break;
+                case "disable-multi-upload":
+                    try {
+                        runOnUiThread(() -> {
+                            if (fh != null) {
+                                fh.setMultiFileUpload(false);
+                            }
+                        });
+                    } catch (Exception e) {
+                        //Exception Occurred
+                    }
                     break;
 
             }

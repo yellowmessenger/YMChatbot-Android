@@ -24,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         //Get YMChat instance
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
@@ -64,6 +63,10 @@ public class MainActivity extends AppCompatActivity {
         // Set custom loader url , it should be a valid, light weight and public image url
         // This is an optional parameter
         ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
+
+
+        //Set custom base url like follows in case of On-Prem environment and multi-region
+        // ymChat.config.customBaseUrl = "https:/rx.cloud.yellow.ai";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
