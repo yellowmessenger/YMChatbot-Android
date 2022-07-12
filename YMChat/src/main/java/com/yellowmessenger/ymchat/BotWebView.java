@@ -18,7 +18,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -314,8 +313,6 @@ public class BotWebView extends AppCompatActivity {
         setStatusBarColorFromHex();
         setCloseButtonColorFromHex();
         setKeyboardListener();
-
-        WebView.setWebContentsDebuggingEnabled(true);
 
         fh = new WebviewOverlay();
         FragmentManager fragManager = getSupportFragmentManager();

@@ -2,7 +2,6 @@ package com.yellowmessenger.ymchatexample;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -65,7 +64,9 @@ public class MainActivity extends AppCompatActivity {
         // This is an optional parameter
         ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
 
-       // ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
+
+        //Set custom base url like follows in case of On-Prem environment and multi-region
+        // ymChat.config.customBaseUrl = "https:/rx.cloud.yellow.ai";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -97,7 +98,6 @@ public class MainActivity extends AppCompatActivity {
                     unlinkDevice();
                 }
         );
-        WebView.setWebContentsDebuggingEnabled(true);
     }
 
     private void unlinkDevice() {
