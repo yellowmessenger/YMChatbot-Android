@@ -1,7 +1,6 @@
 package com.yellowmessenger.ymchat;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
@@ -40,7 +39,7 @@ public class YMChat {
     private static YMChat botPluginInstance;
     public YMConfig config;
     private String unlinkNotificationUrl = "https://app.yellow.ai/api/plugin/removeDeviceToken?bot=";
-    private static Map<String,YMChat> instanceMap = null;
+    private static Map<String, YMChat> instanceMap = null;
 
     private YMChat() {
         this.listener = botEvent -> {
@@ -58,15 +57,15 @@ public class YMChat {
         return botPluginInstance;
     }
 
-    public static YMChat getInstance(String ymAuthToken){
-        if(instanceMap == null){
+    public synchronized static YMChat getInstance(String ymAuthToken) {
+        if (instanceMap == null) {
             instanceMap = new HashMap<>();
         }
-        if(instanceMap.containsKey(ymAuthToken)){
+        if (instanceMap.containsKey(ymAuthToken)) {
             return instanceMap.get(ymAuthToken);
-        }else{
+        } else {
             YMChat instance = new YMChat();
-            instanceMap.put(ymAuthToken,instance);
+            instanceMap.put(ymAuthToken, instance);
             return instance;
         }
     }
@@ -284,6 +283,28 @@ public class YMChat {
             throw new Exception("callback cannot be null");
 
         return true;
+    }
+
+    public void clearAllInstances() {
+        botPluginInstance = null;
+
+        if (instanceMap == null || instanceMap.isEmpty())
+            return;
+
+        instanceMap.clear();
+        instanceMap = null;
+    }
+
+    public synchronized void clearInstance(String ymAuthenticationToken) {
+        botPluginInstance = null;
+
+        if (instanceMap == null || instanceMap.isEmpty())
+            return;
+
+        if (instanceMap.containsKey(ymAuthenticationToken)) {
+            instanceMap.put(ymAuthenticationToken, null);
+        }
+
     }
 }
 

@@ -3,6 +3,7 @@ package com.yellowmessenger.ymchatexample;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -106,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
                     unlinkDevice();
                 }
         );
+
+        WebView.setWebContentsDebuggingEnabled(true);
     }
 
     private void unlinkDevice() {
