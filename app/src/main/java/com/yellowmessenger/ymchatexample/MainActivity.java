@@ -17,7 +17,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1645602443989";
+    String botId = "x1652333933102";
     String deviceToken = "your device token";
     String apiKey = "your api key";
 
@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        // ymChat.config.customBaseUrl = "https:/rx.cloud.yellow.ai";
+         ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
