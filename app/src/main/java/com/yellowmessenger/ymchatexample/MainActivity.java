@@ -40,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         // Choose version(1 or 2), default is 1
         ymChat.config.version = 2;
 
+        ymChat.config.ymAuthenticationToken = "123456";
+
         //To enable notifications
         ymChat.config.deviceToken = deviceToken;
 
@@ -63,6 +65,9 @@ public class MainActivity extends AppCompatActivity {
         // Set custom loader url , it should be a valid, light weight and public image url
         // This is an optional parameter
         ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
+
+        // Hide input bar and disallow action while bot is loading
+        ymChat.config.disableActionsOnLoad = true;
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region

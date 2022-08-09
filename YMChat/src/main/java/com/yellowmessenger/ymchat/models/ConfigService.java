@@ -57,6 +57,7 @@ public class ConfigService {
                 .appendQueryParameter("customBaseUrl", config.customBaseUrl)
                 .appendQueryParameter("version", Integer.toString(config.version))
                 .appendQueryParameter("customLoaderUrl", config.customLoaderUrl)
+                .appendQueryParameter("disableActionsOnLoad", String.valueOf(config.disableActionsOnLoad))
                 .build();
 
         return builtUri.toString();
