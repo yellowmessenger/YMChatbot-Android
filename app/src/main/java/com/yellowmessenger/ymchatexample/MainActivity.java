@@ -40,8 +40,6 @@ public class MainActivity extends AppCompatActivity {
         // Choose version(1 or 2), default is 1
         ymChat.config.version = 2;
 
-        ymChat.config.ymAuthenticationToken = "123456";
-
         //To enable notifications
         ymChat.config.deviceToken = deviceToken;
 
