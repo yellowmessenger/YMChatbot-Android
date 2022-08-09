@@ -64,6 +64,9 @@ public class MainActivity extends AppCompatActivity {
         // This is an optional parameter
         ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
 
+        // Hide input bar and disallow action while bot is loading
+        ymChat.config.disableActionsOnLoad = true;
+
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
         // ymChat.config.customBaseUrl = "https:/rx.cloud.yellow.ai";

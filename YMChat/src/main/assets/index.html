@@ -48,6 +48,7 @@
         var version = getParams(window.location.href)["version"];
         var customLoaderUrl = getParams(window.location.href)["customLoaderUrl"];
         var imageLink = "url(" + customLoaderUrl + ")";
+        var disableActionsOnLoad = getParams(window.location.href)["disableActionsOnLoad"];
         document.getElementById("se-pre-con").style.backgroundImage = imageLink;
 
 
@@ -70,6 +71,7 @@
             ymAuthenticationToken: ymAuthenticationToken,
             deviceToken: deviceToken,
             logging: true,
+            setDisableActionsTimeout: disableActionsOnLoad == 'true',
             handlers: {
                 sendIOSEvent: function (data) {
                  console.log(data);
