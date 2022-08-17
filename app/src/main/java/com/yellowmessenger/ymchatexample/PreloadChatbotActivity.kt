@@ -98,7 +98,6 @@ class PreloadChatbotActivity : AppCompatActivity() {
         }
         ymChat.onBotClose {
             Log.d("Example App", "Bot Was closed")
-            //removeFragment()
             onBackPressed()
         }
 
@@ -115,7 +114,6 @@ class PreloadChatbotActivity : AppCompatActivity() {
     @Throws(Exception::class)
     private fun loadFragment(frag: Fragment, tag: String) {
         val transaction = supportFragmentManager.beginTransaction()
-        //frag_container is your layout name in xml file
         transaction.replace(R.id.frag_preload, frag, tag)
         transaction.addToBackStack(null)
         transaction.commit()
