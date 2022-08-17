@@ -7,6 +7,7 @@ import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.models.ConfigService;
@@ -71,13 +72,25 @@ public class YMChat {
         try {
             if (validate(context)) {
                 ConfigService.getInstance().setConfigData(config);
-                Intent _intent = new Intent(context, BotWebView.class);
+                Intent _intent = new Intent(context, YellowBotWebViewActivity.class);
                 _intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 context.startActivity(_intent);
             }
         } catch (Exception e) {
             throw new Exception(("Exception in staring chat bot ::\nException message :: " + e.getMessage()));
         }
+    }
+
+    public Fragment getChatBotView(@NonNull Context context) throws Exception {
+        try {
+            if (validate(context)) {
+                ConfigService.getInstance().setConfigData(config);
+                return YellowBotWebviewFragment.Companion.newInstance();
+            }
+        } catch (Exception e) {
+            throw new Exception(("Exception in staring chat bot ::\nException message :: " + e.getMessage()));
+        }
+        return null;
     }
 
     private boolean validate(Context context) throws Exception {

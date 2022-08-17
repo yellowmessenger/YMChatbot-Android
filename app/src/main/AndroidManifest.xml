@@ -14,6 +14,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.YMChatExample">
         <activity
+            android:name=".PreloadChatbotActivity"
+            android:theme="@style/Theme.YMChatExample.NoActionBar"
+            android:exported="false" />
+        <activity
+            android:name=".BotViewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.YMChatExample.NoActionBar" />
+        <activity
             android:name=".MainActivity"
             android:label="@string/ym_app_name"
             android:theme="@style/Theme.YMChatExample.NoActionBar">
