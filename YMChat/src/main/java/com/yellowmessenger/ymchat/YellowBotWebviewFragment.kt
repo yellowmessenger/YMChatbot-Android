@@ -29,6 +29,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -62,9 +64,6 @@ class YellowBotWebviewFragment : Fragment() {
     private var hasAudioPermissionInManifest = false
     private val TAG = "YMChat"
     private lateinit var myWebView: WebView
-
-    // private lateinit var myWebView: WebView
-    // private lateinit var myWebView: WebView
     private var mFilePathCallback: ValueCallback<Array<Uri?>>? = null
     private var mCameraPhotoPath: String? = null
     private val INPUT_FILE_REQUEST_CODE = 1
@@ -228,10 +227,10 @@ class YellowBotWebviewFragment : Fragment() {
         }
 
 
-        /*ViewCompat.setOnApplyWindowInsetsListener(
+       /* ViewCompat.setOnApplyWindowInsetsListener(
             findViewById<View>(android.R.id.content)
         ) { v: View, insets: WindowInsetsCompat ->
-            val params = v.layoutParams as MarginLayoutParams
+            val params = v.layoutParams as ViewGroup.MarginLayoutParams
             params.bottomMargin = insets.systemWindowInsetBottom
             insets.consumeSystemWindowInsets()
         }*/
