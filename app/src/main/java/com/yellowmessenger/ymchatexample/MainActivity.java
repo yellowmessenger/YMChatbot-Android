@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1645602443989";
+    String botId = "x1633418462383";
     String deviceToken = "your device token";
     String apiKey = "your api key";
     FrameLayout frame;
@@ -39,12 +39,12 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config = new YMConfig(botId);
 
         //To enable speach to text
-        ymChat.config.enableSpeech = true;
+       // ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
-        payloadData.put("some-key", "some-value");
+        payloadData.put("mobile", "919588863784");
         ymChat.config.payload = payloadData;
 
         // Choose version(1 or 2), default is 1
@@ -72,14 +72,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Set custom loader url , it should be a valid, light weight and public image url
         // This is an optional parameter
-        // ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
+         ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
 
         // Hide input bar and disallow action while bot is loading
         ymChat.config.disableActionsOnLoad = true;
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        // ymChat.config.customBaseUrl = "https:/rx.cloud.yellow.ai";
+        // ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {

@@ -2,6 +2,7 @@
     <string name="ym_app_name">YMChat</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="ym_chatbot_base_url">file:///android_asset/index.html</string>
+    <string name="ym_lite_chatbot_base_url">file:///android_asset/index-lite.html</string>
     <string name="ym_chatbot_base_url_github">https://yellowmessenger.github.io/pages/app/mobile.html</string>
     <string name="ym_msg_listening">I\'m listening...</string>
     <string name="ym_msg_start_speaking">Start Speaking...</string>
