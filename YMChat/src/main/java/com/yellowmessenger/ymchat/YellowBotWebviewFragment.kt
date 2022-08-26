@@ -62,9 +62,6 @@ class YellowBotWebviewFragment : Fragment() {
     private var hasAudioPermissionInManifest = false
     private val TAG = "YMChat"
     private lateinit var myWebView: WebView
-
-    // private lateinit var myWebView: WebView
-    // private lateinit var myWebView: WebView
     private var mFilePathCallback: ValueCallback<Array<Uri?>>? = null
     private var mCameraPhotoPath: String? = null
     private val INPUT_FILE_REQUEST_CODE = 1
@@ -201,7 +198,7 @@ class YellowBotWebviewFragment : Fragment() {
                     //Exception Occurred
                 }
                 "agent-ticket-connected" -> try {
-                    activity?.runOnUiThread(Runnable { isAgentConnected = true })
+                    activity?.runOnUiThread { isAgentConnected = true }
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
@@ -226,15 +223,6 @@ class YellowBotWebviewFragment : Fragment() {
                 }
             }
         }
-
-
-        /*ViewCompat.setOnApplyWindowInsetsListener(
-            findViewById<View>(android.R.id.content)
-        ) { v: View, insets: WindowInsetsCompat ->
-            val params = v.layoutParams as MarginLayoutParams
-            params.bottomMargin = insets.systemWindowInsetBottom
-            insets.consumeSystemWindowInsets()
-        }*/
     }
 
     override fun onCreateView(
