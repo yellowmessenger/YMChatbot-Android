@@ -29,8 +29,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -200,7 +198,7 @@ class YellowBotWebviewFragment : Fragment() {
                     //Exception Occurred
                 }
                 "agent-ticket-connected" -> try {
-                    activity?.runOnUiThread(Runnable { isAgentConnected = true })
+                    activity?.runOnUiThread { isAgentConnected = true }
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
@@ -225,15 +223,6 @@ class YellowBotWebviewFragment : Fragment() {
                 }
             }
         }
-
-
-       /* ViewCompat.setOnApplyWindowInsetsListener(
-            findViewById<View>(android.R.id.content)
-        ) { v: View, insets: WindowInsetsCompat ->
-            val params = v.layoutParams as ViewGroup.MarginLayoutParams
-            params.bottomMargin = insets.systemWindowInsetBottom
-            insets.consumeSystemWindowInsets()
-        }*/
     }
 
     override fun onCreateView(

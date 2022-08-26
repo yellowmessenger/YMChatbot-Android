@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config.deviceToken = deviceToken;
 
         // To Change the color of status bar, by default it will pick app theme
-        ymChat.config.statusBarColor = R.color.colorPrimaryDark;
+        ymChat.config.statusBarColor = R.color.teal_200;
         // To Change the color of close button, default color is white
         ymChat.config.closeButtonColor = R.color.white;
 
@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
          * statusBarColorFromHex will take priority
          * */
         // To set statusBarColor from hexadecimal color code
-        ymChat.config.statusBarColorFromHex = "#49c656";
+        ymChat.config.statusBarColorFromHex = "#FF03DAC5";
 
         /* Note: if color is set from both closeButtonColor and closeButtonColorHex,
          * closeButtonColorHex will take priority
