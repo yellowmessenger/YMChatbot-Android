@@ -19,7 +19,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1633418462383";
+    String botId = "x1652333933102";
     String deviceToken = "your device token";
     String apiKey = "your api key";
     FrameLayout frame;
@@ -38,14 +38,18 @@ public class MainActivity extends AppCompatActivity {
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
 
+        ymChat.config.disableActionsOnLoad = true;
+
         //To enable speach to text
        // ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
-        payloadData.put("mobile", "919588863784");
+       // payloadData.put("mobile", "919588863784");
         ymChat.config.payload = payloadData;
+
+        ymChat.config.useLiteVersion = true;
 
         // Choose version(1 or 2), default is 1
         ymChat.config.version = 2;
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        // ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
+         ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
