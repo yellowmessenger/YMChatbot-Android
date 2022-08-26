@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     android:id="@+id/parentView"
-    tools:context=".BotWebView">
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <FrameLayout
-        android:id="@+id/container"
+    <WebView
+        android:id="@+id/yellowWebView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/ymColorDark" />
@@ -52,16 +50,16 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
+        android:layout_marginEnd="@dimen/ym_negative_margin"
+        android:backgroundTint="@color/ymTransparent"
         android:clickable="true"
         android:contentDescription="@string/ym_fab_voice_button"
         android:focusable="true"
-        android:visibility="gone"
-        app:fabCustomSize="@dimen/ym_custom_fab_size"
-        android:layout_marginEnd="@dimen/ym_negative_margin"
-        android:backgroundTint="@color/ymTransparent"
         android:src="@drawable/ic_mic_ym_small"
+        android:visibility="gone"
         app:borderWidth="0dp"
         app:elevation="0dp"
+        app:fabCustomSize="@dimen/ym_custom_fab_size"
         app:pressedTranslationZ="0dp" />
 
 
