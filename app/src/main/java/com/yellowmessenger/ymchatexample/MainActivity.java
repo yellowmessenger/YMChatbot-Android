@@ -3,6 +3,7 @@ package com.yellowmessenger.ymchatexample;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.Toast;
@@ -19,7 +20,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1652333933102";
+    String botId = "x1651064921026";
     String deviceToken = "your device token";
     String apiKey = "your api key";
     FrameLayout frame;
@@ -29,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
+
+        WebView.setWebContentsDebuggingEnabled(true);
 
         Button startBtn = findViewById(R.id.startbtn);
         Button button = findViewById(R.id.button);
