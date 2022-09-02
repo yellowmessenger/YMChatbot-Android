@@ -1301,7 +1301,7 @@ a:hover {
 
 #ymChatForm {
   height: 71px;
-  margin-bottom: 0;
+  margin-bottom: -15px;
   border-top: 1px solid #eee;
 }
 
