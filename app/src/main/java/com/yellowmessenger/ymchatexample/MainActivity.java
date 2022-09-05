@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1652333933102";
+    String botId = "x1649687669315";
     String deviceToken = "your device token";
     String apiKey = "your api key";
     FrameLayout frame;
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-         ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
+       // ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
