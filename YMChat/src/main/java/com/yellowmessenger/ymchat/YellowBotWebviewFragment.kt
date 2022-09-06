@@ -429,7 +429,13 @@ class YellowBotWebviewFragment : Fragment() {
                 }
             }
         }
-        val newUrl = ConfigService.getInstance().getUrl(getString(R.string.ym_chatbot_base_url))
+        val htmlurl = if (ConfigService.getInstance().config.useLiteVersion) {
+            getString(R.string.ym_lite_chatbot_base_url)
+
+        } else {
+            getString(R.string.ym_chatbot_base_url)
+        }
+        val newUrl = ConfigService.getInstance().getUrl(htmlurl)
         myWebView.loadUrl(newUrl)
         return myWebView
     }
