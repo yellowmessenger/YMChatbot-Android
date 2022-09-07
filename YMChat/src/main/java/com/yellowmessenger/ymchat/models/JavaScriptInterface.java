@@ -1,18 +1,17 @@
 package com.yellowmessenger.ymchat.models;
 
-import android.util.Log;
+import android.app.Activity;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
 import com.google.gson.Gson;
-import com.yellowmessenger.ymchat.BotWebView;
 import com.yellowmessenger.ymchat.YMChat;
 
 public class JavaScriptInterface {
-    protected BotWebView parentActivity;
+    protected Activity parentActivity;
     protected WebView mWebView;
 
-    public JavaScriptInterface(BotWebView _activity, WebView _webView) {
+    public JavaScriptInterface(Activity _activity, WebView _webView) {
         parentActivity = _activity;
         mWebView = _webView;
 
@@ -38,12 +37,6 @@ public class JavaScriptInterface {
             incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
         } catch (Exception e) {
             incomingEvent = new YMBotEventResponse(null, null, false);
-        }
-
-        if (incomingEvent.getCode() != null && incomingEvent.getCode().equals("start-mic")) {
-            // For lambda expression only final variables is allowed
-            final YMBotEventResponse finalIncomingEvent = incomingEvent;
-            parentActivity.runOnUiThread(() -> parentActivity.startMic(Long.parseLong(finalIncomingEvent.getCode()) * 1000));
         }
 
         if (incomingEvent.getCode() != null && ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode()))) {

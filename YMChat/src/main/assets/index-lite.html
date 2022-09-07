@@ -1,0 +1,347 @@
+<!doctype html>
+<html>
+<head>
+    <title></title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" type="text/css" href="file:///android_asset/widget-min-style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@2.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        #ymFrameHolder {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            position: fixed;
+            left: 0px;
+            top: 0px;
+            z-index: 9999;
+            background: url(yellowLoader.gif) center no-repeat #fff;
+        }
+
+        .ym-img-holder {
+          z-index: 999999;
+          background: rgba(0, 0, 0, 0.5);
+          width: 100%;
+          height: 100%;
+          position: fixed;
+          top: 0;
+          left: 0;
+        }
+
+        .ym-img-holder .fixer {
+          height: 100%;
+          vertical-align: middle;
+          display: inline-block;
+        }
+        .ym-img-holder .img-popup {
+              width: 100%;
+              height: 100%;
+              transform: scale(0);
+              overflow: scroll;
+        }
+
+        .ym-img-holder .ym-close {
+          display: flex;
+          height: 40px;
+          padding: 4px 5px;
+          z-index: 9999;
+          justify-content: flex-end;
+          background: white;
+          cursor: pointer;
+        }
+
+        .ym-img{
+          width: 70%;
+          height: 60%;
+          position: fixed;
+          top: 20%;
+          left: 20%;
+        }
+        @media screen and (max-width: 768px) {
+          .ym-img {
+            width: 90%;
+            height: 70%;
+            position: fixed;
+            top: 10%;
+            left: 5%;
+          }
+        }
+
+        .ym-img-holder .ym-zoom {
+            display: flex;
+            flex-direction: row;
+            column-gap: 10px;
+            font-size: 25px;
+            bottom: 0;
+            height: 56px;
+            width: 100%;
+            background: #FFFFFF;
+            font-family: var(--fontFamily);
+            cursor: pointer;
+            z-index: 9999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .ym-zoom-out{
+          cursor: pointer;
+          appearance:none;
+          border:none;
+          background:none;
+        }
+
+        .ym-zoom-in{
+          cursor: pointer;
+          appearance:none;
+          border:none;
+          background:none;
+        }
+
+        .ym-img-holder .img-popup.show {
+          z-index: 200;
+          transform: scale(1);
+          background: #FFFFFF;
+          box-shadow: inset 0px 11px 8px -10px #c4c4c4, inset 0px -11px 8px -10px #c4c4c4;
+        }
+
+        .ym-img-holder .img-popup.show .holder {
+          display: inline-block;
+          position: relative;
+          width: 100%;
+          height: 100%;
+        }
+
+        .ym-img-holder .img-popup .holder img {
+          min-width: 100%;
+          min-height: 100%;
+          overflow: hidden;
+          object-fit: contain;
+          width: 100%;
+          height: 100%;
+        }
+
+
+        @media screen and (max-width: 768px){
+            #ymFrameHolder {
+                max-width: 468px !important;
+                height: 100%;
+                margin: 0px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+<div id="ymFrameHolder">
+    <div id="chatContainer" class="container" style="display: none;">
+        <div id="emailModal" class="email-backdrop" style="display: none;">
+            <div id="emailInputContainer" class="email-holder">
+                Chat transcript will be sent to the following email address
+                <div>
+                    <input aria-label="Email address" id="emailInput" name="email" class="email-input" type="email" placeholder="john@example.com" />
+                    <span id="emailSuffix" class="input-suffix"></span>
+                </div>
+                <div id="email-error">&nbsp;</div>
+                <div>
+                    <button id="emailCancelBtn" class="email-btn cancel">cancel</button>
+                    <button id="emailSendBtn" class="email-btn send" disabled>send</button>
+                </div>
+            </div>
+            <div id="emailSuccess" class="email-holder" style="display: none;">
+                <i class="email-close-icon fa fa-close"></i>
+                Successfully sent chat transcript.
+                <br>
+            </div>
+            <div id="emailFail" class="email-holder" style="display: none;">
+                <i class="email-close-icon fa fa-close"></i>
+                Failed to send chat transcript.
+                <br>
+            </div>
+        </div>
+        <div>
+            <div id="chatDetails" class="full">
+                <div class="go-back">
+                    <button style="all: unset;">
+                        <i class="ri-arrow-left-line close-chat"></i>
+                    </button>
+                    <div class="text">Chat</div>
+                </div>
+                <div class="icon-wrapper">
+                    <img class="icon" src=""/>
+                    <i class="ri-checkbox-blank-circle-fill warning hide" aria-hidden="true"></i>
+                </div>
+                <div class="title-parent">
+                    <div id="chat-title" class="title">Chat with us</div>
+                    <div class="loading title hide"></div>
+                    <div class="loading sub-title hide"></div>
+                    <div class="sub-title"></div>
+                </div>
+                <div class="actions"></div>
+                <div id="agentsThumbsUpDown">
+                    <i class="fa up fa-thumbs-o-up" aria-hidden="true"></i>
+                    <i class="fa down fa-thumbs-o-down" aria-hidden="true"></i>
+                </div>
+                <button aria-label="close bot" title="close bot" class="close-button"><i class="ri-close-line close-icon"></i></button>
+            </div>
+            <div class="chat-background" id="player"></div>
+            <div class="choose-bot-container hide">
+                <div class="choose-bot">
+                    Get started by selecting a bot
+                </div>
+                <div class="bots"></div>
+            </div>
+            <div class="chatDetailsCross hide close-button"><i style="font-size:20px;"class="ri-close-line"></i></div>
+            <div id="chatBoxMainContainer" class="message-icons live-chat">
+                <div id="chatBoxMainContainer_padding_div"></div>
+                <div class="load-more-older-message hide">
+                    <i class="fa fa-spinner fa-pulse fa-2x fa-fw" aria-hidden="true"></i>
+                </div>
+                <div class="location-selector">
+                    <div id="map" style="height: calc(100% - 50px); width: 100%; position: absolute;top: 0; left: 0;z-index: 999;"></div>
+                    <div style="position: absolute; bottom: 0; padding: 14px 0; font-size: 16px; border-top: 1px solid #eee; width: 100%; text-align: center; background: #fff;">
+                        <a href="javascript:window.chat.selectLocation();">Select location</a>
+                    </div>
+                </div>
+                <div class="welcome-message hide">
+                    <div></div>
+                </div>
+                <div class="chatBoxMainScroll hide close-button"><i style="font-size:20px;"class="ri-close-line"></i></div>
+                <div role="region" aria-label="chat window"  tabindex="0" aria-live="polite" id="chatBoxMain" class="row"></div>
+                <div id="chatOptions"></div>
+                <div class="typingDiv" id="typing" style="display:none"><span class="from-icon"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+            </div>
+        </div>
+        <div class="send-input">
+            <div class="send-input-form">
+                <form id="ymChatForm">
+                    <input aria-label="Message input" class="form-control input-lg input auto-complete" id ="ymMsgInput" type="text" placeholder="Type your reply here" autocomplete="off" />
+                </form>
+                <button tabindex="1" title="Switch to chat" class="chat-button hide"><i class="ri-chat-2-fill"></i></button>
+                <button tabindex="1" title="Call agent" class="call-button hide"><i class="ri-phone-fill"></i></button>
+                <button tabindex="2" title="Restart conversation" aria-label="restart conversation" class="new-home-button"><i title="Home" class="ri-home-4-fill"></i></button>
+                <button tabindex="1" title="Send message" aria-label="send message" class="send-button hide"><i id="sendIcon" title="Send" class="ri-send-plane-fill"></i></button>
+                <div class="language-button"><i class="fa fa-language" aria-hidden="true"></i></div>
+                <button class="home-button hide"><i class="fa fa-home" aria-hidden="true"></i></button>
+                <button tabindex="2" title="Upload file" aria-label="upload file" class="attachment-button">
+                    <i class="ri-attachment-2 attach">
+                        <form style="display:none;" id="fileForm">
+                            <input aria-label="Upload file" type="file" title="Upload file" name="images" style="display: none" id="chatFile"/>
+                            <input type="hidden" name="botID" value=""/>
+                        </form>
+                    </i>
+                </button>
+            </div>
+            <iframe id="upload_target" name="upload_target" style="width:0;height:0;border:0px solid #fff;"></iframe>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+        var getParams = function (url) {
+            var params = {};
+            var parser = document.createElement('a');
+            parser.href = url;
+            var query = parser.search.substring(1);
+            var vars = query.split('&');
+            for (var i = 0; i < vars.length; i++) {
+                var pair = vars[i].split('=');
+                params[pair[0]] = decodeURIComponent(pair[1]);
+            }
+            return params;
+        };
+        var payload = getParams(window.location.href)["ym.payload"];
+        var botId = getParams(window.location.href)["botId"];
+        var ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
+        var deviceToken = getParams(window.location.href)["deviceToken"];
+        var customBaseUrl = getParams(window.location.href)["customBaseUrl"];
+        var version = getParams(window.location.href)["version"];
+        var customLoaderUrl = getParams(window.location.href)["customLoaderUrl"];
+        var imageLink = "url(" + customLoaderUrl + ")";
+        var disableActionsOnLoad = getParams(window.location.href)["disableActionsOnLoad"];
+
+        var payloadJSON = {};
+        try{
+            payloadJSON = JSON.parse(payload);
+        }catch(e){
+        }
+
+       var scriptUrl = customBaseUrl+"/widget/v2/widget.js"
+
+        window.ymConfig = {
+            host: customBaseUrl,
+            bot: botId || '',
+            xmpp_domain: 'xmpp.yellowmssngr.com',
+            sdk: true,
+            lite: true,
+            linkType: 'lite',
+            deviceToken: deviceToken,
+            ymAuthenticationToken: ymAuthenticationToken,
+            logging: true,
+            setDisableActionsTimeout: disableActionsOnLoad == 'true',
+            handlers: {
+                sendIOSEvent: function (data) {
+                 console.log(data);
+
+                    try {
+                        window.webkit.messageHandlers.ymHandler.postMessage(data);
+                    } catch (e) { }
+                    try {
+                        window.YMHandler.receiveMessage(JSON.stringify(data));
+                    } catch (e) { }
+                    try {
+                        window.ReactNativeWebView.postMessage(JSON.stringify(data));
+                    } catch (e) { }
+
+                }
+            },
+            payload: payload,
+            triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
+            triggerJourney: payloadJSON.JourneySlug
+        };
+
+        if(payloadJSON.UserId) {
+            window.ymConfig.userId = payloadJSON.UserId;
+        }
+
+        function sendEvent(s) {
+            var iframe = document.getElementById('ymIframe');
+            iframe.contentWindow.postMessage(JSON.stringify({
+                    event_code: 'send-voice-text',
+                    data: s
+                }));
+
+
+            try {
+                window.YMHandler.receiveMessage(JSON.stringify({ code: "Message Received", data: s }));
+            } catch (e) { }
+            try {
+                window.webkit.messageHandlers.ymHandler.postMessage({ code: "Message Received", data: s });
+            } catch (e) { }
+        }
+
+        (function () {
+            var w = window, ic = w.YellowMessenger;
+            if ("function" === typeof ic)
+                ic("reattach_activator"), ic("update", ymConfig);
+            else {
+                var d = document, i = function () {
+                    i.c(arguments)
+                };
+
+                function l() {
+                    var e = d.createElement("script");
+                    e.type = "text/javascript", e.async = !0, e.src = scriptUrl;
+                    var t = d.getElementsByTagName("script")[0];
+                    t.parentNode.insertBefore(e, t)
+                }
+
+                i.q = [], i.c = function (e) {
+                    i.q.push(e)
+                }, w.YellowMessenger = i, w.attachEvent ? w.attachEvent("onload", l) : w.addEventListener("load", l, !1)
+            }
+        })();
+
+    </script>
+</body>
+</html>

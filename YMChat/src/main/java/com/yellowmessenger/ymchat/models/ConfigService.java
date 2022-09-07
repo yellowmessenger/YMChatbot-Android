@@ -52,11 +52,12 @@ public class ConfigService {
                 .buildUpon()
                 .appendQueryParameter("botId", config.botId)
                 .appendQueryParameter("ym.payload", getPayload())
-                .appendQueryParameter("ymAuthenticationToken", config.ymAuthenticationToken)
-                .appendQueryParameter("deviceToken", config.deviceToken)
+                .appendQueryParameter("ymAuthenticationToken", config.ymAuthenticationToken == null ? "" : config.ymAuthenticationToken)
+                .appendQueryParameter("deviceToken", config.deviceToken == null ? "" : config.deviceToken)
                 .appendQueryParameter("customBaseUrl", config.customBaseUrl)
                 .appendQueryParameter("version", Integer.toString(config.version))
                 .appendQueryParameter("customLoaderUrl", config.customLoaderUrl)
+                .appendQueryParameter("disableActionsOnLoad", String.valueOf(config.disableActionsOnLoad))
                 .build();
 
         return builtUri.toString();

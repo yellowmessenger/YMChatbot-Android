@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.yellowmessenger.ymchatexample">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -9,6 +13,14 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.YMChatExample">
+        <activity
+            android:name=".PreloadChatbotActivity"
+            android:theme="@style/Theme.YMChatExample.NoActionBar"
+            android:exported="false" />
+        <activity
+            android:name=".BotViewActivity"
+            android:exported="false"
+            android:theme="@style/Theme.YMChatExample.NoActionBar" />
         <activity
             android:name=".MainActivity"
             android:label="@string/ym_app_name"
