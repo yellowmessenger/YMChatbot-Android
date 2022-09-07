@@ -43,7 +43,7 @@ class BotViewActivity : AppCompatActivity() {
         ymChat.config = YMConfig(botId)
 
         //To enable speach to text
-        ymChat.config.enableSpeech = true
+        //ymChat.config.enableSpeech = true
 
         //Payload attributes
         val payloadData = HashMap<String, Any>()

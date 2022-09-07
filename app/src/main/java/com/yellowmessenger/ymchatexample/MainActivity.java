@@ -20,7 +20,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1649687669315";
+    String botId = "x1645602443989";
     String deviceToken = "your device token";
     String apiKey = "your api key";
     FrameLayout frame;
@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
 
+        // Set this flag to hide input bar while bot is loading the history
         ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
@@ -52,7 +53,9 @@ public class MainActivity extends AppCompatActivity {
        // payloadData.put("mobile", "919588863784");
         ymChat.config.payload = payloadData;
 
-        ymChat.config.useLiteVersion = true;
+        //If you want to use lite version please add ymChat.config.useLiteVersion = true
+        // In case of light version, custom loader url is not supported
+        // ymChat.config.useLiteVersion = true;
 
         // Choose version(1 or 2), default is 1
         ymChat.config.version = 2;
