@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         //If you want to use lite version please add ymChat.config.useLiteVersion = true
         // In case of light version, custom loader url is not supported
-        // ymChat.config.useLiteVersion = true;
+        ymChat.config.useLiteVersion = true;
 
         // Choose version(1 or 2), default is 1
         ymChat.config.version = 2;
@@ -82,14 +82,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Set custom loader url , it should be a valid, light weight and public image url
         // This is an optional parameter
-         ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
+        ymChat.config.customLoaderUrl = "file:///android_asset/yellowLogo.svg";
 
         // Hide input bar and disallow action while bot is loading
         ymChat.config.disableActionsOnLoad = true;
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-       // ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
+        //ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {

@@ -19,7 +19,7 @@ public class YMConfig {
     public int closeButtonColor = -1;
     public String closeButtonColorFromHex = "";
     public int version = 1;
-    public String customLoaderUrl = "https://thumbs.gfycat.com/ImpoliteLivelyGenet-max-1mb.gif";
+    public String customLoaderUrl = "file:///android_asset/yellowLoader.gif";
     public HashMap<String, Object> payload = new HashMap<>(); // For payload key-values
     public HashMap<String, String> customData = new HashMap<>(); // other data key-values
     public boolean disableActionsOnLoad = false;
