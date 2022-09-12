@@ -14,6 +14,8 @@ import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 import com.yellowmessenger.ymchat.models.YellowCallback;
+import com.yellowmessenger.ymchat.models.YellowDataCallback;
+import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
 
 import java.util.HashMap;
 
@@ -22,7 +24,8 @@ public class MainActivity extends AppCompatActivity {
     // Dummy bot id. (Purrs a lot)J
     String botId = "x1645602443989";
     String deviceToken = "your device token";
-    String apiKey = "your api key";
+    String apiKey = "Rs3tSLQF9tWS9lvZFOUyjPBwoiu4naOb7mueI44d";
+    String userId = "12345xyz";
     FrameLayout frame;
 
     @Override
@@ -37,6 +40,8 @@ public class MainActivity extends AppCompatActivity {
         Button button = findViewById(R.id.button);
         Button button2 = findViewById(R.id.showFragment);
         Button button3 = findViewById(R.id.preloadFragment);
+        Button registerDevice = findViewById(R.id.registerDevice);
+        Button unreadMessages = findViewById(R.id.unreadMessages);
         //Get YMChat instance
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
@@ -45,12 +50,12 @@ public class MainActivity extends AppCompatActivity {
         ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
-       // ymChat.config.enableSpeech = true;
+        // ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
-       // payloadData.put("mobile", "919588863784");
+        // payloadData.put("mobile", "919588863784");
         ymChat.config.payload = payloadData;
 
         //If you want to use lite version please add ymChat.config.useLiteVersion = true
@@ -82,14 +87,14 @@ public class MainActivity extends AppCompatActivity {
 
         // Set custom loader url , it should be a valid, light weight and public image url
         // This is an optional parameter
-         ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
+        ymChat.config.customLoaderUrl = "https://yellow.ai/images/Logo.svg";
 
         // Hide input bar and disallow action while bot is loading
         ymChat.config.disableActionsOnLoad = true;
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-       // ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
+        // ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -113,6 +118,10 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+        registerDevice.setOnClickListener(view -> registerDevice());
+        unreadMessages.setOnClickListener(view -> getUnreadMessages());
+
         button.setOnClickListener(v -> unlinkDevice());
 
         button2.setOnClickListener(v -> startActivity(new Intent(this, BotViewActivity.class)));
@@ -126,6 +135,48 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 public void success() {
                     Toast.makeText(MainActivity.this, "Token unlinked", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void failure(String message) {
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
+            //Catch and handle the exception
+            e.printStackTrace();
+        }
+    }
+
+
+    private void registerDevice() {
+        try {
+            YMChat ymChat = YMChat.getInstance();
+            ymChat.registerDevice(botId, apiKey, deviceToken, userId, new YellowCallback() {
+                @Override
+                public void success() {
+                    Toast.makeText(MainActivity.this, "Device Registered", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void failure(String message) {
+                    Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT).show();
+                }
+            });
+        } catch (Exception e) {
+            //Catch and handle the exception
+            e.printStackTrace();
+        }
+    }
+
+    private void getUnreadMessages() {
+        try {
+            YMChat ymChat = YMChat.getInstance();
+            ymChat.getUnreadMessages(botId, apiKey, userId, new YellowDataCallback() {
+                @Override
+                public <T> void success(T data) {
+                    YellowUnreadMessageResponse response = (YellowUnreadMessageResponse) data;
+                    Toast.makeText(MainActivity.this, "Unread messages - " + response.getUnreadCount(), Toast.LENGTH_SHORT).show();
                 }
 
                 @Override

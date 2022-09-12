@@ -35,6 +35,20 @@
             android:text="Activity + Pre-load Fragment Example" />
 
         <Button
+            android:id="@+id/registerDevice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Register Device" />
+
+        <Button
+            android:id="@+id/unreadMessages"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="Get Unread Messages" />
+
+        <Button
             android:id="@+id/button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

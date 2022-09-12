@@ -10,14 +10,19 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
 import com.yellowmessenger.ymchat.models.YellowCallback;
+import com.yellowmessenger.ymchat.models.YellowDataCallback;
+import com.yellowmessenger.ymchat.models.YellowGenericResponseModel;
+import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.net.URL;
 import java.net.URLEncoder;
 
@@ -37,7 +42,10 @@ public class YMChat {
     private BotCloseEventListener botCloseEventListener;
     private static YMChat botPluginInstance;
     public YMConfig config;
-    private String unlinkNotificationUrl = "https://app.yellow.ai/api/plugin/removeDeviceToken?bot=";
+    private final String unlinkNotificationUrl = "https://app.yellow.ai/api/plugin/removeDeviceToken?bot=";
+    private final String registerDeviceUrl = "https://app.yellow.ai/api/mobile/register?bot=";
+    private final String unreadMessagesUrl = "https://cloud.yellow.ai/api/mobile/unreadMessages?bot=";
+
 
     private YMChat() {
         this.listener = botEvent -> {
@@ -242,6 +250,159 @@ public class YMChat {
         }
     }
 
+
+    public void registerDevice(String botId, String apiKey, String deviceToken, String userId, YellowCallback callback) throws Exception {
+        try {
+            if (isRegisterDeviceParamsValidated(botId, apiKey, deviceToken, userId, callback)) {
+                Thread thread = new Thread() {
+                    @Override
+                    public void run() {
+                        // create your json here
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("token", deviceToken);
+                            jsonObject.put("userId", userId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        String postUrl = registerDeviceUrl + botId;
+                        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                        // put your json here
+                        RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
+
+                        OkHttpClient client = new OkHttpClient();
+
+                        Request request = new Request.Builder()
+                                .url(postUrl)
+                                .addHeader("x-api-key", apiKey)
+                                .addHeader("Content-Type", "application/json")
+                                .post(requestBody)
+                                .build();
+
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                call.cancel();
+                                sendFailureCallback(callback, "Failed to register device :: Error message :: " + e.getMessage());
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                Log.d(TAG, response.body().toString());
+                                if (response.isSuccessful()) {
+                                    ResponseBody body = response.body();
+                                    if (body != null) {
+                                        try {
+                                            JSONObject jsonObject = new JSONObject(body.string());
+                                            boolean isSuccess = jsonObject.getBoolean("success");
+                                            String message = jsonObject.getString("message");
+                                            if (isSuccess) {
+                                                sendSuccessCallback(callback);
+                                            } else {
+                                                sendFailureCallback(callback, "Failed to register device :: Error message :: " + message);
+                                            }
+                                            // Do something here
+                                        } catch (JSONException e) {
+                                            sendFailureCallback(callback, "Failed to register device :: Error message :: " + e.getMessage());
+                                        }
+                                    }
+                                } else if (response.code() >= 400 && response.code() <= 499) {
+                                    sendFailureCallback(callback, "Failed to register device. Please make sure you are passing correct `apiKey`");
+                                } else {
+                                    sendFailureCallback(callback, "Failed to register device. Please try after sometime.");
+                                }
+
+                            }
+                        });
+                    }
+                };
+                thread.start();
+            }
+        } catch (Exception e) {
+            throw new Exception("Exception in unlink notification ::\nException message :: " + e.getMessage());
+        }
+    }
+
+    public void getUnreadMessages(String botId, String apiKey, String userId, YellowDataCallback callback) throws Exception {
+        try {
+            if (isUnreadParamsValidated(botId, apiKey, userId, callback)) {
+                Thread thread = new Thread() {
+                    @Override
+                    public void run() {
+                        // create your json here
+                        JSONObject jsonObject = new JSONObject();
+                        try {
+                            jsonObject.put("userId", userId);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        String postUrl = unreadMessagesUrl + botId;
+                        MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+                        // put your json here
+                        RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
+
+                        OkHttpClient client = new OkHttpClient();
+
+                        Request request = new Request.Builder()
+                                .url(postUrl)
+                                .addHeader("x-api-key", apiKey)
+                                .addHeader("Content-Type", "application/json")
+                                .post(requestBody)
+                                .build();
+
+                        client.newCall(request).enqueue(new Callback() {
+                            @Override
+                            public void onFailure(Call call, IOException e) {
+                                call.cancel();
+                                sendFailureDataCallback(callback, "Failed to get unread messages :: Error message :: " + e.getMessage());
+                            }
+
+                            @Override
+                            public void onResponse(Call call, Response response) throws IOException {
+                                Log.d(TAG, response.body().toString());
+                                if (response.isSuccessful()) {
+                                    ResponseBody body = response.body();
+                                    if (body != null) {
+                                        try {
+                                            //JSONObject jsonObject = new JSONObject(body.string());
+                                            Type collectionType = new TypeToken<YellowGenericResponseModel<YellowUnreadMessageResponse>>() {
+                                            }.getType();
+                                            YellowGenericResponseModel<YellowUnreadMessageResponse> resp = new Gson().fromJson(body.string(), collectionType);
+
+                                            boolean isSuccess = resp.getSuccess(); //jsonObject.getBoolean("success");
+                                            String message = resp.getError(); //jsonObject.getString("message");
+                                            YellowUnreadMessageResponse unreadMessages = resp.getData();
+
+                                            if (isSuccess) {
+                                                sendSuccessDataCallback(callback, unreadMessages);
+                                            } else {
+                                                sendFailureDataCallback(callback, "Failed to get unread messages :: Error message :: " + message);
+                                            }
+                                            // Do something here
+                                        } catch (Exception e) {
+                                            sendFailureDataCallback(callback, "Failed to get unread messages :: Error message :: " + e.getMessage());
+                                        }
+                                    }
+                                } else if (response.code() >= 400 && response.code() <= 499) {
+                                    sendFailureDataCallback(callback, "Failed to get unread messages . Please make sure you are passing correct `apiKey`");
+                                } else {
+                                    sendFailureDataCallback(callback, "Failed to get unread messages . Please try after sometime.");
+                                }
+
+                            }
+                        });
+                    }
+                };
+                thread.start();
+            }
+        } catch (Exception e) {
+            throw new Exception("Exception in getting unread messages  ::\nException message :: " + e.getMessage());
+        }
+    }
+
+
     private void sendFailureCallback(YellowCallback callback, String message) {
         new Handler(Looper.getMainLooper()).post(() -> callback.failure(message));
     }
@@ -250,19 +411,49 @@ public class YMChat {
         new Handler(Looper.getMainLooper()).post(callback::success);
     }
 
+    private void sendFailureDataCallback(YellowDataCallback callback, String message) {
+        new Handler(Looper.getMainLooper()).post(() -> callback.failure(message));
+    }
+
+    private void sendSuccessDataCallback(YellowDataCallback callback, YellowUnreadMessageResponse unreadMessageResponse) {
+        new Handler(Looper.getMainLooper()).post(() -> callback.success(unreadMessageResponse));
+    }
+
+    private boolean isRegisterDeviceParamsValidated(String botId, String apiKey, String deviceToken, String userId, YellowCallback callback) throws Exception {
+        isValidParam(botId, "Bot Id");
+        isValidParam(apiKey, "Api Key");
+        isValidParam(deviceToken, "Device Token");
+        isValidParam(userId, "User Id");
+
+        if (callback == null)
+            throw new Exception("callback cannot be null");
+
+        return true;
+    }
+
+    private boolean isUnreadParamsValidated(String botId, String apiKey, String userId, YellowDataCallback callback) throws Exception {
+        isValidParam(botId, "Bot Id");
+        isValidParam(apiKey, "Api Key");
+        isValidParam(userId, "User Id");
+
+        if (callback == null)
+            throw new Exception("callback cannot be null");
+
+        return true;
+    }
+
+    private boolean isValidParam(String param, String key) throws Exception {
+        if (param == null || param.isEmpty()) {
+            String msg = key + "cannot be null or empty";
+            throw new Exception(msg);
+        }
+        return true;
+    }
 
     private boolean isValidate(String botId, String apiKey, String deviceToken, YellowCallback callback) throws Exception {
-        if (botId == null || botId.isEmpty()) {
-            throw new Exception("botId is cannot be null or empty");
-        }
-
-        if (apiKey == null || apiKey.isEmpty()) {
-            throw new Exception("apiKey is cannot be null or empty");
-        }
-
-        if (deviceToken == null || deviceToken.isEmpty()) {
-            throw new Exception("deviceToken is cannot be null or empty");
-        }
+        isValidParam(botId, "Bot Id");
+        isValidParam(apiKey, "Api Key");
+        isValidParam(deviceToken, "Device Token");
 
         if (callback == null)
             throw new Exception("callback cannot be null");
