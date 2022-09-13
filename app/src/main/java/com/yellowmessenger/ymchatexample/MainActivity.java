@@ -22,9 +22,9 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1645602443989";
+    String botId = "x1620307627069";
     String deviceToken = "your device token";
-    String apiKey = "Rs3tSLQF9tWS9lvZFOUyjPBwoiu4naOb7mueI44d";
+    String apiKey = "5cv-by5-_bjAGbwuDDtcWN1r67-vJRVm0YDCfeDG";
     String userId = "12345xyz";
     FrameLayout frame;
 
@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
 
         //If you want to use lite version please add ymChat.config.useLiteVersion = true
         // In case of light version, custom loader url is not supported
-       // ymChat.config.useLiteVersion = true;
+        // ymChat.config.useLiteVersion = true;
 
         // Choose version(1 or 2), default is 1
         ymChat.config.version = 2;
@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        //ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
+        ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -131,7 +131,10 @@ public class MainActivity extends AppCompatActivity {
     private void unlinkDevice() {
         try {
             YMChat ymChat = YMChat.getInstance();
-            ymChat.unlinkDeviceToken(botId, apiKey, deviceToken, new YellowCallback() {
+            YMConfig ymConfig = new YMConfig(botId);
+            ymConfig.deviceToken = deviceToken;
+            ymConfig.customBaseUrl = "https://staging.yellowmessenger.com";
+            ymChat.unlinkDeviceToken(apiKey, ymConfig, new YellowCallback() {
                 @Override
                 public void success() {
                     Toast.makeText(MainActivity.this, "Token unlinked", Toast.LENGTH_SHORT).show();
@@ -152,7 +155,11 @@ public class MainActivity extends AppCompatActivity {
     private void registerDevice() {
         try {
             YMChat ymChat = YMChat.getInstance();
-            ymChat.registerDevice(botId, apiKey, deviceToken, userId, new YellowCallback() {
+            YMConfig ymConfig = new YMConfig(botId);
+            ymConfig.deviceToken = deviceToken;
+            ymConfig.ymAuthenticationToken = userId;
+            ymConfig.customBaseUrl = "https://staging.yellowmessenger.com"; //"https://r5.app.yellow.ai";
+            ymChat.registerDevice(apiKey, ymConfig, new YellowCallback() {
                 @Override
                 public void success() {
                     Toast.makeText(MainActivity.this, "Device Registered", Toast.LENGTH_SHORT).show();
@@ -172,7 +179,10 @@ public class MainActivity extends AppCompatActivity {
     private void getUnreadMessages() {
         try {
             YMChat ymChat = YMChat.getInstance();
-            ymChat.getUnreadMessages(botId, apiKey, userId, new YellowDataCallback() {
+            YMConfig ymConfig = new YMConfig(botId);
+            ymConfig.ymAuthenticationToken = userId;
+            ymConfig.customBaseUrl = "https://staging.yellowmessenger.com"; //"https://r5.app.yellow.ai";
+            ymChat.getUnreadMessages(apiKey, ymConfig, new YellowDataCallback() {
                 @Override
                 public <T> void success(T data) {
                     YellowUnreadMessageResponse response = (YellowUnreadMessageResponse) data;

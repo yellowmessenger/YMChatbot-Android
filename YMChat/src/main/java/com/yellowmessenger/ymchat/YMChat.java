@@ -42,9 +42,9 @@ public class YMChat {
     private BotCloseEventListener botCloseEventListener;
     private static YMChat botPluginInstance;
     public YMConfig config;
-    private final String unlinkNotificationUrl = "https://app.yellow.ai/api/plugin/removeDeviceToken?bot=";
-    private final String registerDeviceUrl = "https://app.yellow.ai/api/mobile/register?bot=";
-    private final String unreadMessagesUrl = "https://cloud.yellow.ai/api/mobile/unreadMessages?bot=";
+    private final String unlinkNotificationUrl = "/api/plugin/removeDeviceToken?bot=";
+    private final String registerDeviceUrl = "/api/mobile/register?bot=";
+    private final String unreadMessagesUrl = "/api/mobile/unreadMessages?bot=";
 
 
     private YMChat() {
@@ -178,21 +178,37 @@ public class YMChat {
         return (event.getCode() != null && event.getCode().equals("bot-closed"));
     }
 
+    /**
+     * @deprecated use
+     * {@link #unlinkDeviceToken(String, YMConfig, YellowCallback)}
+     * You can set `botId`, `deviceToken` in YMConfig object.
+     * If your bot is deployed in different region (apart from India) or it is a on-prem url please pass `customBaseUrl` as well
+     */
+    @SuppressWarnings("deprecation")
+    @Deprecated
     public void unlinkDeviceToken(String botId, String apiKey, String deviceToken, YellowCallback callback) throws Exception {
+        YMConfig ymConfig = new YMConfig(botId);
+        ymConfig.deviceToken = deviceToken;
+        ymConfig.customBaseUrl = "https://app.yellow.ai";
+        unlinkDeviceToken(apiKey, ymConfig, callback);
+    }
+
+
+    public void unlinkDeviceToken(String apiKey, YMConfig ymConfig, YellowCallback callback) throws Exception {
         try {
-            if (isValidate(botId, apiKey, deviceToken, callback)) {
+            if (isValidate(ymConfig.botId, apiKey, ymConfig.deviceToken, ymConfig.customBaseUrl, callback)) {
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
                         // create your json here
                         JSONObject jsonObject = new JSONObject();
                         try {
-                            jsonObject.put("deviceToken", deviceToken);
+                            jsonObject.put("deviceToken", ymConfig.deviceToken);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        String postUrl = unlinkNotificationUrl + botId;
+                        String postUrl = ymConfig.customBaseUrl + unlinkNotificationUrl + ymConfig.botId;
                         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                         // put your json here
                         RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
@@ -250,23 +266,22 @@ public class YMChat {
         }
     }
 
-
-    public void registerDevice(String botId, String apiKey, String deviceToken, String userId, YellowCallback callback) throws Exception {
+    public void registerDevice(String apiKey, YMConfig ymConfig, YellowCallback callback) throws Exception {
         try {
-            if (isRegisterDeviceParamsValidated(botId, apiKey, deviceToken, userId, callback)) {
+            if (isRegisterDeviceParamsValidated(ymConfig.botId, apiKey, ymConfig.deviceToken, ymConfig.ymAuthenticationToken, ymConfig.customBaseUrl, callback)) {
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
                         // create your json here
                         JSONObject jsonObject = new JSONObject();
                         try {
-                            jsonObject.put("token", deviceToken);
-                            jsonObject.put("userId", userId);
+                            jsonObject.put("token", ymConfig.deviceToken);
+                            jsonObject.put("userId", ymConfig.ymAuthenticationToken);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        String postUrl = registerDeviceUrl + botId;
+                        String postUrl = ymConfig.customBaseUrl + registerDeviceUrl + ymConfig.botId;
                         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                         // put your json here
                         RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
@@ -324,21 +339,21 @@ public class YMChat {
         }
     }
 
-    public void getUnreadMessages(String botId, String apiKey, String userId, YellowDataCallback callback) throws Exception {
+    public void getUnreadMessages(String apiKey, YMConfig ymConfig, YellowDataCallback callback) throws Exception {
         try {
-            if (isUnreadParamsValidated(botId, apiKey, userId, callback)) {
+            if (isUnreadParamsValidated(ymConfig.botId, apiKey, ymConfig.ymAuthenticationToken, ymConfig.customBaseUrl, callback)) {
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
                         // create your json here
                         JSONObject jsonObject = new JSONObject();
                         try {
-                            jsonObject.put("userId", userId);
+                            jsonObject.put("userId", ymConfig.ymAuthenticationToken);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
 
-                        String postUrl = unreadMessagesUrl + botId;
+                        String postUrl = ymConfig.customBaseUrl + unreadMessagesUrl + ymConfig.botId;
                         MediaType JSON = MediaType.parse("application/json; charset=utf-8");
                         // put your json here
                         RequestBody requestBody = RequestBody.create(JSON, jsonObject.toString());
@@ -419,11 +434,12 @@ public class YMChat {
         new Handler(Looper.getMainLooper()).post(() -> callback.success(unreadMessageResponse));
     }
 
-    private boolean isRegisterDeviceParamsValidated(String botId, String apiKey, String deviceToken, String userId, YellowCallback callback) throws Exception {
+    private boolean isRegisterDeviceParamsValidated(String botId, String apiKey, String deviceToken, String userId, String customBaseUrl, YellowCallback callback) throws Exception {
         isValidParam(botId, "Bot Id");
         isValidParam(apiKey, "Api Key");
         isValidParam(deviceToken, "Device Token");
         isValidParam(userId, "User Id");
+        isValidParam(customBaseUrl, "Custom base url");
 
         if (callback == null)
             throw new Exception("callback cannot be null");
@@ -431,10 +447,11 @@ public class YMChat {
         return true;
     }
 
-    private boolean isUnreadParamsValidated(String botId, String apiKey, String userId, YellowDataCallback callback) throws Exception {
+    private boolean isUnreadParamsValidated(String botId, String apiKey, String userId, String customBaseUrl, YellowDataCallback callback) throws Exception {
         isValidParam(botId, "Bot Id");
         isValidParam(apiKey, "Api Key");
         isValidParam(userId, "User Id");
+        isValidParam(customBaseUrl, "Custom base url");
 
         if (callback == null)
             throw new Exception("callback cannot be null");
@@ -450,10 +467,11 @@ public class YMChat {
         return true;
     }
 
-    private boolean isValidate(String botId, String apiKey, String deviceToken, YellowCallback callback) throws Exception {
+    private boolean isValidate(String botId, String apiKey, String deviceToken, String customBaseUrl, YellowCallback callback) throws Exception {
         isValidParam(botId, "Bot Id");
         isValidParam(apiKey, "Api Key");
         isValidParam(deviceToken, "Device Token");
+        isValidParam(customBaseUrl, "Custom base url");
 
         if (callback == null)
             throw new Exception("callback cannot be null");
