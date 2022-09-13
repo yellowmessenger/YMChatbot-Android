@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         //If you want to use lite version please add ymChat.config.useLiteVersion = true
         // In case of light version, custom loader url is not supported
-        ymChat.config.useLiteVersion = true;
+       // ymChat.config.useLiteVersion = true;
 
         // Choose version(1 or 2), default is 1
         ymChat.config.version = 2;
@@ -80,9 +80,9 @@ public class MainActivity extends AppCompatActivity {
         // To set closeButtonColor from hexadecimal color code
         ymChat.config.closeButtonColorFromHex = "#b72a2a";
 
-        // Set custom loader url , it should be a valid, light weight and public image url
+        // Set custom loader url , it should be a valid, light weight and image url
         // This is an optional parameter
-        ymChat.config.customLoaderUrl = "file:///android_asset/yellowLogo.svg";
+        ymChat.config.customLoaderUrl = "https://cdn.yellowmessenger.com/PQuTgjPG7NxY1611996274269.png"; //"file:///android_asset/yellowLogo.svg";
 
         // Hide input bar and disallow action while bot is loading
         ymChat.config.disableActionsOnLoad = true;
