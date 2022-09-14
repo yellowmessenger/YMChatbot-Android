@@ -43,8 +43,8 @@ public class YMChat {
     private static YMChat botPluginInstance;
     public YMConfig config;
     private final String unlinkNotificationUrl = "/api/plugin/removeDeviceToken?bot=";
-    private final String registerDeviceUrl = "/api/mobile/register?bot=";
-    private final String unreadMessagesUrl = "/api/mobile/unreadMessages?bot=";
+    private final String registerDeviceUrl = "/api/mobile-backend/device-token?bot=";
+    private final String unreadMessagesUrl = "/api/mobile-backend/message/unreadMsgs?botId=";
 
 
     private YMChat() {
@@ -275,8 +275,8 @@ public class YMChat {
                         // create your json here
                         JSONObject jsonObject = new JSONObject();
                         try {
-                            jsonObject.put("token", ymConfig.deviceToken);
-                            jsonObject.put("userId", ymConfig.ymAuthenticationToken);
+                            jsonObject.put("deviceToken", ymConfig.deviceToken);
+                            jsonObject.put("ymAuthenticationToken", ymConfig.ymAuthenticationToken);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -348,7 +348,7 @@ public class YMChat {
                         // create your json here
                         JSONObject jsonObject = new JSONObject();
                         try {
-                            jsonObject.put("userId", ymConfig.ymAuthenticationToken);
+                            jsonObject.put("ymAuthenticationToken", ymConfig.ymAuthenticationToken);
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
