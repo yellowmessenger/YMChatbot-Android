@@ -292,7 +292,7 @@ public class YMChat {
                                 .url(postUrl)
                                 .addHeader("x-api-key", apiKey)
                                 .addHeader("Content-Type", "application/json")
-                                .post(requestBody)
+                                .put(requestBody)
                                 .build();
 
                         client.newCall(request).enqueue(new Callback() {

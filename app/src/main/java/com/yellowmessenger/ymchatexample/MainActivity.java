@@ -22,10 +22,10 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1620307627069";
-    String deviceToken = "your device token";
-    String apiKey = "5cv-by5-_bjAGbwuDDtcWN1r67-vJRVm0YDCfeDG";
-    String userId = "12345xyz";
+    String botId = "x1645602443989";
+    String deviceToken = "yourdevicetoken";
+    String apiKey = "your-api-key";
+    String ymAuthenticationToken = "unique device token for each user";
     FrameLayout frame;
 
     @Override
@@ -45,6 +45,8 @@ public class MainActivity extends AppCompatActivity {
         //Get YMChat instance
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
+
+        ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
 
         // Set this flag to hide input bar while bot is loading the history
         ymChat.config.disableActionsOnLoad = true;
@@ -94,7 +96,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
+        // ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -132,8 +134,11 @@ public class MainActivity extends AppCompatActivity {
         try {
             YMChat ymChat = YMChat.getInstance();
             YMConfig ymConfig = new YMConfig(botId);
+            // Set the FCM token as device token, this is required so that it can be removed and customer stop receiving the notification
             ymConfig.deviceToken = deviceToken;
-            ymConfig.customBaseUrl = "https://staging.yellowmessenger.com";
+            // Set custom base url in case your bot does not belong to india region and yellow cloud
+            // Example- If your bot is in `r5` region custom base url would be `https://r5.cloud.yellow.ai
+            // ymConfig.customBaseUrl = "https://staging.yellowmessenger.com";
             ymChat.unlinkDeviceToken(apiKey, ymConfig, new YellowCallback() {
                 @Override
                 public void success() {
@@ -157,8 +162,10 @@ public class MainActivity extends AppCompatActivity {
             YMChat ymChat = YMChat.getInstance();
             YMConfig ymConfig = new YMConfig(botId);
             ymConfig.deviceToken = deviceToken;
-            ymConfig.ymAuthenticationToken = userId;
-            ymConfig.customBaseUrl = "https://staging.yellowmessenger.com"; //"https://r5.app.yellow.ai";
+            ymConfig.ymAuthenticationToken = ymAuthenticationToken;
+            // Set custom base url in case your bot does not belong to india region and yellow cloud
+            // Example- If your bot is in `r5` region custom base url would be `https://r5.cloud.yellow.ai
+            // ymConfig.customBaseUrl = "https://staging.yellowmessenger.com";
             ymChat.registerDevice(apiKey, ymConfig, new YellowCallback() {
                 @Override
                 public void success() {
@@ -180,8 +187,10 @@ public class MainActivity extends AppCompatActivity {
         try {
             YMChat ymChat = YMChat.getInstance();
             YMConfig ymConfig = new YMConfig(botId);
-            ymConfig.ymAuthenticationToken = userId;
-            ymConfig.customBaseUrl = "https://staging.yellowmessenger.com"; //"https://r5.app.yellow.ai";
+            ymConfig.ymAuthenticationToken = ymAuthenticationToken;
+            // Set custom base url in case your bot does not belong to india region and yellow cloud
+            // Example- If your bot is in `r5` region custom base url would be `https://r5.cloud.yellow.ai
+            // ymConfig.customBaseUrl = "https://staging.yellowmessenger.com";
             ymChat.getUnreadMessages(apiKey, ymConfig, new YellowDataCallback() {
                 @Override
                 public <T> void success(T data) {
