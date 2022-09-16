@@ -381,13 +381,12 @@ public class YMChat {
                                     ResponseBody body = response.body();
                                     if (body != null) {
                                         try {
-                                            //JSONObject jsonObject = new JSONObject(body.string());
                                             Type collectionType = new TypeToken<YellowGenericResponseModel<YellowUnreadMessageResponse>>() {
                                             }.getType();
                                             YellowGenericResponseModel<YellowUnreadMessageResponse> resp = new Gson().fromJson(body.string(), collectionType);
 
-                                            boolean isSuccess = resp.getSuccess(); //jsonObject.getBoolean("success");
-                                            String message = resp.getError(); //jsonObject.getString("message");
+                                            boolean isSuccess = resp.getSuccess();
+                                            String message = resp.getError();
                                             YellowUnreadMessageResponse unreadMessages = resp.getData();
 
                                             if (isSuccess) {

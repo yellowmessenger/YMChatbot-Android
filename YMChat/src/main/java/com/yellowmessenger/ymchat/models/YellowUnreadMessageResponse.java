@@ -3,10 +3,10 @@ package com.yellowmessenger.ymchat.models;
 import java.util.List;
 
 public class YellowUnreadMessageResponse{
-	private String unreadCount;
+	private int unreadCount;
 	private List<YellowMessagesItem> messages;
 
-	public String getUnreadCount(){
+	public int getUnreadCount(){
 		return unreadCount;
 	}
 
