@@ -44,7 +44,7 @@ public class YMChat {
     public YMConfig config;
     private final String unlinkNotificationUrl = "/api/plugin/removeDeviceToken?bot=";
     private final String registerDeviceUrl = "/api/mobile-backend/device-token?bot=";
-    private final String unreadMessagesUrl = "/api/mobile-backend/message/unreadMsgs?botId=";
+    private final String unreadMessagesUrl = "/api/mobile-backend/message/unreadMsgs?bot=";
 
 
     private YMChat() {
@@ -189,7 +189,7 @@ public class YMChat {
     public void unlinkDeviceToken(String botId, String apiKey, String deviceToken, YellowCallback callback) throws Exception {
         YMConfig ymConfig = new YMConfig(botId);
         ymConfig.deviceToken = deviceToken;
-        ymConfig.customBaseUrl = "https://app.yellow.ai";
+        ymConfig.customBaseUrl = "https://cloud.yellow.ai";
         unlinkDeviceToken(apiKey, ymConfig, callback);
     }
 
@@ -386,7 +386,7 @@ public class YMChat {
                                             YellowGenericResponseModel<YellowUnreadMessageResponse> resp = new Gson().fromJson(body.string(), collectionType);
 
                                             boolean isSuccess = resp.getSuccess();
-                                            String message = resp.getError();
+                                            String message = resp.getMessage();
                                             YellowUnreadMessageResponse unreadMessages = resp.getData();
 
                                             if (isSuccess) {
