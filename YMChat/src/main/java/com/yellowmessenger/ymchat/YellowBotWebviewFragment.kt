@@ -850,7 +850,7 @@ class YellowBotWebviewFragment : Fragment() {
                 .isEmpty()) {
             activity?.onBackPressed()
         }
-        if (shouldKeepApplicationInBackground && isAgentConnected) {
+        if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {
             reload()
         } else {
             enableShouldKeepApplicationInBackground()
@@ -1078,7 +1078,7 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     override fun onStop() {
-        if (shouldKeepApplicationInBackground && isAgentConnected) {
+        if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {
             updateAgentStatus("offline")
         }
         super.onStop()

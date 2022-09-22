@@ -1,9 +1,9 @@
 package com.yellowmessenger.ymchat.models;
 
 public class YellowUnreadMessageResponse {
-    private int unreadCount;
+    private String unreadCount;
 
-    public int getUnreadCount() {
+    public String getUnreadCount() {
         return unreadCount;
     }
 }
