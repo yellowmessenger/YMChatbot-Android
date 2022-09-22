@@ -339,9 +339,9 @@ public class YMChat {
         }
     }
 
-    public void getUnreadMessages(String apiKey, YMConfig ymConfig, YellowDataCallback callback) throws Exception {
+    public void getUnreadMessagesCount(YMConfig ymConfig, YellowDataCallback callback) throws Exception {
         try {
-            if (isUnreadParamsValidated(ymConfig.botId, apiKey, ymConfig.ymAuthenticationToken, ymConfig.customBaseUrl, callback)) {
+            if (isUnreadParamsValidated(ymConfig.botId, ymConfig.ymAuthenticationToken, ymConfig.customBaseUrl, callback)) {
                 Thread thread = new Thread() {
                     @Override
                     public void run() {
@@ -362,7 +362,6 @@ public class YMChat {
 
                         Request request = new Request.Builder()
                                 .url(postUrl)
-                                .addHeader("x-api-key", apiKey)
                                 .addHeader("Content-Type", "application/json")
                                 .post(requestBody)
                                 .build();
@@ -446,9 +445,8 @@ public class YMChat {
         return true;
     }
 
-    private boolean isUnreadParamsValidated(String botId, String apiKey, String userId, String customBaseUrl, YellowDataCallback callback) throws Exception {
+    private boolean isUnreadParamsValidated(String botId, String userId, String customBaseUrl, YellowDataCallback callback) throws Exception {
         isValidParam(botId, "Bot Id");
-        isValidParam(apiKey, "Api Key");
         isValidParam(userId, "User Id");
         isValidParam(customBaseUrl, "Custom base url");
 
