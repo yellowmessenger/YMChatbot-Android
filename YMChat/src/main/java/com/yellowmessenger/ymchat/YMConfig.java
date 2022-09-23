@@ -24,6 +24,7 @@ public class YMConfig {
     public HashMap<String, String> customData = new HashMap<>(); // other data key-values
     public boolean disableActionsOnLoad = false;
     public boolean useLiteVersion = false;
+    public boolean alwaysReload = false;
 
     public YMConfig(@NonNull String botId) {
         this.botId = botId;
