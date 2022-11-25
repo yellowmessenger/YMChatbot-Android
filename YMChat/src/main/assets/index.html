@@ -93,9 +93,7 @@
             triggerJourney: payloadJSON.JourneySlug
         };
 
-        if(version == '2') {
             window.ymConfig.host = customBaseUrl;
-        }
 
         if(payloadJSON.UserId) {
             window.ymConfig.userId = payloadJSON.UserId;
