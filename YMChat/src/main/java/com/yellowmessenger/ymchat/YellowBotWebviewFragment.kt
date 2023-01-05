@@ -846,8 +846,7 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     override fun onStart() {
-        if (ConfigService.getInstance().config.botId == null || ConfigService.getInstance().config.botId.trim { it <= ' ' }
-                .isEmpty()) {
+        if (ConfigService.getInstance().config.botId == null || ConfigService.getInstance().config.botId.trim().isEmpty()) {
             activity?.onBackPressed()
         }
         if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {

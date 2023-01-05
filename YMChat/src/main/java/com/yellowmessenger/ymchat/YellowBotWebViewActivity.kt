@@ -19,10 +19,16 @@ class YellowBotWebViewActivity : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount == 1) {
+        try {
+            if (supportFragmentManager.backStackEntryCount == 1) {
+                finish()
+            } else {
+                super.onBackPressed()
+            }
+        } catch (e: Exception) {
+            //Some problem occurred please relaunch the bot
             finish()
-        } else {
-            super.onBackPressed()
+
         }
     }
 }
