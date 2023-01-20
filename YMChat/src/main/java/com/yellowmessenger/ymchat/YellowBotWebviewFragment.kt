@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Rect
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Message
 import android.provider.MediaStore
@@ -399,9 +398,13 @@ class YellowBotWebviewFragment : Fragment() {
                 if (newWebView != null) {
                     newWebView.webViewClient = object : WebViewClient() {
                         override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                            val browserIntent = Intent(Intent.ACTION_VIEW)
-                            browserIntent.data = Uri.parse(url)
-                            startActivity(browserIntent)
+                            try {
+                                val browserIntent = Intent(Intent.ACTION_VIEW)
+                                browserIntent.data = Uri.parse(url)
+                                startActivity(browserIntent)
+                            } catch (e: Exception) {
+                                //Some error occurred
+                            }
                             return true
                         }
                     }
@@ -511,16 +514,18 @@ class YellowBotWebviewFragment : Fragment() {
             // Continue only if the File was successfully created
             if (photoFile != null) {
                 mCameraPhotoPath = "file:" + photoFile.absolutePath
-                val photoURI: Uri = if (Build.VERSION.SDK_INT >= 24 && context != null) {
-                    FileProvider.getUriForFile(
-                        requireContext(),
-                        getString(R.string.ym_file_provider),
-                        photoFile
-                    )
-                } else {
-                    Uri.fromFile(photoFile)
+
+                if (context == null) {
+                    return
                 }
+                val photoURI: Uri = FileProvider.getUriForFile(
+                    requireContext(),
+                    getString(R.string.ym_file_provider),
+                    photoFile
+                )
+
                 takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                 disableShouldKeepApplicationInBackground()
                 startActivityForResult(
                     takePictureIntent,
@@ -846,7 +851,9 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     override fun onStart() {
-        if (ConfigService.getInstance().config.botId == null || ConfigService.getInstance().config.botId.trim().isEmpty()) {
+        if (ConfigService.getInstance().config.botId == null || ConfigService.getInstance().config.botId.trim()
+                .isEmpty()
+        ) {
             activity?.onBackPressed()
         }
         if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {
