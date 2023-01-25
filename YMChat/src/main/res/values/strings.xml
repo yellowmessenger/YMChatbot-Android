@@ -1,10 +1,10 @@
 <resources>
     <string name="ym_app_name">YMChat</string>
     <string name="title_activity_test">TestActivity</string>
-    <string name="ym_chatbot_base_url">file:///android_asset/index.html</string>
+    <string name="ym_chatbot_base_url">file:///android_asset/yellow-index.html</string>
     <string name="ym_msg_listening">I\'m listening…</string>
     <string name="ym_msg_start_speaking">Start Speaking…</string>
-    <string name="ym_lite_chatbot_base_url">file:///android_asset/index-lite.html</string>
+    <string name="ym_lite_chatbot_base_url">file:///android_asset/yellow-index-lite.html</string>
     <string name="ym_fab_voice_button">voice button</string>
     <string name="application_id_for_provider">com.yellowmessenger.ymchatexample.fileprovider</string>
     <string name="ym_file_provider">@string/application_id_for_provider</string>
