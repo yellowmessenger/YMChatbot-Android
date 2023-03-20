@@ -75,6 +75,10 @@ public class YMChat {
         this.botCloseEventListener = listener;
     }
 
+    public void reloadBot(){
+        emitLocalEvent(new YMBotEventResponse("reload-bot","",true));
+    }
+
 
     public void startChatbot(@NonNull Context context) throws Exception {
         try {
