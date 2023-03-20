@@ -144,6 +144,7 @@ class YellowBotWebviewFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStatusBarColor()
+
         hasAudioPermissionInManifest = hasAudioPermissionInManifest(requireContext())
         // setting up local listener
         YMChat.getInstance().setLocalListener { botEvent: YMBotEventResponse ->
@@ -216,6 +217,13 @@ class YellowBotWebviewFragment : Fragment() {
                 "disable-multi-upload" -> try {
                     activity?.runOnUiThread {
                         setMultiFileUpload(false)
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
+                "reload-bot" -> try {
+                    activity?.runOnUiThread {
+                       reload()
                     }
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
