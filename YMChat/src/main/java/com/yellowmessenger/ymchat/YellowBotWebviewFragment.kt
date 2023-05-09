@@ -50,6 +50,7 @@ import java.util.*
  * create an instance of this fragment.
  */
 class YellowBotWebviewFragment : Fragment() {
+    private var audioPermission: PermissionRequest? = null
     private var willStartMic = false
     var postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot="
     private var uid: String? = null
@@ -119,7 +120,8 @@ class YellowBotWebviewFragment : Fragment() {
                 }
             } else if (requestedPermission == Manifest.permission.RECORD_AUDIO) {
                 if (isGranted) {
-                    toggleBottomSheet()
+                    audioPermission?.grant(audioPermission?.resources)
+                    //toggleBottomSheet()
                 } else {
                     YmHelper.showSnackBarWithSettingAction(
                         requireContext(),
@@ -274,6 +276,7 @@ class YellowBotWebviewFragment : Fragment() {
         setStatusBarColorFromHex()
         setCloseButtonColorFromHex()
         setKeyboardListener()
+       // showVoiceOption()
     }
 
     //File picker activity result
@@ -322,6 +325,7 @@ class YellowBotWebviewFragment : Fragment() {
             JavaScriptInterface(requireActivity(), myWebView),
             "YMHandler"
         )
+
         myWebView.webViewClient = WebViewClient()
         myWebView.webChromeClient = object : WebChromeClient() {
             private var mCustomView: View? = null
@@ -438,6 +442,14 @@ class YellowBotWebviewFragment : Fragment() {
                     geoOrigin = origin
                     geoCallback = callback
                 }
+            }
+
+            override fun onPermissionRequest(request: PermissionRequest?) {
+                //request?.grant(request.resources)
+                if(request?.resources?.contains("android.webkit.resource.AUDIO_CAPTURE") == true){
+                    showNewVoiceOption(request)
+                }
+                //super.onPermissionRequest(request)
             }
         }
         val htmlurl = if (ConfigService.getInstance().config.useLiteVersion) {
@@ -851,6 +863,29 @@ class YellowBotWebviewFragment : Fragment() {
         ) {
             toggleBottomSheet()
         } else {
+            requestedPermission = Manifest.permission.RECORD_AUDIO
+            requestPermissionLauncher.launch(
+                Manifest.permission.RECORD_AUDIO
+            )
+        }
+    }
+
+    private fun showNewVoiceOption(request:PermissionRequest?) {
+        if (!hasAudioPermissionInManifest) {
+            YmHelper.showMessageInSnackBar(
+                parentLayout,
+                getString(R.string.ym_declare_audio_permission)
+            )
+            return
+        }
+        if (ContextCompat.checkSelfPermission(
+                requireContext(), Manifest.permission.RECORD_AUDIO
+            ) ==
+            PackageManager.PERMISSION_GRANTED
+        ) {
+            request?.grant(request.resources)
+        } else {
+            audioPermission = request
             requestedPermission = Manifest.permission.RECORD_AUDIO
             requestPermissionLauncher.launch(
                 Manifest.permission.RECORD_AUDIO
