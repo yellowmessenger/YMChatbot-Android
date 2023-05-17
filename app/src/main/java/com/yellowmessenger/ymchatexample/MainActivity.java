@@ -21,11 +21,12 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
 
+    //https://uayellowuat.bankofindia.co.in/liveBot/x1677588205681?region=
     // Dummy bot id. (Purrs a lot)J
-    String botId = "x1645602443989";
+    String botId = "x1677588205681";
     String deviceToken = "yourdevicetoken";
     String apiKey = "your-api-key";
-    String ymAuthenticationToken = "secure and unique auth token";
+    String ymAuthenticationToken = "secure and unique auth token goes here";
     FrameLayout frame;
 
     @Override
@@ -46,18 +47,28 @@ public class MainActivity extends AppCompatActivity {
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
 
-        ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
+        ymChat.config.ymAuthenticationToken = "154119639";
 
         // Set this flag to hide input bar while bot is loading the history
         //ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
-        // ymChat.config.enableSpeech = true;
+         ymChat.config.enableSpeech = true;
 
+    /*    token: "Bearer EYpu96CSuUef9yxxJQac5t858LyeBRXrhUlBz7pT4ts.TpVksGre5aBWJZPVAyeLDONKLxS0cl2Mr-GcJSdFu2M",
+                customerId: "154119639",
+                customerName: "Aishwarya",
+                JourneySlug: 'boi-main-menu_fjomgm',
+                type: 'react-native',
+                uniqueCustNo: "154119639",*/
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
-        // payloadData.put("mobile", "919588863784");
+        payloadData.put("token", "Bearer EYpu96CSuUef9yxxJQac5t858LyeBRXrhUlBz7pT4ts.TpVksGre5aBWJZPVAyeLDONKLxS0cl2Mr-GcJSdFu2M");
+        payloadData.put("customerId", "154119639");
+        payloadData.put("JourneySlug", "boi-main-menu_fjomgm");
+        payloadData.put("type", "react-native");
+        payloadData.put("uniqueCustNo", "154119639");
         ymChat.config.payload = payloadData;
 
         //If you want to use lite version please add ymChat.config.useLiteVersion = true
@@ -96,10 +107,11 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        // ymChat.config.customBaseUrl = "https://r5.cloud.yellow.ai";
+        ymChat.config.customBaseUrl = "https://uayellowuat.bankofindia.co.in";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
+            Toast.makeText(this,botEvent.getCode(),Toast.LENGTH_SHORT).show();
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;

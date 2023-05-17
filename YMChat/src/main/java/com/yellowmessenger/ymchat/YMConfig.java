@@ -25,6 +25,10 @@ public class YMConfig {
     public boolean disableActionsOnLoad = false;
     public boolean useLiteVersion = false;
     public boolean alwaysReload = false;
+    public HashMap<String, String> speechFabProperties = new HashMap<>(); // other data key-values
+    // public String speechFabProperties
+        // fabIconColor: String  (hex values)
+        // fabBackgroundColor : String (hex value)
 
     public YMConfig(@NonNull String botId) {
         this.botId = botId;
