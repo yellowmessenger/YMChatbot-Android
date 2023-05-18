@@ -31,7 +31,6 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -224,7 +223,7 @@ class YellowBotWebviewFragment : Fragment() {
                 }
                 "reload-bot" -> try {
                     activity?.runOnUiThread {
-                       reload()
+                        reload()
                     }
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
@@ -255,6 +254,20 @@ class YellowBotWebviewFragment : Fragment() {
                 micButton.visibility = View.VISIBLE
                 micButton.setOnClickListener { showVoiceOption() }
                 alignMicButton()
+                val speechValue = ConfigService.getInstance().config.enableSpeechConfig
+                try {
+                    if (speechValue?.fabBackgroundColor?.isNotEmpty() == true) {
+                        micButton.backgroundTintList =
+                            ColorStateList.valueOf(Color.parseColor(speechValue.fabBackgroundColor))
+                    }
+                    if (speechValue?.fabIconColor?.isNotEmpty() == true) {
+                        micButton.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor(speechValue.fabIconColor))
+
+                    }
+                } catch (e: Exception) {
+                    //
+                }
             } else {
                 YmHelper.showMessageInSnackBar(
                     parentLayout,
@@ -778,11 +791,6 @@ class YellowBotWebviewFragment : Fragment() {
 
     // Adjust view of FAB based on version
     private fun alignMicButton() {
-        val customFab = true
-        if(customFab){
-           // micButton.backgroundTintList = ColorStateList.valueOf(context?.resources?.getColor(R.color.colorAccent)!!)
-           // micButton.imageTintList = ColorStateList.valueOf(context?.resources?.getColor(R.color.ymColorWhite)!!)
-        }
         val version = ConfigService.getInstance().config.version
         val params = micButton.layoutParams as RelativeLayout.LayoutParams
         if (version == 1) {
@@ -973,7 +981,7 @@ class YellowBotWebviewFragment : Fragment() {
             var defaultLanguage =
                 if (payload != null) payload["defaultLanguage"] as String? else null
             if (defaultLanguage == null) {
-                defaultLanguage = "en"
+                defaultLanguage = Locale.getDefault().toString()
             }
             val languagePref: String = defaultLanguage
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, languagePref)

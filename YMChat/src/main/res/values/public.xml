@@ -8,5 +8,4 @@
 
     <public name="ym_mic_color" type="color">@color/ymIconColor</public>
     <public name="ym_icon_color" type="color">@color/ymIconColor</public>
-    <public name="ym_fab_background" type="color">@color/ymTransparent</public>
 </resources>

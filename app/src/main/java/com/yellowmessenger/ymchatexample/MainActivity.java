@@ -18,6 +18,7 @@ import com.yellowmessenger.ymchat.models.YellowDataCallback;
 import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -53,14 +54,11 @@ public class MainActivity extends AppCompatActivity {
         //ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
-         ymChat.config.enableSpeech = true;
+        ymChat.config.enableSpeech = true;
+        //Speech Button config
+        ymChat.config.enableSpeechConfig.fabBackgroundColor = "#000000";
+        ymChat.config.enableSpeechConfig.fabIconColor = "#FFFFFF";
 
-    /*    token: "Bearer EYpu96CSuUef9yxxJQac5t858LyeBRXrhUlBz7pT4ts.TpVksGre5aBWJZPVAyeLDONKLxS0cl2Mr-GcJSdFu2M",
-                customerId: "154119639",
-                customerName: "Aishwarya",
-                JourneySlug: 'boi-main-menu_fjomgm',
-                type: 'react-native',
-                uniqueCustNo: "154119639",*/
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
         //Setting Payload Data
@@ -69,8 +67,9 @@ public class MainActivity extends AppCompatActivity {
         payloadData.put("JourneySlug", "boi-main-menu_fjomgm");
         payloadData.put("type", "react-native");
         payloadData.put("uniqueCustNo", "154119639");
+        payloadData.put("defaultLanguage", Locale.getDefault().toString());
         ymChat.config.payload = payloadData;
-
+        4
         //If you want to use lite version please add ymChat.config.useLiteVersion = true
         // In case of light version, custom loader url is not supported
         // ymChat.config.useLiteVersion = true;
@@ -111,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
-            Toast.makeText(this,botEvent.getCode(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, botEvent.getCode(), Toast.LENGTH_SHORT).show();
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;

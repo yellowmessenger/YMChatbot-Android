@@ -46,7 +46,6 @@ public class YMChat {
     private final String registerDeviceUrl = "/api/mobile-backend/device-token?bot=";
     private final String unreadMessagesUrl = "/api/mobile-backend/message/unreadMsgs?bot=";
 
-
     private YMChat() {
         this.listener = botEvent -> {
         };
@@ -75,8 +74,8 @@ public class YMChat {
         this.botCloseEventListener = listener;
     }
 
-    public void reloadBot(){
-        emitLocalEvent(new YMBotEventResponse("reload-bot","",true));
+    public void reloadBot() {
+        emitLocalEvent(new YMBotEventResponse("reload-bot", "", true));
     }
 
 

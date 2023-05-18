@@ -2,10 +2,11 @@ package com.yellowmessenger.ymchat;
 
 import androidx.annotation.NonNull;
 
+import com.yellowmessenger.ymchat.models.YMEnableSpeechConfig;
+
 import java.util.HashMap;
 
 public class YMConfig {
-
     public String botId;
     public boolean enableSpeech = false;
     public boolean showConsoleLogs = false;
@@ -25,10 +26,8 @@ public class YMConfig {
     public boolean disableActionsOnLoad = false;
     public boolean useLiteVersion = false;
     public boolean alwaysReload = false;
-    public HashMap<String, String> speechFabProperties = new HashMap<>(); // other data key-values
-    // public String speechFabProperties
-        // fabIconColor: String  (hex values)
-        // fabBackgroundColor : String (hex value)
+    public YMEnableSpeechConfig enableSpeechConfig = new YMEnableSpeechConfig();
+    public HashMap<String, String> speechFabProperties = new HashMap<>();
 
     public YMConfig(@NonNull String botId) {
         this.botId = botId;
