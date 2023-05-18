@@ -27,7 +27,6 @@ public class YMConfig {
     public boolean useLiteVersion = false;
     public boolean alwaysReload = false;
     public YMEnableSpeechConfig enableSpeechConfig = new YMEnableSpeechConfig();
-    public HashMap<String, String> speechFabProperties = new HashMap<>();
 
     public YMConfig(@NonNull String botId) {
         this.botId = botId;

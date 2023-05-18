@@ -69,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
         payloadData.put("uniqueCustNo", "154119639");
         payloadData.put("defaultLanguage", Locale.getDefault().toString());
         ymChat.config.payload = payloadData;
-        4
+        
         //If you want to use lite version please add ymChat.config.useLiteVersion = true
         // In case of light version, custom loader url is not supported
         // ymChat.config.useLiteVersion = true;
