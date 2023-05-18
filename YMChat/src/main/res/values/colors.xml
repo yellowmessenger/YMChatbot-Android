@@ -10,6 +10,7 @@
     <color name="ymTranslucent">#80000000</color>
     <color name="ymAccentBlue">#FF4384f5</color>
     <color name="ym_mic_color">@color/ymIconColor</color>
-    <color name="black_overlay">#66000000</color>
+    <color name="black_overlay" >#66000000</color>
     <color name="ym_icon_color">@color/ymIconColor</color>
+    <color name="ym_fab_background">@color/ymTransparent</color>
 </resources>

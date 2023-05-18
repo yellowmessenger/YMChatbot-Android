@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
+import android.content.res.ColorStateList
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -30,7 +31,6 @@ import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
-import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -54,7 +54,7 @@ class YellowBotWebviewFragment : Fragment() {
     var postUrl = "https://app.yellowmessenger.com/api/chat/upload?bot="
     private var uid: String? = null
     private lateinit var closeButton: ImageView
-    private lateinit var micButton: FloatingActionButton
+    private lateinit var micButton: YmMovableFloatingActionButton
     private lateinit var parentLayout: View
     private var shouldKeepApplicationInBackground = true
     private var isAgentConnected = false
@@ -223,7 +223,7 @@ class YellowBotWebviewFragment : Fragment() {
                 }
                 "reload-bot" -> try {
                     activity?.runOnUiThread {
-                       reload()
+                        reload()
                     }
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
@@ -254,6 +254,20 @@ class YellowBotWebviewFragment : Fragment() {
                 micButton.visibility = View.VISIBLE
                 micButton.setOnClickListener { showVoiceOption() }
                 alignMicButton()
+                val speechValue = ConfigService.getInstance().config.enableSpeechConfig
+                try {
+                    if (speechValue?.fabBackgroundColor?.isNotEmpty() == true) {
+                        micButton.backgroundTintList =
+                            ColorStateList.valueOf(Color.parseColor(speechValue.fabBackgroundColor))
+                    }
+                    if (speechValue?.fabIconColor?.isNotEmpty() == true) {
+                        micButton.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor(speechValue.fabIconColor))
+
+                    }
+                } catch (e: Exception) {
+                    //
+                }
             } else {
                 YmHelper.showMessageInSnackBar(
                     parentLayout,
@@ -967,7 +981,7 @@ class YellowBotWebviewFragment : Fragment() {
             var defaultLanguage =
                 if (payload != null) payload["defaultLanguage"] as String? else null
             if (defaultLanguage == null) {
-                defaultLanguage = "en"
+                defaultLanguage = Locale.getDefault().toString()
             }
             val languagePref: String = defaultLanguage
             intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE, languagePref)
@@ -997,8 +1011,8 @@ class YellowBotWebviewFragment : Fragment() {
         if (context == null)
             return
         val voiceArea: RelativeLayout = parentLayout.findViewById<RelativeLayout>(R.id.voiceArea)
-        val micButton: FloatingActionButton =
-            parentLayout.findViewById<FloatingActionButton>(R.id.floatingActionButton)
+        val micButton: YmMovableFloatingActionButton =
+            parentLayout.findViewById<YmMovableFloatingActionButton>(R.id.floatingActionButton)
         val textView: TextView = parentLayout.findViewById<TextView>(R.id.speechTranscription)
         if (voiceArea.visibility == View.INVISIBLE) {
             textView.setText(R.string.ym_msg_listening)
@@ -1031,8 +1045,8 @@ class YellowBotWebviewFragment : Fragment() {
             return
 
         val voiceArea: RelativeLayout = parentLayout.findViewById<RelativeLayout>(R.id.voiceArea)
-        val micButton: FloatingActionButton =
-            parentLayout.findViewById<FloatingActionButton>(R.id.floatingActionButton)
+        val micButton: YmMovableFloatingActionButton =
+            parentLayout.findViewById<YmMovableFloatingActionButton>(R.id.floatingActionButton)
         val textView: TextView = parentLayout.findViewById<TextView>(R.id.speechTranscription)
         voiceArea.visibility = View.INVISIBLE
         micButton.setImageDrawable(

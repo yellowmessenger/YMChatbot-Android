@@ -18,6 +18,7 @@ import com.yellowmessenger.ymchat.models.YellowDataCallback;
 import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
 
 import java.util.HashMap;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
         //ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
-        // ymChat.config.enableSpeech = true;
+         ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
@@ -100,6 +101,7 @@ public class MainActivity extends AppCompatActivity {
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
+            Toast.makeText(this, botEvent.getCode(), Toast.LENGTH_SHORT).show();
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;
