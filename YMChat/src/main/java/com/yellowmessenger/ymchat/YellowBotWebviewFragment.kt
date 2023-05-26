@@ -522,43 +522,53 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     private fun launchCameraIntent() {
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        if (activity != null && takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
-            // Create the File where the photo should go
-            var photoFile: File? = null
-            try {
-                photoFile = createImageFile()
-                takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath)
-            } catch (ex: IOException) {
-                //IO exception occurred
-            }
-
-            // Continue only if the File was successfully created
-            if (photoFile != null) {
-                mCameraPhotoPath = "file:" + photoFile.absolutePath
-
-                if (context == null) {
-                    return
+        try {
+            val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+            if (activity != null && takePictureIntent.resolveActivity(requireActivity().packageManager) != null) {
+                // Create the File where the photo should go
+                var photoFile: File? = null
+                try {
+                    photoFile = createImageFile()
+                    takePictureIntent.putExtra("PhotoPath", mCameraPhotoPath)
+                } catch (ex: IOException) {
+                    //IO exception occurred
                 }
-                val photoURI: Uri = FileProvider.getUriForFile(
-                    requireContext(),
-                    getString(R.string.ym_file_provider),
-                    photoFile
-                )
 
-                takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                disableShouldKeepApplicationInBackground()
-                startActivityForResult(
-                    takePictureIntent,
-                    INPUT_FILE_REQUEST_CODE
-                )
-            } else {
-                YmHelper.showMessageInSnackBar(
-                    parentLayout,
-                    requireContext().getString(R.string.ym_message_camera_error)
-                )
+                // Continue only if the File was successfully created
+                if (photoFile != null) {
+                    mCameraPhotoPath = "file:" + photoFile.absolutePath
+
+                    if (context == null) {
+                        return
+                    }
+
+                    val appId = requireContext().packageName + ".yellow.chatbot.provider"
+                    val photoURI: Uri = FileProvider.getUriForFile(
+                        requireContext(),
+                        appId,
+                        photoFile
+                    )
+
+                    takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
+                    takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    disableShouldKeepApplicationInBackground()
+                    startActivityForResult(
+                        takePictureIntent,
+                        INPUT_FILE_REQUEST_CODE
+                    )
+                } else {
+                    YmHelper.showMessageInSnackBar(
+                        parentLayout,
+                        requireContext().getString(R.string.ym_message_camera_error)
+                    )
+                }
             }
+        } catch (e: Exception) {
+            YmHelper.showMessageInSnackBar(
+                parentLayout,
+                requireContext().getString(R.string.ym_message_camera_error)
+            )
+
         }
     }
 

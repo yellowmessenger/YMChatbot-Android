@@ -33,7 +33,7 @@
 
         <provider
             android:name=".YellowChatBotFileProvide"
-            android:authorities="@string/ym_file_provider"
+            android:authorities="${applicationId}.yellow.chatbot.provider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
