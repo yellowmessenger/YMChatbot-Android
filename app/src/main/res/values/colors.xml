@@ -8,5 +8,5 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="ymAccentBlue">#FF03DAC5</color>
-    <color name="ym_icon_color">#FFFFFF</color>
+   <!-- <color name="ym_icon_color">#FFFFFF</color>-->
 </resources>
