@@ -42,7 +42,7 @@ public class YMChat {
     private BotCloseEventListener botCloseEventListener;
     private static YMChat botPluginInstance;
     public YMConfig config;
-    private final String unlinkNotificationUrl = "api/mobile-backend/device-token?";
+    private final String unlinkNotificationUrl = "/api/mobile-backend/device-token?bot=";
     private final String registerDeviceUrl = "/api/mobile-backend/device-token?bot=";
     private final String unreadMessagesUrl = "/api/mobile-backend/message/unreadMsgs?bot=";
 
