@@ -282,7 +282,6 @@
             setDisableActionsTimeout: disableActionsOnLoad == 'true',
             handlers: {
                 sendIOSEvent: function (data) {
-                 console.log(data);
 
                     try {
                         window.webkit.messageHandlers.ymHandler.postMessage(data);
