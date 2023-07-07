@@ -42,7 +42,7 @@ public class YMChat {
     private BotCloseEventListener botCloseEventListener;
     private static YMChat botPluginInstance;
     public YMConfig config;
-    private final String unlinkNotificationUrl = "/api/plugin/removeDeviceToken?bot=";
+    private final String unlinkNotificationUrl = "/api/mobile-backend/device-token?bot=";
     private final String registerDeviceUrl = "/api/mobile-backend/device-token?bot=";
     private final String unreadMessagesUrl = "/api/mobile-backend/message/unreadMsgs?bot=";
 
@@ -222,7 +222,7 @@ public class YMChat {
                                 .url(postUrl)
                                 .addHeader("x-api-key", apiKey)
                                 .addHeader("Content-Type", "application/json")
-                                .post(requestBody)
+                                .delete(requestBody)
                                 .build();
 
                         client.newCall(request).enqueue(new Callback() {
