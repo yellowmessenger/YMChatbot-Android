@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
 
-        ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
+       // ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
 
         // Set this flag to hide input bar while bot is loading the history
         //ymChat.config.disableActionsOnLoad = true;

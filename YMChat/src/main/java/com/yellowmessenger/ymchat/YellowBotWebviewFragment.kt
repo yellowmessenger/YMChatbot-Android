@@ -12,6 +12,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Rect
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Message
 import android.provider.MediaStore
@@ -24,7 +25,9 @@ import android.view.*
 import android.webkit.*
 import android.webkit.WebView.WebViewTransport
 import android.widget.*
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
+import androidx.annotation.RequiresApi
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
@@ -43,6 +46,7 @@ import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
+
 
 /**
  * A simple [Fragment] subclass.
@@ -69,24 +73,44 @@ class YellowBotWebviewFragment : Fragment() {
     private var geoOrigin: String? = null
     private var isMultiFileUpload = false
     private var isBotClosing = false
+    private var storgePermissions = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    var storgePermission33 = arrayOf(
+        Manifest.permission.READ_MEDIA_IMAGES,
+        Manifest.permission.READ_MEDIA_AUDIO,
+        Manifest.permission.READ_MEDIA_VIDEO
+    )
+
+    private val requestMultiplePermissions = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if ((permissions.containsKey(Manifest.permission.READ_MEDIA_IMAGES) && permissions[Manifest.permission.READ_MEDIA_IMAGES] == true)
+            || (permissions.containsKey(Manifest.permission.READ_MEDIA_VIDEO) && permissions[Manifest.permission.READ_MEDIA_VIDEO] == true)
+            || (permissions.containsKey(Manifest.permission.READ_MEDIA_AUDIO) && permissions[Manifest.permission.READ_MEDIA_AUDIO] == true)
+            || (permissions.containsKey(Manifest.permission.READ_EXTERNAL_STORAGE) && permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true)
+        ) {
+            launchFileIntent()
+        } else {
+            resetFilePathCallback()
+            if (context != null) {
+                YmHelper.showSnackBarWithSettingAction(
+                    requireContext(),
+                    parentLayout,
+                    getString(R.string.ym_message_storgae_permission)
+                )
+            }
+        }
+
+    }
+
     private val requestPermissionLauncher = registerForActivityResult(
         RequestPermission()
     ) { isGranted: Boolean ->
         if (!TextUtils.isEmpty(requestedPermission)) {
-            if (requestedPermission == Manifest.permission.READ_EXTERNAL_STORAGE) {
-                if (isGranted) {
-                    launchFileIntent()
-                } else {
-                    resetFilePathCallback()
-                    if (context != null) {
-                        YmHelper.showSnackBarWithSettingAction(
-                            requireContext(),
-                            parentLayout,
-                            getString(R.string.ym_message_storgae_permission)
-                        )
-                    }
-                }
-            } else if (requestedPermission == Manifest.permission.CAMERA) {
+            if (requestedPermission == Manifest.permission.CAMERA) {
                 if (isGranted) {
                     launchCameraIntent()
                 } else {
@@ -245,7 +269,6 @@ class YellowBotWebviewFragment : Fragment() {
         preLoadWebView()
         return v
     }
-
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -697,18 +720,30 @@ class YellowBotWebviewFragment : Fragment() {
 
 
     private fun checkForStoragePermission(context: Context): Boolean {
-        return if (ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.READ_EXTERNAL_STORAGE
-            )
-            == PackageManager.PERMISSION_GRANTED
-        ) {
+        val p: Array<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            storgePermission33
+        } else {
+            storgePermissions
+        }
+        return if (hasStoragePermissions(context, p)) {
             true
         } else {
-            requestedPermission = Manifest.permission.READ_EXTERNAL_STORAGE
-            requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
+            requestMultiplePermissions.launch(p)
             false
         }
+    }
+
+    private fun hasStoragePermissions(context: Context, p: Array<String>): Boolean {
+        p.forEach {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    it
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                return true
+            }
+        }
+        return false
     }
 
 
@@ -810,7 +845,7 @@ class YellowBotWebviewFragment : Fragment() {
         if (version == 1) {
             params.setMargins(0, 0, 4, 200)
         } else {
-            params.setMargins(0, 0, 0, 144)
+            params.setMargins(0, 0, 0, 186)
         }
         micButton.layoutParams = params
     }
