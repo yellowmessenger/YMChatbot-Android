@@ -68,6 +68,7 @@ class YellowBotWebviewFragment : Fragment() {
     private var geoCallback: GeolocationPermissions.Callback? = null
     private var geoOrigin: String? = null
     private var isMultiFileUpload = false
+    private var isBotClosing = false
     private val requestPermissionLauncher = registerForActivityResult(
         RequestPermission()
     ) { isGranted: Boolean ->
@@ -156,6 +157,7 @@ class YellowBotWebviewFragment : Fragment() {
                         if (activity is YellowBotWebViewActivity) {
                             closeBot()
                             activity?.onBackPressed()
+                            isBotClosing = true
                         }
                     }
                 } catch (e: java.lang.Exception) {
@@ -244,6 +246,7 @@ class YellowBotWebviewFragment : Fragment() {
         return v
     }
 
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentLayout = view
@@ -282,6 +285,7 @@ class YellowBotWebviewFragment : Fragment() {
             if (activity is YellowBotWebViewActivity) {
                 closeBot()
                 activity?.onBackPressed()
+                isBotClosing = true
             }
         }
         showCloseButton()
@@ -893,6 +897,7 @@ class YellowBotWebviewFragment : Fragment() {
         } else {
             enableShouldKeepApplicationInBackground()
         }
+        YMChat.getInstance().emitEvent(YMBotEventResponse(getString(R.string.ym_chat_bot_foreground_event), "", false))
         super.onStart()
     }
 
@@ -1118,6 +1123,9 @@ class YellowBotWebviewFragment : Fragment() {
     override fun onStop() {
         if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {
             updateAgentStatus("offline")
+        }
+        if(!isBotClosing){
+            YMChat.getInstance().emitEvent(YMBotEventResponse(getString(R.string.ym_chat_bot_background_event), "", false))
         }
         super.onStop()
     }
