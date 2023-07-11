@@ -922,6 +922,7 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     override fun onStart() {
+        isBotClosing = false
         if (ConfigService.getInstance().config.botId == null || ConfigService.getInstance().config.botId.trim()
                 .isEmpty()
         ) {
