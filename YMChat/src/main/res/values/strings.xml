@@ -18,4 +18,6 @@
     <string name="ym_no_location_permission_declared">Please declare ACCESS_FINE_LOCATION and ACCESS_COARSE_LOCATION permission in application manifest</string>
     <string name="ym_message_location_permission">Location permission is required to complete this operation.</string>
     <string name="ym_declare_audio_permission">To use enable speech to text feature, please declare RECORD_AUDIO permission in application manifest.</string>
+    <string name="ym_chat_bot_foreground_event">chatbot-in-foreground</string>
+    <string name="ym_chat_bot_background_event">chatbot-in-background</string>
 </resources>
