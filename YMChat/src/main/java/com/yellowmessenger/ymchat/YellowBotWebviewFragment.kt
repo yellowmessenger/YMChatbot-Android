@@ -487,7 +487,8 @@ class YellowBotWebviewFragment : Fragment() {
         } else {
             getString(R.string.ym_chatbot_base_url)
         }
-        val newUrl = ConfigService.getInstance().getUrl(htmlurl)
+        val appId = requireContext().packageName
+        val newUrl = ConfigService.getInstance().getUrl(htmlurl,appId)
         myWebView.loadUrl(newUrl)
         return myWebView
     }

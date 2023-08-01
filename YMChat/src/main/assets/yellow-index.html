@@ -50,7 +50,7 @@
         var imageLink = "url(" + customLoaderUrl + ")";
         var disableActionsOnLoad = getParams(window.location.href)["disableActionsOnLoad"];
         document.getElementById("se-pre-con").style.backgroundImage = imageLink;
-
+        var appId = getParams(window.location.href)["appId"];
 
         var payloadJSON = {};
         try{
@@ -89,7 +89,8 @@
             },
             payload: payload,
             triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
-            triggerJourney: payloadJSON.JourneySlug
+            triggerJourney: payloadJSON.JourneySlug,
+            appId: appId
         };
 
             window.ymConfig.host = customBaseUrl;

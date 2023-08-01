@@ -1,9 +1,11 @@
 package com.yellowmessenger.ymchat.models;
 
 
+import android.content.Context;
 import android.net.Uri;
 
 import com.google.gson.Gson;
+import com.yellowmessenger.ymchat.BuildConfig;
 import com.yellowmessenger.ymchat.YMConfig;
 
 import java.util.HashMap;
@@ -15,7 +17,6 @@ public class ConfigService {
     private YMConfig config; // For configurations
     private Map<String, Object> payload; // For payload key-values
     private Map<String, String> customData; // other data key-values
-
     private ConfigService() {
         config = new YMConfig("");
         payload = new HashMap<>();
@@ -47,7 +48,7 @@ public class ConfigService {
         return config;
     }
 
-    public String getUrl(String baseUrl) {
+    public String getUrl(String baseUrl,String appId) {
         Uri builtUri = Uri.parse(baseUrl)
                 .buildUpon()
                 .appendQueryParameter("botId", config.botId)
@@ -57,8 +58,8 @@ public class ConfigService {
                 .appendQueryParameter("customBaseUrl", config.customBaseUrl)
                 .appendQueryParameter("version", Integer.toString(config.version))
                 .appendQueryParameter("customLoaderUrl", config.customLoaderUrl)
-                .appendQueryParameter("disableActionsOnLoad", String.valueOf(config.disableActionsOnLoad))
-                .build();
+                .appendQueryParameter("appId", appId)
+                .appendQueryParameter("disableActionsOnLoad", String.valueOf(config.disableActionsOnLoad)).build();
 
         return builtUri.toString();
     }

@@ -261,6 +261,7 @@
         var imageLink = "url(" + customLoaderUrl + ")";
         var disableActionsOnLoad = getParams(window.location.href)["disableActionsOnLoad"];
         document.getElementById("ymFrameHolder").style.backgroundImage = imageLink;
+        var appId = getParams(window.location.href)["appId"];
         var payloadJSON = {};
         try{
             payloadJSON = JSON.parse(payload);
@@ -297,7 +298,8 @@
             },
             payload: payload,
             triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
-            triggerJourney: payloadJSON.JourneySlug
+            triggerJourney: payloadJSON.JourneySlug,
+            appId: appId
         };
 
         if(payloadJSON.UserId) {
