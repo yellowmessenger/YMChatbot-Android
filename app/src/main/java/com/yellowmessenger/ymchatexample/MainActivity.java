@@ -2,6 +2,7 @@ package com.yellowmessenger.ymchatexample;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -10,9 +11,11 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
+import com.yellowmessenger.ymchat.models.YMEventModel;
 import com.yellowmessenger.ymchat.models.YellowCallback;
 import com.yellowmessenger.ymchat.models.YellowDataCallback;
 import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
@@ -22,8 +25,8 @@ import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Dummy bot id. (Purrs a lot)J
-    String botId = "x1645602443989";
+    // Dummy bot id. (Purrs a lot)
+    String botId = "x1669202195349";
     String deviceToken = "yourdevicetoken";
     String apiKey = "your-api-key";
     String ymAuthenticationToken = "secure and unique auth token";
@@ -97,7 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        // ymChat.config.customBaseUrl = "https://r5.cloud.yellow.ai";
+         ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -119,12 +122,32 @@ public class MainActivity extends AppCompatActivity {
             //Starting the bot activity
             try {
                 ymChat.startChatbot(this);
+
+                final Handler handler = new Handler();
+                handler.postDelayed(() -> {
+                    // Do something after 5s = 5000ms
+                    try {
+                        HashMap<String, String> tokenData = new HashMap<>();
+                        tokenData.put("refreshToken","131231sadasdadasd");
+                        tokenData.put("accessToken","asdasd23234234234");
+                        String dataString = new Gson().toJson(tokenData);
+
+                        ymChat.sendEventToBot(new YMEventModel(
+                                "event-from-mobile",
+                                dataString
+                        ));
+                    } catch (Exception e) {
+                        //e.printStackTrace();
+                    }
+                }, 60000);
             } catch (Exception e) {
                 //Catch and handle the exception
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
                 e.printStackTrace();
             }
         });
+
+
 
 
         registerDevice.setOnClickListener(view -> registerDevice());

@@ -262,6 +262,13 @@ class YellowBotWebviewFragment : Fragment() {
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
+                "send-event-to-bot"-> try {
+                    activity?.runOnUiThread {
+                        sendEvent("event-from-client", botEvent.data)
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
             }
         }
     }
@@ -700,7 +707,7 @@ class YellowBotWebviewFragment : Fragment() {
 
     // Sending messages to bot
     fun sendEvent(eventCode: String, eventData: String) {
-        myWebView.loadUrl("javascript:sendEvent(\"$eventCode\",\"$eventData\");")
+        myWebView.loadUrl("javascript:sendEvent(\'$eventCode\',\'$eventData\');")
     }
 
     private fun closeBot() {
