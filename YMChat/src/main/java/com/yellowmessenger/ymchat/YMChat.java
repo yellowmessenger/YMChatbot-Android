@@ -157,6 +157,14 @@ public class YMChat {
             localListener.onSuccess(new YMBotEventResponse("close-bot", "", false));
     }
 
+    public void revalidateToken(String token) throws Exception {
+        if(token == null || token.isEmpty()){
+            throw new Exception("Token cannot be null or empty.");
+        }
+        if (localListener != null)
+            localListener.onSuccess(new YMBotEventResponse("ym-revalidate-token", token, true));
+    }
+
     public void emitEvent(YMBotEventResponse event) {
         if (event != null) {
             if (botCloseEventListener != null && event.getCode() != null && isCloseBotEvent(event)) {

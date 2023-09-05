@@ -9,6 +9,10 @@ import android.view.View;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
+import com.google.gson.Gson;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class YmHelper {
 
@@ -25,19 +29,24 @@ public class YmHelper {
 
     public static void showSnackBarWithSettingAction(@NonNull final Context context, @NonNull final View view, @NonNull final String message) {
         Snackbar.make(view,
-                message,
-                Snackbar.LENGTH_LONG)
+                        message,
+                        Snackbar.LENGTH_LONG)
                 .setAction(context.getString(R.string.ym_text_settings), v -> startInstalledAppDetailsActivity(context))
                 .show();
     }
 
     public static void showMessageInSnackBar(@NonNull final View view, @NonNull final String message) {
         Snackbar.make(view,
-                message,
-                Snackbar.LENGTH_LONG)
+                        message,
+                        Snackbar.LENGTH_LONG)
                 .setAction("", v -> {
                 })
                 .show();
     }
 
+    public static String getTokenObject(String token) {
+        Map<String, String> tokenData = new HashMap<>();
+        tokenData.put("token", token);
+        return new Gson().toJson(tokenData);
+    }
 }

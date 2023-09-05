@@ -105,6 +105,10 @@ public class MainActivity extends AppCompatActivity {
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;
+                case "ym-revalidate-token" : {
+                    //make api call to fetch new encrypted token and then call YMChat.getInstance().revalidateToken("your-new-token");
+                    break;
+                }
             }
         });
         ymChat.onBotClose(() -> {

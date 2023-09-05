@@ -100,11 +100,11 @@
             window.ymConfig.userId = payloadJSON.UserId;
         }
 
-        function sendEvent(s) {
+        function sendEvent(eventCode, eventData) {
             var iframe = document.getElementById('ymIframe');
             iframe.contentWindow.postMessage(JSON.stringify({
-                    event_code: 'send-voice-text',
-                    data: s
+                    event_code: eventCode,
+                    data: eventData
                 }));
 
 
