@@ -11,7 +11,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
@@ -21,7 +20,6 @@ import com.yellowmessenger.ymchat.models.YellowDataCallback;
 import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
 
 import java.util.HashMap;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -50,13 +48,13 @@ public class MainActivity extends AppCompatActivity {
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
 
-       // ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
+        // ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
 
         // Set this flag to hide input bar while bot is loading the history
         //ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
-         ymChat.config.enableSpeech = true;
+        ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
@@ -100,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-         ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
+        ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -108,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;
-                case "ym-revalidate-token" : {
+                case "ym-revalidate-token": {
                     //make api call to fetch new encrypted token and then call YMChat.getInstance().revalidateToken("your-new-token");
                     break;
                 }
@@ -128,13 +126,12 @@ public class MainActivity extends AppCompatActivity {
                     // Do something after 5s = 5000ms
                     try {
                         HashMap<String, String> tokenData = new HashMap<>();
-                        tokenData.put("refreshToken","131231sadasdadasd");
-                        tokenData.put("accessToken","asdasd23234234234");
-                        String dataString = new Gson().toJson(tokenData);
+                        tokenData.put("refreshToken", "131231sadasdadasd");
+                        tokenData.put("accessToken", "thenewaccesstokenisthis123123123");
 
                         ymChat.sendEventToBot(new YMEventModel(
                                 "event-from-mobile",
-                                dataString
+                                tokenData
                         ));
                     } catch (Exception e) {
                         //e.printStackTrace();
@@ -146,8 +143,6 @@ public class MainActivity extends AppCompatActivity {
                 e.printStackTrace();
             }
         });
-
-
 
 
         registerDevice.setOnClickListener(view -> registerDevice());
