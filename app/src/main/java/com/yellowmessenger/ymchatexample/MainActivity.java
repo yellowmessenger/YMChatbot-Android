@@ -125,9 +125,10 @@ public class MainActivity extends AppCompatActivity {
                 handler.postDelayed(() -> {
                     // Do something after 5s = 5000ms
                     try {
-                        HashMap<String, String> tokenData = new HashMap<>();
+                        HashMap<String, Object> tokenData = new HashMap<>();
                         tokenData.put("refreshToken", "131231sadasdadasd");
                         tokenData.put("accessToken", "thenewaccesstokenisthis123123123");
+                        tokenData.put("async", true);
 
                         ymChat.sendEventToBot(new YMEventModel(
                                 "event-from-mobile",
@@ -136,7 +137,7 @@ public class MainActivity extends AppCompatActivity {
                     } catch (Exception e) {
                         //e.printStackTrace();
                     }
-                }, 60000);
+                }, 30000);
             } catch (Exception e) {
                 //Catch and handle the exception
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
