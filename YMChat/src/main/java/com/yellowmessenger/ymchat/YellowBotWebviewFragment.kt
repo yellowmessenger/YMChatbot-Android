@@ -257,7 +257,7 @@ class YellowBotWebviewFragment : Fragment() {
 
                 "ym-revalidate-token" -> try {
                     activity?.runOnUiThread {
-                        sendEvent("revalidate-token", YmHelper.getTokenObject(botEvent.code))
+                        sendEvent("revalidate-token", YmHelper.getTokenObject(botEvent.data))
                     }
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
@@ -700,7 +700,7 @@ class YellowBotWebviewFragment : Fragment() {
 
     // Sending messages to bot
     fun sendEvent(eventCode: String, eventData: String) {
-        myWebView.loadUrl("javascript:sendEvent(\"$eventCode\",\"$eventData\");")
+        myWebView.loadUrl("javascript:sendEvent(\'$eventCode\',\'$eventData\');")
     }
 
     private fun closeBot() {
