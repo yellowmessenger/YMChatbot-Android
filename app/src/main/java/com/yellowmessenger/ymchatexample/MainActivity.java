@@ -24,7 +24,7 @@ import java.util.HashMap;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)
-    String botId = "x1669202195349";
+    String botId = "x1677588205681";
     String deviceToken = "yourdevicetoken";
     String apiKey = "your-api-key";
     String ymAuthenticationToken = "secure and unique auth token";
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         //ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
-        ymChat.config.enableSpeech = true;
+       // ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
@@ -98,7 +98,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";
+        ymChat.config.customBaseUrl = "https://uayellowuat.bankofindia.co.in";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -128,10 +128,9 @@ public class MainActivity extends AppCompatActivity {
                         HashMap<String, Object> tokenData = new HashMap<>();
                         tokenData.put("refreshToken", "131231sadasdadasd");
                         tokenData.put("accessToken", "thenewaccesstokenisthis123123123");
-                        tokenData.put("async", true);
 
                         ymChat.sendEventToBot(new YMEventModel(
-                                "event-from-mobile",
+                                "random_1",
                                 tokenData
                         ));
                     } catch (Exception e) {
