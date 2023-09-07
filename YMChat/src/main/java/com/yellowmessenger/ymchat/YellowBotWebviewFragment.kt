@@ -257,7 +257,7 @@ class YellowBotWebviewFragment : Fragment() {
 
                 "ym-revalidate-token" -> try {
                     activity?.runOnUiThread {
-                        sendEvent("revalidate-token", YmHelper.getTokenObject(botEvent.data))
+                        sendEvent("revalidate-token", botEvent.data)
                     }
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
