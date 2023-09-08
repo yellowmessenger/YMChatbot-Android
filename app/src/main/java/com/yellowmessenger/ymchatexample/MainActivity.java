@@ -28,7 +28,7 @@ import java.util.Locale;
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)
-    String botId = "x1677588205681";
+    String botId = "x1669202195349";
     String deviceToken = "yourdevicetoken";
     String apiKey = "your-api-key";
     String ymAuthenticationToken = "secure and unique auth token";
@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        ymChat.config.customBaseUrl = "https://uayellowuat.bankofindia.co.in";
+        ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";//"https://uayellowuat.bankofindia.co.in";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                         tokenData.put("accessToken", "thenewaccesstokenisthis123123123");
 
                         ymChat.sendEventToBot(new YMEventModel(
-                                "random_1",
+                                "event-from-mobile",
                                 tokenData
                         ));
                     } catch (Exception e) {
