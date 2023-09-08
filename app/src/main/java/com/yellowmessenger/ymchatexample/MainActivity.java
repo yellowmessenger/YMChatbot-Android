@@ -108,6 +108,7 @@ public class MainActivity extends AppCompatActivity {
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;
+                    //This event will be received when client is using secure ymAuth approach
                 case "ym-revalidate-token" : {
                     // You will receive 'refreshSession' boolean value in botEvent.getData()
                     boolean refreshSession = false;
