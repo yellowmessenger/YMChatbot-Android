@@ -26,6 +26,7 @@ public class YMConfig {
     public boolean disableActionsOnLoad = false;
     public boolean useLiteVersion = false;
     public boolean alwaysReload = false;
+    public boolean useSecureYmAuth = false;
     public YMEnableSpeechConfig enableSpeechConfig = new YMEnableSpeechConfig();
 
     public YMConfig(@NonNull String botId) {

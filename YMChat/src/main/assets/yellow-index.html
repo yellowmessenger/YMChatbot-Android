@@ -43,6 +43,7 @@
         var payload = getParams(window.location.href)["ym.payload"];
         var botId = getParams(window.location.href)["botId"];
         var ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
+        var useSecureYmAuth = getParams(window.location.href)["useSecureYmAuth"];
         var deviceToken = getParams(window.location.href)["deviceToken"];
         var customBaseUrl = getParams(window.location.href)["customBaseUrl"];
         var version = getParams(window.location.href)["version"];
@@ -69,6 +70,7 @@
             pwa: true,
             sdk: true,
             ymAuthenticationToken: ymAuthenticationToken,
+            useSecureYmAuth: useSecureYmAuth == 'true',
             deviceToken: deviceToken,
             logging: true,
             setDisableActionsTimeout: disableActionsOnLoad == 'true',
@@ -98,13 +100,12 @@
             window.ymConfig.userId = payloadJSON.UserId;
         }
 
-        function sendEvent(s) {
+        function sendEvent(eventCode, eventData) {
             var iframe = document.getElementById('ymIframe');
             iframe.contentWindow.postMessage(JSON.stringify({
-                    event_code: 'send-voice-text',
-                    data: s
+                    event_code: eventCode,
+                    data: eventData
                 }));
-
 
             try {
                 window.YMHandler.receiveMessage(JSON.stringify({ code: "Message Received", data: s }));

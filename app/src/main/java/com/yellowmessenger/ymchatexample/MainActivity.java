@@ -17,6 +17,9 @@ import com.yellowmessenger.ymchat.models.YellowCallback;
 import com.yellowmessenger.ymchat.models.YellowDataCallback;
 import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
 import java.util.Locale;
 
@@ -105,6 +108,25 @@ public class MainActivity extends AppCompatActivity {
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;
+                case "ym-revalidate-token" : {
+                   /** This event will be received when client is using secure ymAuth approach
+                    This feature is available for only cloud bots On-prem bot does not support this
+                    Set ymChat.config.useSecureYmAuth = true in config
+                    */
+
+                    // You will receive 'refreshSession' boolean value in botEvent.getData()
+                    boolean refreshSession = false;
+                    try {
+                        JSONObject object = new JSONObject(botEvent.getData());
+                        refreshSession = object.getBoolean("refreshSession");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    /** make api call to fetch new encrypted token and then call
+                     * YMChat.getInstance().revalidateToken("your-new-token", refreshSession);
+                     * */
+                    break;
+                }
             }
         });
         ymChat.onBotClose(() -> {
