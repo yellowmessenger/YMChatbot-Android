@@ -254,6 +254,7 @@
         var payload = getParams(window.location.href)["ym.payload"];
         var botId = getParams(window.location.href)["botId"];
         var ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
+        var useSecureYmAuth = getParams(window.location.href)["useSecureYmAuth"];
         var deviceToken = getParams(window.location.href)["deviceToken"];
         var customBaseUrl = getParams(window.location.href)["customBaseUrl"];
         var version = getParams(window.location.href)["version"];
@@ -278,6 +279,7 @@
             linkType: 'lite',
             deviceToken: deviceToken,
             ymAuthenticationToken: ymAuthenticationToken,
+            useSecureYmAuth: useSecureYmAuth == 'true',
             logging: true,
             setDisableActionsTimeout: disableActionsOnLoad == 'true',
             handlers: {
