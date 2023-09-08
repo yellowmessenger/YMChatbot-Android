@@ -108,8 +108,12 @@ public class MainActivity extends AppCompatActivity {
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;
-                    //This event will be received when client is using secure ymAuth approach
                 case "ym-revalidate-token" : {
+                   /** This event will be received when client is using secure ymAuth approach
+                    This feature is available for only cloud bots On-prem bot does not support this
+                    Set ymChat.config.useSecureYmAuth = true in config
+                    */
+
                     // You will receive 'refreshSession' boolean value in botEvent.getData()
                     boolean refreshSession = false;
                     try {
