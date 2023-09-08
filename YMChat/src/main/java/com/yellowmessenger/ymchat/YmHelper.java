@@ -45,9 +45,10 @@ public class YmHelper {
                 .show();
     }
 
-    public static String getTokenObject(String token) {
-        Map<String, String> tokenData = new HashMap<>();
+    public static String getTokenObject(String token, boolean refreshSession) {
+        Map<String, Object> tokenData = new HashMap<>();
         tokenData.put("token", token);
+        tokenData.put("refreshSession", refreshSession);
         return new Gson().toJson(tokenData);
     }
 
