@@ -2,7 +2,6 @@ package com.yellowmessenger.ymchatexample;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.webkit.WebView;
 import android.widget.Button;
@@ -14,7 +13,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
-import com.yellowmessenger.ymchat.models.YMEventModel;
 import com.yellowmessenger.ymchat.models.YellowCallback;
 import com.yellowmessenger.ymchat.models.YellowDataCallback;
 import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
@@ -23,12 +21,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
     // Dummy bot id. (Purrs a lot)
-    String botId = "x1669202195349";
+    String botId = "x1657623696077";
     String deviceToken = "yourdevicetoken";
     String apiKey = "your-api-key";
     String ymAuthenticationToken = "secure and unique auth token";
@@ -58,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         //ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
-       // ymChat.config.enableSpeech = true;
+        // ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
@@ -102,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        ymChat.config.customBaseUrl = "https://staging.yellowmessenger.com";//"https://uayellowuat.bankofindia.co.in";
+        //ymChat.config.customBaseUrl = "https://rx.cloud.yellow.ai";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -110,11 +107,11 @@ public class MainActivity extends AppCompatActivity {
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;
-                case "ym-revalidate-token" : {
-                   /** This event will be received when client is using secure ymAuth approach
-                    This feature is available for only cloud bots On-prem bot does not support this
-                    Set ymChat.config.useSecureYmAuth = true in config
-                    */
+                case "ym-revalidate-token": {
+                    /** This event will be received when client is using secure ymAuth approach
+                     This feature is available for only cloud bots On-prem bot does not support this
+                     Set ymChat.config.useSecureYmAuth = true in config
+                     */
 
                     // You will receive 'refreshSession' boolean value in botEvent.getData()
                     boolean refreshSession = false;
@@ -139,23 +136,6 @@ public class MainActivity extends AppCompatActivity {
             //Starting the bot activity
             try {
                 ymChat.startChatbot(this);
-
-                final Handler handler = new Handler();
-                handler.postDelayed(() -> {
-                    // Do something after 5s = 5000ms
-                    try {
-                        HashMap<String, Object> tokenData = new HashMap<>();
-                        tokenData.put("refreshToken", "131231sadasdadasd");
-                        tokenData.put("accessToken", "thenewaccesstokenisthis123123123");
-
-                        ymChat.sendEventToBot(new YMEventModel(
-                                "event-from-mobile",
-                                tokenData
-                        ));
-                    } catch (Exception e) {
-                        //e.printStackTrace();
-                    }
-                }, 30000);
             } catch (Exception e) {
                 //Catch and handle the exception
                 Toast.makeText(this, e.getMessage(), Toast.LENGTH_LONG).show();
