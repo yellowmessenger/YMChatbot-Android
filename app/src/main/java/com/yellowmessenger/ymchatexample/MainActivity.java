@@ -21,12 +21,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Dummy bot id. (Purrs a lot)J
-    String botId = "x1645602443989";
+    // Dummy bot id. (Purrs a lot)
+    String botId = "x1657623696077";
     String deviceToken = "yourdevicetoken";
     String apiKey = "your-api-key";
     String ymAuthenticationToken = "secure and unique auth token";
@@ -50,13 +49,13 @@ public class MainActivity extends AppCompatActivity {
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
 
-       // ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
+        // ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
 
         // Set this flag to hide input bar while bot is loading the history
         //ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
-         ymChat.config.enableSpeech = true;
+        // ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
@@ -100,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        // ymChat.config.customBaseUrl = "https://r5.cloud.yellow.ai";
+        //ymChat.config.customBaseUrl = "https://rx.cloud.yellow.ai";
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -108,11 +107,11 @@ public class MainActivity extends AppCompatActivity {
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;
-                case "ym-revalidate-token" : {
-                   /** This event will be received when client is using secure ymAuth approach
-                    This feature is available for only cloud bots On-prem bot does not support this
-                    Set ymChat.config.useSecureYmAuth = true in config
-                    */
+                case "ym-revalidate-token": {
+                    /** This event will be received when client is using secure ymAuth approach
+                     This feature is available for only cloud bots On-prem bot does not support this
+                     Set ymChat.config.useSecureYmAuth = true in config
+                     */
 
                     // You will receive 'refreshSession' boolean value in botEvent.getData()
                     boolean refreshSession = false;

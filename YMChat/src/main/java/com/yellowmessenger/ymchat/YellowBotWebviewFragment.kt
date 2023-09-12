@@ -262,6 +262,13 @@ class YellowBotWebviewFragment : Fragment() {
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
+                "send-event-to-bot"-> try {
+                    activity?.runOnUiThread {
+                        sendEvent("event-from-client", botEvent.data)
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
             }
         }
     }

@@ -10,6 +10,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
+import com.yellowmessenger.ymchat.models.YMEventModel;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -49,5 +50,9 @@ public class YmHelper {
         tokenData.put("token", token);
         tokenData.put("refreshSession", refreshSession);
         return new Gson().toJson(tokenData);
+    }
+
+    public static String getStringFromObject(YMEventModel model) {
+        return new Gson().toJson(model);
     }
 }
