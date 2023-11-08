@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
+import com.yellowmessenger.ymchat.models.YMTheme;
 import com.yellowmessenger.ymchat.models.YellowCallback;
 import com.yellowmessenger.ymchat.models.YellowDataCallback;
 import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
@@ -100,6 +101,15 @@ public class MainActivity extends AppCompatActivity {
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
         //ymChat.config.customBaseUrl = "https://rx.cloud.yellow.ai";
+
+        //Set theme for your bot at the go like following
+        YMTheme theme = new YMTheme();
+        theme.botName = "Demo Bot Name";
+        theme.botDesc = "Demo Bot Description";
+        theme.primaryColor = "#000000";
+        theme.secondaryColor = "#FFFFFF";
+        theme.botIcon = "https://cdn.yellowmessenger.com/XJFcMhLpN6L91684914460598.png";
+        ymChat.config.theme = theme;
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
