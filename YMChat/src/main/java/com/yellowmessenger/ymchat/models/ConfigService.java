@@ -59,6 +59,7 @@ public class ConfigService {
                 .appendQueryParameter("version", Integer.toString(config.version))
                 .appendQueryParameter("customLoaderUrl", config.customLoaderUrl)
                 .appendQueryParameter("disableActionsOnLoad", String.valueOf(config.disableActionsOnLoad))
+                .appendQueryParameter("ym.theme",getTheme())
                 .build();
 
         return builtUri.toString();
@@ -68,6 +69,10 @@ public class ConfigService {
         payload = config.payload != null ? config.payload : new HashMap<>();
         payload.put("Platform", "Android-App");
         return new Gson().toJson(payload);
+    }
+
+    private String getTheme() {
+        return new Gson().toJson(config.theme);
     }
 
     public String getCustomDataByKey(String key) {

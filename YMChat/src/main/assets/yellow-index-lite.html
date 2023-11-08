@@ -252,6 +252,7 @@
             return params;
         };
         var payload = getParams(window.location.href)["ym.payload"];
+        var theme = getParams(window.location.href)["ym.theme"];
         var botId = getParams(window.location.href)["botId"];
         var ymAuthenticationToken = getParams(window.location.href)["ymAuthenticationToken"];
         var useSecureYmAuth = getParams(window.location.href)["useSecureYmAuth"];
@@ -299,7 +300,8 @@
             },
             payload: payload,
             triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
-            triggerJourney: payloadJSON.JourneySlug
+            triggerJourney: payloadJSON.JourneySlug,
+            theme: theme
         };
 
         if(payloadJSON.UserId) {
