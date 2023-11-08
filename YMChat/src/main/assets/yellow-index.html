@@ -93,7 +93,7 @@
             payload: payload,
             triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
             triggerJourney: payloadJSON.JourneySlug,
-            theme: theme
+            theme: JSON.parse(theme)
         };
 
             window.ymConfig.host = customBaseUrl;

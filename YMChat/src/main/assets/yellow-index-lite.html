@@ -301,7 +301,7 @@
             payload: payload,
             triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
             triggerJourney: payloadJSON.JourneySlug,
-            theme: theme
+            theme: JSON.parse(theme)
         };
 
         if(payloadJSON.UserId) {
