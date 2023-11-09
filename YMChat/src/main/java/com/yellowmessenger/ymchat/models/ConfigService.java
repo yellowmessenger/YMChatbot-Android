@@ -59,7 +59,7 @@ public class ConfigService {
                 .appendQueryParameter("version", Integer.toString(config.version))
                 .appendQueryParameter("customLoaderUrl", config.customLoaderUrl)
                 .appendQueryParameter("disableActionsOnLoad", String.valueOf(config.disableActionsOnLoad))
-                .appendQueryParameter("ym.theme",getTheme())
+                .appendQueryParameter("ym.theme",config.theme == null ? "" : getTheme())
                 .build();
 
         return builtUri.toString();
