@@ -3,6 +3,7 @@ package com.yellowmessenger.ymchat;
 import androidx.annotation.NonNull;
 
 import com.yellowmessenger.ymchat.models.YMEnableSpeechConfig;
+import com.yellowmessenger.ymchat.models.YMTheme;
 
 import java.util.HashMap;
 
@@ -28,6 +29,7 @@ public class YMConfig {
     public boolean alwaysReload = false;
     public boolean useSecureYmAuth = false;
     public YMEnableSpeechConfig enableSpeechConfig = new YMEnableSpeechConfig();
+    public YMTheme theme;
 
     public YMConfig(@NonNull String botId) {
         this.botId = botId;
