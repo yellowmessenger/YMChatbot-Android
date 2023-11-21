@@ -29,7 +29,7 @@ public class YMConfig {
     public boolean alwaysReload = false;
     public boolean useSecureYmAuth = false;
     public YMEnableSpeechConfig enableSpeechConfig = new YMEnableSpeechConfig();
-    public YMTheme theme;
+    public YMTheme theme = new YMTheme();
 
     public YMConfig(@NonNull String botId) {
         this.botId = botId;
