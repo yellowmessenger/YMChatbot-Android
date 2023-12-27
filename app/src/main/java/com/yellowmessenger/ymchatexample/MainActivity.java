@@ -13,17 +13,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.yellowmessenger.ymchat.YMChat;
 import com.yellowmessenger.ymchat.YMConfig;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
+import com.yellowmessenger.ymchat.models.YMTheme;
 import com.yellowmessenger.ymchat.models.YellowCallback;
 import com.yellowmessenger.ymchat.models.YellowDataCallback;
 import com.yellowmessenger.ymchat.models.YellowUnreadMessageResponse;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
-import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    // Dummy bot id. (Purrs a lot)J
-    String botId = "x1645602443989";
+    // Dummy bot id. (Purrs a lot)
+    String botId = "x1657623696077";
     String deviceToken = "yourdevicetoken";
     String apiKey = "your-api-key";
     String ymAuthenticationToken = "secure and unique auth token";
@@ -47,13 +50,13 @@ public class MainActivity extends AppCompatActivity {
         YMChat ymChat = YMChat.getInstance();
         ymChat.config = new YMConfig(botId);
 
-       // ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
+        // ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
 
         // Set this flag to hide input bar while bot is loading the history
         //ymChat.config.disableActionsOnLoad = true;
 
         //To enable speach to text
-         ymChat.config.enableSpeech = true;
+        // ymChat.config.enableSpeech = true;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
@@ -97,7 +100,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         //Set custom base url like follows in case of On-Prem environment and multi-region
-        // ymChat.config.customBaseUrl = "https://r5.cloud.yellow.ai";
+        //ymChat.config.customBaseUrl = "https://rx.cloud.yellow.ai";
+
+        //Set theme for your bot at the go like following
+        YMTheme theme = new YMTheme();
+        theme.botName = "Demo Bot Name";
+        theme.botDesc = "Demo Bot Description";
+        theme.primaryColor = "#000000";
+        theme.secondaryColor = "#FFFFFF";
+        theme.botIcon = "https://cdn.yellowmessenger.com/XJFcMhLpN6L91684914460598.png";
+        ymChat.config.theme = theme;
 
         //setting event listener
         ymChat.onEventFromBot((YMBotEventResponse botEvent) -> {
@@ -105,6 +117,25 @@ public class MainActivity extends AppCompatActivity {
             switch (botEvent.getCode()) {
                 case "event-name":
                     break;
+                case "ym-revalidate-token": {
+                    /** This event will be received when client is using secure ymAuth approach
+                     This feature is available for only cloud bots On-prem bot does not support this
+                     Set ymChat.config.useSecureYmAuth = true in config
+                     */
+
+                    // You will receive 'refreshSession' boolean value in botEvent.getData()
+                    boolean refreshSession = false;
+                    try {
+                        JSONObject object = new JSONObject(botEvent.getData());
+                        refreshSession = object.getBoolean("refreshSession");
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                    /** make api call to fetch new encrypted token and then call
+                     * YMChat.getInstance().revalidateToken("your-new-token", refreshSession);
+                     * */
+                    break;
+                }
             }
         });
         ymChat.onBotClose(() -> {

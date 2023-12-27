@@ -254,6 +254,21 @@ class YellowBotWebviewFragment : Fragment() {
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
+
+                "ym-revalidate-token" -> try {
+                    activity?.runOnUiThread {
+                        sendEvent("revalidate-token", botEvent.data)
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
+                "send-event-to-bot"-> try {
+                    activity?.runOnUiThread {
+                        sendEvent("event-from-client", botEvent.data)
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
             }
         }
     }
@@ -278,7 +293,9 @@ class YellowBotWebviewFragment : Fragment() {
         if (enableSpeech) {
             if (hasAudioPermissionInManifest) {
                 micButton.visibility = View.VISIBLE
-                micButton.setOnClickListener { showVoiceOption() }
+                micButton.setOnClickListener {
+                    showVoiceOption()
+                }
                 alignMicButton()
                 val speechValue = ConfigService.getInstance().config.enableSpeechConfig
                 try {
@@ -690,8 +707,8 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     // Sending messages to bot
-    fun sendEvent(s: String) {
-        myWebView.loadUrl("javascript:sendEvent(\"$s\");")
+    fun sendEvent(eventCode: String, eventData: String) {
+        myWebView.loadUrl("javascript:sendEvent(\'$eventCode\',\'$eventData\');")
     }
 
     private fun closeBot() {
@@ -934,7 +951,13 @@ class YellowBotWebviewFragment : Fragment() {
         } else {
             enableShouldKeepApplicationInBackground()
         }
-        YMChat.getInstance().emitEvent(YMBotEventResponse(getString(R.string.ym_chat_bot_foreground_event), "", false))
+        YMChat.getInstance().emitEvent(
+            YMBotEventResponse(
+                getString(R.string.ym_chat_bot_foreground_event),
+                "",
+                false
+            )
+        )
         super.onStart()
     }
 
@@ -1138,7 +1161,7 @@ class YellowBotWebviewFragment : Fragment() {
             if (singleResult) {
                 if (result != null && result.size > 0) {
                     if (sr != null) sr!!.cancel()
-                    sendEvent(result[0])
+                    sendEvent("send-voice-text", result[0])
                 }
                 closeVoiceArea()
                 singleResult = false
@@ -1161,10 +1184,21 @@ class YellowBotWebviewFragment : Fragment() {
         if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {
             updateAgentStatus("offline")
         }
-        if(!isBotClosing){
-            YMChat.getInstance().emitEvent(YMBotEventResponse(getString(R.string.ym_chat_bot_background_event), "", false))
+        if (!isBotClosing) {
+            YMChat.getInstance().emitEvent(
+                YMBotEventResponse(
+                    getString(R.string.ym_chat_bot_background_event),
+                    "",
+                    false
+                )
+            )
         }
         super.onStop()
+    }
+
+    override fun onDestroy() {
+        YMChat.getInstance().setLocalListener(null)
+        super.onDestroy()
     }
 
     companion object {

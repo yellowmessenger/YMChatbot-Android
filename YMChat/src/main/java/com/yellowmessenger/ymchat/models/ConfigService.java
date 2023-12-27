@@ -54,12 +54,15 @@ public class ConfigService {
                 .appendQueryParameter("botId", config.botId)
                 .appendQueryParameter("ym.payload", getPayload())
                 .appendQueryParameter("ymAuthenticationToken", config.ymAuthenticationToken == null ? "" : config.ymAuthenticationToken)
+                .appendQueryParameter("useSecureYmAuth", String.valueOf(config.useSecureYmAuth))
                 .appendQueryParameter("deviceToken", config.deviceToken == null ? "" : config.deviceToken)
                 .appendQueryParameter("customBaseUrl", config.customBaseUrl)
                 .appendQueryParameter("version", Integer.toString(config.version))
                 .appendQueryParameter("customLoaderUrl", config.customLoaderUrl)
                 .appendQueryParameter("appId", appId)
-                .appendQueryParameter("disableActionsOnLoad", String.valueOf(config.disableActionsOnLoad)).build();
+                .appendQueryParameter("disableActionsOnLoad", String.valueOf(config.disableActionsOnLoad))
+                .appendQueryParameter("ym.theme",config.theme == null ? "" : getTheme())
+                .build();
 
         return builtUri.toString();
     }
@@ -68,6 +71,10 @@ public class ConfigService {
         payload = config.payload != null ? config.payload : new HashMap<>();
         payload.put("Platform", "Android-App");
         return new Gson().toJson(payload);
+    }
+
+    private String getTheme() {
+        return new Gson().toJson(config.theme);
     }
 
     public String getCustomDataByKey(String key) {

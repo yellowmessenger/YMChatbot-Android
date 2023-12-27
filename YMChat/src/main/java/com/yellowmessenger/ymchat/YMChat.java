@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.yellowmessenger.ymchat.models.ConfigService;
 import com.yellowmessenger.ymchat.models.YMBotEventResponse;
+import com.yellowmessenger.ymchat.models.YMEventModel;
 import com.yellowmessenger.ymchat.models.YellowCallback;
 import com.yellowmessenger.ymchat.models.YellowDataCallback;
 import com.yellowmessenger.ymchat.models.YellowGenericResponseModel;
@@ -155,6 +156,31 @@ public class YMChat {
     public void closeBot() {
         if (localListener != null)
             localListener.onSuccess(new YMBotEventResponse("close-bot", "", false));
+    }
+
+    public void revalidateToken(String token, boolean refreshSession) throws Exception {
+        if (token == null || token.isEmpty()) {
+            throw new Exception("Token cannot be null or empty.");
+        }
+        YMBotEventResponse event = new YMBotEventResponse(
+                "ym-revalidate-token",
+                YmHelper.getTokenObject(token, refreshSession),
+                true
+        );
+        emitLocalEvent(event);
+    }
+
+    public void sendEventToBot(YMEventModel ymEventModel) throws Exception{
+        if(ymEventModel == null) {
+            throw new Exception("Event model cannot be null, please pass valid data.");
+
+        }
+        if(ymEventModel.getCode().isEmpty()){
+            throw new Exception("Event code cannot be null or empty, please pass valid code.");
+        }
+
+        String stringData = YmHelper.getStringFromObject(ymEventModel);
+        emitLocalEvent(new YMBotEventResponse("send-event-to-bot",stringData,true));
     }
 
     public void emitEvent(YMBotEventResponse event) {
