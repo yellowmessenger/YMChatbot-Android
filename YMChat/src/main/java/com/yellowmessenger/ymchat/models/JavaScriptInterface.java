@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebView;
 
+import com.google.gson.Gson;
 import com.yellowmessenger.ymchat.YMChat;
 
 public class JavaScriptInterface {
@@ -33,10 +34,10 @@ public class JavaScriptInterface {
         YMBotEventResponse incomingEvent;
 
         try {
-//            incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
-            incomingEvent = new YMBotEventResponse("dummy code 38", "dummy data 38", false);
+            incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
+//            incomingEvent = new YMBotEventResponse("dummy code 38", "dummy data 38", false);
         } catch (Exception e) {
-            incomingEvent = new YMBotEventResponse("dummy code", "dummy data", false);
+            incomingEvent = new YMBotEventResponse("reached exception", "dummy data", false);
         }
 
         if (incomingEvent.getCode() != null && ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode()))) {
