@@ -35,7 +35,6 @@ public class JavaScriptInterface {
 
         try {
             incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
-//            incomingEvent = new YMBotEventResponse("dummy code 38", "dummy data 38", false);
         } catch (Exception e) {
             incomingEvent = new YMBotEventResponse("reached exception", "dummy data", false);
         }
