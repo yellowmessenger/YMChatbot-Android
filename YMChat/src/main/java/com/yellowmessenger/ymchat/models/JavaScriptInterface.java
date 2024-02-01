@@ -36,7 +36,7 @@ public class JavaScriptInterface {
         try {
             incomingEvent = new Gson().fromJson(s, YMBotEventResponse.class);
         } catch (Exception e) {
-            incomingEvent = new YMBotEventResponse(null, null, false);
+            incomingEvent = new YMBotEventResponse("dummy code", "dummy data", false);
         }
 
         if (incomingEvent.getCode() != null && ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode()))) {
