@@ -3,17 +3,23 @@ package com.yellowmessenger.ymchat.models;
 
 import androidx.annotation.Nullable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class YMBotEventResponse {
 
     private @Nullable
     String code, data;
     private boolean internal;
 
-    public YMBotEventResponse(String code, String data, boolean internal) {
+    public YMBotEventResponse(@JsonProperty("code") String code, @JsonProperty("data") String data, @JsonProperty("internal") boolean internal) {
         this.code = code;
         this.data = data;
         this.internal = internal;
     }
+
+    public YMBotEventResponse() {
+    }
+
 
     public String getCode() {
         return code;
