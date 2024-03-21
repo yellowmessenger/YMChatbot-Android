@@ -3,6 +3,7 @@ package com.yellowmessenger.ymchat
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
+import com.yellowmessenger.ymchat.models.YMBotEventResponse
 
 class YellowBotWebViewActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,6 +22,7 @@ class YellowBotWebViewActivity : AppCompatActivity() {
     override fun onBackPressed() {
         try {
             if (supportFragmentManager.backStackEntryCount == 1) {
+                YMChat.getInstance().emitEvent(YMBotEventResponse("bot-closed", "", false))
                 finish()
             } else {
                 super.onBackPressed()
