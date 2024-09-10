@@ -111,6 +111,7 @@ public class MainActivity extends AppCompatActivity {
         theme.botBubbleBackgroundColor = "#0000FF";
         theme.botIcon = "https://cdn.yellowmessenger.com/XJFcMhLpN6L91684914460598.png";
         theme.botClickIcon = "https://cdn.yellowmessenger.com/XJFcMhLpN6L91684914460598.png";
+        theme.chatBotTheme = "light";
         ymChat.config.theme = theme;
 
         //setting event listener
