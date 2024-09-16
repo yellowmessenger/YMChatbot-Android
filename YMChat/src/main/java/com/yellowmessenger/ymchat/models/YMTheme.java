@@ -8,4 +8,5 @@ public class YMTheme {
     public String botIcon;
     public String botDesc;
     public String botClickIcon;
+    public String chatBotTheme;
 }
