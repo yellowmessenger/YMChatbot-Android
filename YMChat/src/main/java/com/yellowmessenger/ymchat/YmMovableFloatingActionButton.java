@@ -15,6 +15,12 @@ public class YmMovableFloatingActionButton extends FloatingActionButton implemen
     private float downRawX, downRawY;
     private float dX, dY;
 
+    private boolean isButtonStatic = false;
+
+    public void setButtonToStatic() {
+        isButtonStatic = true;
+    }
+
     public YmMovableFloatingActionButton(Context context) {
         super(context);
         init();
@@ -36,6 +42,9 @@ public class YmMovableFloatingActionButton extends FloatingActionButton implemen
 
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent){
+        if (isButtonStatic) {
+            return super.onTouchEvent(motionEvent);
+        }
 
         ViewGroup.MarginLayoutParams layoutParams = (ViewGroup.MarginLayoutParams)view.getLayoutParams();
 

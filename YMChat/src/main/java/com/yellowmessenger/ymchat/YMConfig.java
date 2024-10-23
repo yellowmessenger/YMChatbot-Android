@@ -9,6 +9,10 @@ import java.util.HashMap;
 
 public class YMConfig {
     public String botId;
+    /**
+     * @deprecated use speechConfig.enableSpeech instead
+     */
+    @Deprecated
     public boolean enableSpeech = false;
     public boolean showConsoleLogs = false;
     public String ymAuthenticationToken = "";
@@ -28,7 +32,7 @@ public class YMConfig {
     public boolean useLiteVersion = false;
     public boolean alwaysReload = false;
     public boolean useSecureYmAuth = false;
-    public YMEnableSpeechConfig enableSpeechConfig = new YMEnableSpeechConfig();
+    public YMEnableSpeechConfig speechConfig = new YMEnableSpeechConfig();
     public YMTheme theme = new YMTheme();
 
     public YMConfig(@NonNull String botId) {
