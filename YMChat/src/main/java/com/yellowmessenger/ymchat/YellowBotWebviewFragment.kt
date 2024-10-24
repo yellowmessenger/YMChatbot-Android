@@ -288,7 +288,7 @@ class YellowBotWebviewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentLayout = view
-        val enableSpeech = ConfigService.getInstance().config.enableSpeech
+        val enableSpeech = this.speechEnabled
         micButton = view.findViewById(R.id.floatingActionButton)
         if (enableSpeech) {
             if (hasAudioPermissionInManifest) {
@@ -297,7 +297,21 @@ class YellowBotWebviewFragment : Fragment() {
                     showVoiceOption()
                 }
                 alignMicButton()
-                val speechValue = ConfigService.getInstance().config.enableSpeechConfig
+                val enableSpeechValue = ConfigService.getInstance().config.enableSpeechConfig
+                try {
+                    if (enableSpeechValue?.fabBackgroundColor?.isNotEmpty() == true) {
+                        micButton.backgroundTintList =
+                            ColorStateList.valueOf(Color.parseColor(enableSpeechValue.fabBackgroundColor))
+                    }
+                    if (enableSpeechValue?.fabIconColor?.isNotEmpty() == true) {
+                        micButton.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor(enableSpeechValue.fabIconColor))
+
+                    }
+                } catch (e: Exception) {
+                    //
+                }
+                val speechValue = ConfigService.getInstance().config.speechConfig
                 try {
                     if (speechValue?.fabBackgroundColor?.isNotEmpty() == true) {
                         micButton.backgroundTintList =
@@ -307,6 +321,9 @@ class YellowBotWebviewFragment : Fragment() {
                         micButton.imageTintList =
                             ColorStateList.valueOf(Color.parseColor(speechValue.fabIconColor))
 
+                    }
+                    if (speechValue?.isButtonMovable == false) {
+                        micButton.setButtonToStatic()
                     }
                 } catch (e: Exception) {
                     //
@@ -888,13 +905,16 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     private fun showMic() {
-        val enableSpeech = ConfigService.getInstance().config.enableSpeech
+        val enableSpeech = this.speechEnabled
         if (enableSpeech && hasAudioPermissionInManifest) {
             micButton.show()
         } else {
             micButton.hide()
         }
     }
+
+    private val speechEnabled: Boolean
+        get() = ConfigService.getInstance().config.enableSpeech || ConfigService.getInstance().config.speechConfig?.enableSpeech == true
 
     private fun hasAudioPermissionInManifest(context: Context): Boolean {
         var packageInfo: PackageInfo? = null

@@ -53,10 +53,19 @@ public class MainActivity extends AppCompatActivity {
         // ymChat.config.ymAuthenticationToken = ymAuthenticationToken;
 
         // Set this flag to hide input bar while bot is loading the history
-        //ymChat.config.disableActionsOnLoad = true;
+        // ymChat.config.disableActionsOnLoad = true;
 
-        //To enable speach to text
-        // ymChat.config.enableSpeech = true;
+        // To enable speech to text
+        ymChat.config.speechConfig.enableSpeech = true;
+
+        // To set mic icon color
+        ymChat.config.speechConfig.fabIconColor = "#ffffff";
+
+        // To set mic button background color
+        ymChat.config.speechConfig.fabBackgroundColor = "#000000";
+
+        // To set mic button to static
+        // ymChat.config.speechConfig.isButtonMovable = false;
 
         //Payload attributes
         HashMap<String, Object> payloadData = new HashMap<>();
@@ -106,12 +115,12 @@ public class MainActivity extends AppCompatActivity {
         YMTheme theme = new YMTheme();
         theme.botName = "Demo Bot Name";
         theme.botDesc = "Demo Bot Description";
-        theme.primaryColor = "#000000";
-        theme.secondaryColor = "#FFFFFF";
-        theme.botBubbleBackgroundColor = "#0000FF";
+        // theme.primaryColor = "#000000";
+        // theme.secondaryColor = "#FFFFFF";
+        // theme.botBubbleBackgroundColor = "#0000FF";
         theme.botIcon = "https://cdn.yellowmessenger.com/XJFcMhLpN6L91684914460598.png";
         theme.botClickIcon = "https://cdn.yellowmessenger.com/XJFcMhLpN6L91684914460598.png";
-        theme.chatBotTheme = "light";
+        // theme.chatBotTheme = "light";
         ymChat.config.theme = theme;
 
         //setting event listener
