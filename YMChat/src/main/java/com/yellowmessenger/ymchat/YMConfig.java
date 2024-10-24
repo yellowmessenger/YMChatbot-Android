@@ -3,6 +3,7 @@ package com.yellowmessenger.ymchat;
 import androidx.annotation.NonNull;
 
 import com.yellowmessenger.ymchat.models.YMEnableSpeechConfig;
+import com.yellowmessenger.ymchat.models.YMSpeechConfig;
 import com.yellowmessenger.ymchat.models.YMTheme;
 
 import java.util.HashMap;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 public class YMConfig {
     public String botId;
     /**
-     * @deprecated use speechConfig.enableSpeech instead
+     * @deprecated enableSpeech is deprecated. Use speechConfig.enableSpeech instead
      */
     @Deprecated
     public boolean enableSpeech = false;
@@ -32,7 +33,14 @@ public class YMConfig {
     public boolean useLiteVersion = false;
     public boolean alwaysReload = false;
     public boolean useSecureYmAuth = false;
-    public YMEnableSpeechConfig speechConfig = new YMEnableSpeechConfig();
+
+    /**
+     * @deprecated enableSpeechConfig is deprecated. Use speechConfig instead
+     */
+    @Deprecated
+    public YMEnableSpeechConfig enableSpeechConfig = new YMEnableSpeechConfig();
+
+    public YMSpeechConfig speechConfig = new YMSpeechConfig();
     public YMTheme theme = new YMTheme();
 
     public YMConfig(@NonNull String botId) {

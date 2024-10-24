@@ -297,6 +297,20 @@ class YellowBotWebviewFragment : Fragment() {
                     showVoiceOption()
                 }
                 alignMicButton()
+                val enableSpeechValue = ConfigService.getInstance().config.enableSpeechConfig
+                try {
+                    if (enableSpeechValue?.fabBackgroundColor?.isNotEmpty() == true) {
+                        micButton.backgroundTintList =
+                            ColorStateList.valueOf(Color.parseColor(enableSpeechValue.fabBackgroundColor))
+                    }
+                    if (enableSpeechValue?.fabIconColor?.isNotEmpty() == true) {
+                        micButton.imageTintList =
+                            ColorStateList.valueOf(Color.parseColor(enableSpeechValue.fabIconColor))
+
+                    }
+                } catch (e: Exception) {
+                    //
+                }
                 val speechValue = ConfigService.getInstance().config.speechConfig
                 try {
                     if (speechValue?.fabBackgroundColor?.isNotEmpty() == true) {
