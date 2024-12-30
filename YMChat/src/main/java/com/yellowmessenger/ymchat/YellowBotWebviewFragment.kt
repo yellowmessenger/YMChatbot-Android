@@ -543,10 +543,15 @@ class YellowBotWebviewFragment : Fragment() {
             val bottomSheetDialog = BottomSheetDialog(requireContext())
             bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_attachment)
             val cameraLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.camera_layout)
+            val galleryLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.gallery_layout)
             val fileLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.file_layout)
             cameraLayout?.setOnClickListener { v: View? ->
                 isMediaUploadOptionSelected = true
                 checkAndLaunchCamera()
+                bottomSheetDialog.dismiss()
+            }
+            galleryLayout?.setOnClickListener {v: View? ->
+                isMediaUploadOptionSelected = true
                 bottomSheetDialog.dismiss()
             }
             fileLayout?.setOnClickListener { v: View? ->

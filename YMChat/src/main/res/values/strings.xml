@@ -8,6 +8,7 @@
     <string name="ym_fab_voice_button">voice button</string>
     <string name="application_id_for_provider">com.yellowmessenger.ymchatexample.fileprovider</string>
     <string name="ym_title_camera">Camera</string>
+    <string name="ym_title_gallery">Gallery</string>
     <string name="ym_title_file">File</string>
     <string name="ym_title_choose_option">Choose Option</string>
     <string name="ym_text_settings">Settings</string>
