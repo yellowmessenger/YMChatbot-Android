@@ -446,7 +446,7 @@ class YellowBotWebviewFragment : Fragment() {
                 }
                 mFilePathCallback = filePath as ValueCallback<Array<Uri?>>?
                 isMediaUploadOptionSelected = false
-                showFileChooser()
+                showBottomSheet()
                 return true
             }
 
@@ -550,17 +550,6 @@ class YellowBotWebviewFragment : Fragment() {
         return myWebView
     }
 
-    private fun showFileChooser() {
-        val hideCameraForUpload = ConfigService.getInstance().config.hideCameraForUpload
-        if (hideCameraForUpload || isMultiFileUpload()) {
-            if (context?.let { checkForStoragePermission(it) } == true) {
-                launchFileIntent()
-            }
-        } else {
-            showBottomSheet()
-        }
-    }
-
     private fun showBottomSheet() {
         if (context != null) {
             val bottomSheetDialog = BottomSheetDialog(requireContext())
@@ -568,10 +557,16 @@ class YellowBotWebviewFragment : Fragment() {
             val cameraLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.camera_layout)
             val galleryLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.gallery_layout)
             val fileLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.file_layout)
-            cameraLayout?.setOnClickListener { v: View? ->
-                isMediaUploadOptionSelected = true
-                checkAndLaunchCamera()
-                bottomSheetDialog.dismiss()
+
+            val hideCameraForUpload = ConfigService.getInstance().config.hideCameraForUpload
+            if (hideCameraForUpload) {
+                cameraLayout?.isVisible = false
+            } else {
+                cameraLayout?.setOnClickListener { v: View? ->
+                    isMediaUploadOptionSelected = true
+                    checkAndLaunchCamera()
+                    bottomSheetDialog.dismiss()
+                }
             }
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 galleryLayout?.setOnClickListener { v: View? ->
