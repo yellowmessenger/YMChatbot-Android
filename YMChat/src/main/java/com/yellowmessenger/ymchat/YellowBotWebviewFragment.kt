@@ -25,6 +25,8 @@ import android.view.*
 import android.webkit.*
 import android.webkit.WebView.WebViewTransport
 import android.widget.*
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.annotation.RequiresApi
@@ -32,6 +34,7 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -166,6 +169,8 @@ class YellowBotWebviewFragment : Fragment() {
         }
     }
 
+    private lateinit var photoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
+    private lateinit var multiPhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStatusBarColor()
@@ -269,6 +274,24 @@ class YellowBotWebviewFragment : Fragment() {
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
+            }
+        }
+
+        photoPickerLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
+            if (uri != null) {
+                mFilePathCallback!!.onReceiveValue(arrayOf(uri))
+                mFilePathCallback = null
+            } else {
+                resetFilePathCallback()
+            }
+        }
+
+        multiPhotoPickerLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris: List<Uri> ->
+            if (uris.isNotEmpty()) {
+                mFilePathCallback!!.onReceiveValue(uris.toTypedArray())
+                mFilePathCallback = null
+            } else {
+                resetFilePathCallback()
             }
         }
     }
@@ -550,9 +573,18 @@ class YellowBotWebviewFragment : Fragment() {
                 checkAndLaunchCamera()
                 bottomSheetDialog.dismiss()
             }
-            galleryLayout?.setOnClickListener {v: View? ->
-                isMediaUploadOptionSelected = true
-                bottomSheetDialog.dismiss()
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                galleryLayout?.setOnClickListener { v: View? ->
+                    isMediaUploadOptionSelected = true
+                    if (isMultiFileUpload()) {
+                        multiPhotoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                    } else {
+                        photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
+                    }
+                    bottomSheetDialog.dismiss()
+                }
+            } else {
+                galleryLayout?.isVisible = false
             }
             fileLayout?.setOnClickListener { v: View? ->
                 isMediaUploadOptionSelected = true
