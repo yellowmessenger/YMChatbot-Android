@@ -76,38 +76,6 @@ class YellowBotWebviewFragment : Fragment() {
     private var geoOrigin: String? = null
     private var isMultiFileUpload = false
     private var isBotClosing = false
-    private var storgePermissions = arrayOf(
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
-
-    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
-    var storgePermission33 = arrayOf(
-        Manifest.permission.READ_MEDIA_IMAGES,
-        Manifest.permission.READ_MEDIA_AUDIO,
-        Manifest.permission.READ_MEDIA_VIDEO
-    )
-
-    private val requestMultiplePermissions = registerForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions()
-    ) { permissions ->
-        if ((permissions.containsKey(Manifest.permission.READ_MEDIA_IMAGES) && permissions[Manifest.permission.READ_MEDIA_IMAGES] == true)
-            || (permissions.containsKey(Manifest.permission.READ_MEDIA_VIDEO) && permissions[Manifest.permission.READ_MEDIA_VIDEO] == true)
-            || (permissions.containsKey(Manifest.permission.READ_MEDIA_AUDIO) && permissions[Manifest.permission.READ_MEDIA_AUDIO] == true)
-            || (permissions.containsKey(Manifest.permission.READ_EXTERNAL_STORAGE) && permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true)
-        ) {
-            launchFileIntent()
-        } else {
-            resetFilePathCallback()
-            if (context != null) {
-                YmHelper.showSnackBarWithSettingAction(
-                    requireContext(),
-                    parentLayout,
-                    getString(R.string.ym_message_storgae_permission)
-                )
-            }
-        }
-
-    }
 
     private val requestPermissionLauncher = registerForActivityResult(
         RequestPermission()
@@ -583,7 +551,7 @@ class YellowBotWebviewFragment : Fragment() {
             }
             fileLayout?.setOnClickListener { v: View? ->
                 isMediaUploadOptionSelected = true
-                checkAndLaunchFilePicker()
+                launchFileIntent()
                 bottomSheetDialog.dismiss()
             }
             bottomSheetDialog.setOnDismissListener {
@@ -592,14 +560,6 @@ class YellowBotWebviewFragment : Fragment() {
                 }
             }
             bottomSheetDialog.show()
-        }
-    }
-
-    private fun checkAndLaunchFilePicker() {
-        if (context != null) {
-            if (checkForStoragePermission(requireContext())) {
-                launchFileIntent()
-            }
         }
     }
 
@@ -784,35 +744,6 @@ class YellowBotWebviewFragment : Fragment() {
             storageDir /* directory */
         )
     }
-
-
-    private fun checkForStoragePermission(context: Context): Boolean {
-        val p: Array<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            storgePermission33
-        } else {
-            storgePermissions
-        }
-        return if (hasStoragePermissions(context, p)) {
-            true
-        } else {
-            requestMultiplePermissions.launch(p)
-            false
-        }
-    }
-
-    private fun hasStoragePermissions(context: Context, p: Array<String>): Boolean {
-        p.forEach {
-            if (ContextCompat.checkSelfPermission(
-                    context,
-                    it
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                return true
-            }
-        }
-        return false
-    }
-
 
     fun reload() {
         myWebView.reload()
