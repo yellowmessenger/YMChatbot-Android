@@ -414,7 +414,7 @@ class YellowBotWebviewFragment : Fragment() {
                 }
                 mFilePathCallback = filePath as ValueCallback<Array<Uri?>>?
                 isMediaUploadOptionSelected = false
-                showBottomSheet()
+                showFileChooser()
                 return true
             }
 
@@ -517,6 +517,16 @@ class YellowBotWebviewFragment : Fragment() {
         myWebView.loadUrl(newUrl)
         return myWebView
     }
+
+    private fun showFileChooser() {
+        val hideCameraForUpload = ConfigService.getInstance().config.hideCameraForUpload
+        if (hideCameraForUpload && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            launchFileIntent()
+        } else {
+            showBottomSheet()
+        }
+    }
+
 
     private fun showBottomSheet() {
         if (context != null) {
