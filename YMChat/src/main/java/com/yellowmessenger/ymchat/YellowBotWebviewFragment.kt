@@ -25,8 +25,6 @@ import android.view.*
 import android.webkit.*
 import android.webkit.WebView.WebViewTransport
 import android.widget.*
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.annotation.RequiresApi
@@ -34,7 +32,6 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
-import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -76,6 +73,38 @@ class YellowBotWebviewFragment : Fragment() {
     private var geoOrigin: String? = null
     private var isMultiFileUpload = false
     private var isBotClosing = false
+    private var storgePermissions = arrayOf(
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+
+    @RequiresApi(api = Build.VERSION_CODES.TIRAMISU)
+    var storgePermission33 = arrayOf(
+        Manifest.permission.READ_MEDIA_IMAGES,
+        Manifest.permission.READ_MEDIA_AUDIO,
+        Manifest.permission.READ_MEDIA_VIDEO
+    )
+
+    private val requestMultiplePermissions = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        if ((permissions.containsKey(Manifest.permission.READ_MEDIA_IMAGES) && permissions[Manifest.permission.READ_MEDIA_IMAGES] == true)
+            || (permissions.containsKey(Manifest.permission.READ_MEDIA_VIDEO) && permissions[Manifest.permission.READ_MEDIA_VIDEO] == true)
+            || (permissions.containsKey(Manifest.permission.READ_MEDIA_AUDIO) && permissions[Manifest.permission.READ_MEDIA_AUDIO] == true)
+            || (permissions.containsKey(Manifest.permission.READ_EXTERNAL_STORAGE) && permissions[Manifest.permission.READ_EXTERNAL_STORAGE] == true)
+        ) {
+            launchFileIntent()
+        } else {
+            resetFilePathCallback()
+            if (context != null) {
+                YmHelper.showSnackBarWithSettingAction(
+                    requireContext(),
+                    parentLayout,
+                    getString(R.string.ym_message_storgae_permission)
+                )
+            }
+        }
+
+    }
 
     private val requestPermissionLauncher = registerForActivityResult(
         RequestPermission()
@@ -137,8 +166,6 @@ class YellowBotWebviewFragment : Fragment() {
         }
     }
 
-    private lateinit var photoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
-    private lateinit var multiPhotoPickerLauncher: ActivityResultLauncher<PickVisualMediaRequest>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setStatusBarColor()
@@ -242,24 +269,6 @@ class YellowBotWebviewFragment : Fragment() {
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
-            }
-        }
-
-        photoPickerLauncher = registerForActivityResult(ActivityResultContracts.PickVisualMedia()) { uri ->
-            if (uri != null) {
-                mFilePathCallback!!.onReceiveValue(arrayOf(uri))
-                mFilePathCallback = null
-            } else {
-                resetFilePathCallback()
-            }
-        }
-
-        multiPhotoPickerLauncher = registerForActivityResult(ActivityResultContracts.PickMultipleVisualMedia(5)) { uris: List<Uri> ->
-            if (uris.isNotEmpty()) {
-                mFilePathCallback!!.onReceiveValue(uris.toTypedArray())
-                mFilePathCallback = null
-            } else {
-                resetFilePathCallback()
             }
         }
     }
@@ -520,48 +529,29 @@ class YellowBotWebviewFragment : Fragment() {
 
     private fun showFileChooser() {
         val hideCameraForUpload = ConfigService.getInstance().config.hideCameraForUpload
-        if (hideCameraForUpload && Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            launchFileIntent()
+        if (hideCameraForUpload || isMultiFileUpload()) {
+            if (context?.let { checkForStoragePermission(it) } == true) {
+                launchFileIntent()
+            }
         } else {
             showBottomSheet()
         }
     }
-
 
     private fun showBottomSheet() {
         if (context != null) {
             val bottomSheetDialog = BottomSheetDialog(requireContext())
             bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_attachment)
             val cameraLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.camera_layout)
-            val galleryLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.gallery_layout)
             val fileLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.file_layout)
-
-            val hideCameraForUpload = ConfigService.getInstance().config.hideCameraForUpload
-            if (hideCameraForUpload) {
-                cameraLayout?.isVisible = false
-            } else {
-                cameraLayout?.setOnClickListener { v: View? ->
-                    isMediaUploadOptionSelected = true
-                    checkAndLaunchCamera()
-                    bottomSheetDialog.dismiss()
-                }
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                galleryLayout?.setOnClickListener { v: View? ->
-                    isMediaUploadOptionSelected = true
-                    if (isMultiFileUpload()) {
-                        multiPhotoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-                    } else {
-                        photoPickerLauncher.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageAndVideo))
-                    }
-                    bottomSheetDialog.dismiss()
-                }
-            } else {
-                galleryLayout?.isVisible = false
+            cameraLayout?.setOnClickListener { v: View? ->
+                isMediaUploadOptionSelected = true
+                checkAndLaunchCamera()
+                bottomSheetDialog.dismiss()
             }
             fileLayout?.setOnClickListener { v: View? ->
                 isMediaUploadOptionSelected = true
-                launchFileIntent()
+                checkAndLaunchFilePicker()
                 bottomSheetDialog.dismiss()
             }
             bottomSheetDialog.setOnDismissListener {
@@ -570,6 +560,14 @@ class YellowBotWebviewFragment : Fragment() {
                 }
             }
             bottomSheetDialog.show()
+        }
+    }
+
+    private fun checkAndLaunchFilePicker() {
+        if (context != null) {
+            if (checkForStoragePermission(requireContext())) {
+                launchFileIntent()
+            }
         }
     }
 
@@ -754,6 +752,35 @@ class YellowBotWebviewFragment : Fragment() {
             storageDir /* directory */
         )
     }
+
+
+    private fun checkForStoragePermission(context: Context): Boolean {
+        val p: Array<String> = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            storgePermission33
+        } else {
+            storgePermissions
+        }
+        return if (hasStoragePermissions(context, p)) {
+            true
+        } else {
+            requestMultiplePermissions.launch(p)
+            false
+        }
+    }
+
+    private fun hasStoragePermissions(context: Context, p: Array<String>): Boolean {
+        p.forEach {
+            if (ContextCompat.checkSelfPermission(
+                    context,
+                    it
+                ) == PackageManager.PERMISSION_GRANTED
+            ) {
+                return true
+            }
+        }
+        return false
+    }
+
 
     fun reload() {
         myWebView.reload()
