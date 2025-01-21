@@ -4,6 +4,7 @@ plugins {
 }
 
 android {
+    namespace 'com.yellowmessenger.ymchatexample'
     compileSdkVersion 34
     buildToolsVersion "30.0.3"
 
@@ -12,7 +13,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 34
         versionCode 1
-        versionName "2.18.0"
+        versionName "2.18.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
