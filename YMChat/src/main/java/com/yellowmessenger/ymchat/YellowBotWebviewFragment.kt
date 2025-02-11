@@ -11,6 +11,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Rect
+import android.location.LocationManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -476,7 +477,16 @@ class YellowBotWebviewFragment : Fragment() {
                     return
                 }
                 if (checkForLocationPermission(requireContext())) {
-                    callback.invoke(origin, true, false)
+                    if (isDeviceLocationEnabled(requireContext())) {
+                        callback.invoke(origin, true, false)
+                    } else {
+                        YmHelper.showMessageInSnackBar(
+                            parentLayout,
+                            getString(R.string.ym_device_location_not_enabled)
+                        )
+                        callback.invoke(origin, false, false)
+                        return
+                    }
                 } else {
                     geoOrigin = origin
                     geoCallback = callback
@@ -493,6 +503,11 @@ class YellowBotWebviewFragment : Fragment() {
         val newUrl = ConfigService.getInstance().getUrl(htmlurl,appId)
         myWebView.loadUrl(newUrl)
         return myWebView
+    }
+
+    private fun isDeviceLocationEnabled(context: Context): Boolean {
+        val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     private fun showFileChooser() {
