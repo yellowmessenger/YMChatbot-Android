@@ -94,7 +94,15 @@ class YellowBotWebviewFragment : Fragment() {
                 }
             } else if (requestedPermission == Manifest.permission.ACCESS_FINE_LOCATION) {
                 if (isGranted && geoCallback != null && geoOrigin != null) {
-                    geoCallback!!.invoke(geoOrigin, true, false)
+                    if (isDeviceLocationEnabled(requireContext())) {
+                        geoCallback!!.invoke(geoOrigin, true, false)
+                    } else {
+                        YmHelper.showMessageInSnackBar(
+                            parentLayout,
+                            getString(R.string.ym_device_location_not_enabled)
+                        )
+                        geoCallback!!.invoke(geoOrigin, false, false)
+                    }
                     geoCallback = null
                     geoOrigin = null
                 } else {
