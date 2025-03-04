@@ -67,6 +67,11 @@ public class YMChat {
         this.localListener = localListener;
     }
 
+    void clearLocalListener() {
+        this.localListener = null;
+        this.botCloseEventListener = null;
+    }
+
     public void onEventFromBot(BotEventListener listener) {
         this.listener = listener;
     }

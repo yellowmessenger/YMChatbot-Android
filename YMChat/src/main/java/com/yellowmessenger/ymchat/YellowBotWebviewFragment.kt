@@ -1173,7 +1173,7 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     override fun onDestroy() {
-        YMChat.getInstance().setLocalListener(null)
+        YMChat.getInstance().clearLocalListener()
         super.onDestroy()
     }
 
