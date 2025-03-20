@@ -41,6 +41,7 @@ public class YMChat {
     private final String TAG = "YMChat";
     private BotEventListener listener, localListener;
     private BotCloseEventListener botCloseEventListener;
+    private BotLoadFailedEventListener botLoadFailedEventListener;
     private static YMChat botPluginInstance;
     public YMConfig config;
     private final String unlinkNotificationUrl = "/api/mobile-backend/device-token?bot=";
@@ -73,6 +74,10 @@ public class YMChat {
 
     public void onBotClose(BotCloseEventListener listener) {
         this.botCloseEventListener = listener;
+    }
+
+    public void onBotLoadFailed(BotLoadFailedEventListener listener) {
+        this.botLoadFailedEventListener = listener;
     }
 
     public void reloadBot() {
