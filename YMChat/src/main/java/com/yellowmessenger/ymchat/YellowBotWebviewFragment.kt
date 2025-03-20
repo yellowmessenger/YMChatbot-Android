@@ -66,6 +66,12 @@ class YellowBotWebviewFragment : Fragment() {
     private var hasAudioPermissionInManifest = false
     private val TAG = "YMChat"
     private lateinit var myWebView: WebView
+    private lateinit var errorOverlay: ImageView
+    private val errorPathsToValidate = listOf(
+        "/widget/v2/mobile.js",
+        "/plugin/widget-v2/latest/dist/mobile.min.js",
+        "/plugin/widget-v2/latest/dist/widget.min.js"
+    )
     private var mFilePathCallback: ValueCallback<Array<Uri?>>? = null
     private var mCameraPhotoPath: String? = null
     private val INPUT_FILE_REQUEST_CODE = 1
@@ -257,6 +263,7 @@ class YellowBotWebviewFragment : Fragment() {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_yellow_bot_webview, container, false)
         myWebView = v.findViewById(R.id.yellowWebView)
+        errorOverlay = v.findViewById(R.id.errorView)
 
         preLoadWebView()
         return v
@@ -374,7 +381,22 @@ class YellowBotWebviewFragment : Fragment() {
             JavaScriptInterface(requireActivity(), myWebView),
             "YMHandler"
         )
-        myWebView.webViewClient = WebViewClient()
+        myWebView.webViewClient = object : WebViewClient() {
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                super.onReceivedError(view, request, error)
+                request?.url?.path?.let { path ->
+                    if (errorPathsToValidate.any { path.contains(it) }) {
+                        myWebView.visibility = View.GONE
+                        errorOverlay.visibility = View.VISIBLE
+                    }
+                }
+            }
+        }
+
         myWebView.webChromeClient = object : WebChromeClient() {
             private var mCustomView: View? = null
             private var mCustomViewCallback: CustomViewCallback? = null

@@ -76,4 +76,11 @@
         android:scaleType="centerInside"
         app:srcCompat="@drawable/ic_back_button_ym" />
 
+    <ImageView
+        android:id="@+id/errorView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        android:background="@color/ymAccentBlue"/>
+
 </RelativeLayout>
