@@ -71,6 +71,7 @@ public class YMChat {
     void clearLocalListener() {
         this.localListener = null;
         this.botCloseEventListener = null;
+        this.botLoadFailedEventListener = null;
     }
 
     public void onEventFromBot(BotEventListener listener) {
@@ -197,6 +198,8 @@ public class YMChat {
         if (event != null) {
             if (botCloseEventListener != null && event.getCode() != null && isCloseBotEvent(event)) {
                 botCloseEventListener.onClosed();
+            } else if (botLoadFailedEventListener != null && event.getCode() != null && isBotLoadFailedEvent(event)) {
+                botLoadFailedEventListener.onBotLoadFailed();
             } else {
                 if (listener != null)
                     listener.onSuccess(event);
@@ -215,6 +218,10 @@ public class YMChat {
 
     private boolean isCloseBotEvent(YMBotEventResponse event) {
         return (event.getCode() != null && event.getCode().equals("bot-closed"));
+    }
+
+    private boolean isBotLoadFailedEvent(YMBotEventResponse event) {
+        return (event.getCode() != null && event.getCode().equals("bot-load-failed"));
     }
 
     /**

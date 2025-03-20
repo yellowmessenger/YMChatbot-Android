@@ -392,6 +392,13 @@ class YellowBotWebviewFragment : Fragment() {
                     if (errorPathsToValidate.any { path.contains(it) }) {
                         myWebView.visibility = View.GONE
                         errorOverlay.visibility = View.VISIBLE
+                        YMChat.getInstance().emitEvent(
+                            YMBotEventResponse(
+                                "bot-load-failed",
+                                "",
+                                false
+                            )
+                        )
                     }
                 }
             }
