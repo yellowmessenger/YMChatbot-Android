@@ -66,7 +66,7 @@ class YellowBotWebviewFragment : Fragment() {
     private var hasAudioPermissionInManifest = false
     private val TAG = "YMChat"
     private lateinit var myWebView: WebView
-    private lateinit var errorOverlay: ImageView
+    private lateinit var errorOverlay: FrameLayout
     private val errorPathsToValidate = listOf(
         "/widget/v2/mobile.js",
         "/plugin/widget-v2/latest/dist/mobile.min.js",
