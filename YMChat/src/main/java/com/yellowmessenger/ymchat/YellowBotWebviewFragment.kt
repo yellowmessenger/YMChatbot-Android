@@ -68,7 +68,10 @@ class YellowBotWebviewFragment : Fragment() {
     private lateinit var myWebView: WebView
     private lateinit var errorOverlay: FrameLayout
     private val errorPathsToValidate = listOf(
+        "/widget/mobile.js",
         "/widget/v2/mobile.js",
+        "/plugin/latest/dist/mobile.min.js",
+        "/plugin/latest/dist/widget.min.js",
         "/plugin/widget-v2/latest/dist/mobile.min.js",
         "/plugin/widget-v2/latest/dist/widget.min.js"
     )
