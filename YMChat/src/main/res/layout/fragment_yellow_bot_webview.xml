@@ -62,20 +62,6 @@
         app:pressedTranslationZ="0dp"
         android:visibility="gone" />
 
-
-    <ImageButton
-        android:id="@+id/backButton"
-        android:layout_width="@dimen/ym_back_button_width"
-        android:layout_height="@dimen/ym_back_button_width"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentEnd="true"
-        android:layout_marginTop="@dimen/ym_margin_normal"
-        android:layout_marginEnd="@dimen/ym_margin_normal"
-        android:background="@color/ymTransparent"
-        android:padding="10dp"
-        android:scaleType="centerInside"
-        app:srcCompat="@drawable/ic_back_button_ym" />
-
     <FrameLayout
         android:id="@+id/errorView"
         android:layout_width="match_parent"
@@ -113,6 +99,18 @@
                 android:textSize="14sp"
                 android:textColor="@color/ym_slate_grey" />
         </LinearLayout>
-
     </FrameLayout>
+
+    <ImageButton
+        android:id="@+id/backButton"
+        android:layout_width="@dimen/ym_back_button_width"
+        android:layout_height="@dimen/ym_back_button_width"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginTop="@dimen/ym_margin_normal"
+        android:layout_marginEnd="@dimen/ym_margin_normal"
+        android:background="@color/ymTransparent"
+        android:padding="10dp"
+        android:scaleType="centerInside"
+        app:srcCompat="@drawable/ic_back_button_ym" />
 </RelativeLayout>
