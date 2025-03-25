@@ -33,6 +33,7 @@ public class YMConfig {
     public boolean useLiteVersion = false;
     public boolean alwaysReload = false;
     public boolean useSecureYmAuth = false;
+    public boolean shouldOpenLinkExternally = true;
 
     /**
      * @deprecated enableSpeechConfig is deprecated. Use speechConfig instead
