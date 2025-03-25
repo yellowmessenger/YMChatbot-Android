@@ -154,6 +154,12 @@ public class MainActivity extends AppCompatActivity {
             Log.d("Example App", "Bot Was closed");
         });
 
+        ymChat.onBotLoadFailed(() -> {
+            // Handle the failure of bot screen loading.
+            // Implement appropriate error handling or fallback logic, such as notifying the user or retrying the load process.
+            Log.d("Example App", "Bot failed to load");
+        });
+
         startBtn.setOnClickListener(view -> {
             //Starting the bot activity
             try {

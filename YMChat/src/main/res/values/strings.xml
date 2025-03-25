@@ -21,4 +21,6 @@
     <string name="ym_declare_audio_permission">To use enable speech to text feature, please declare RECORD_AUDIO permission in application manifest.</string>
     <string name="ym_chat_bot_foreground_event">chatbot-in-foreground</string>
     <string name="ym_chat_bot_background_event">chatbot-in-background</string>
+    <string name="ym_technical_issue">We are facing a technical issue right now.</string>
+    <string name="ym_please_ty_again">Please try again later.</string>
 </resources>

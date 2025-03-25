@@ -66,6 +66,15 @@ class YellowBotWebviewFragment : Fragment() {
     private var hasAudioPermissionInManifest = false
     private val TAG = "YMChat"
     private lateinit var myWebView: WebView
+    private lateinit var errorOverlay: FrameLayout
+    private val errorPathsToValidate = listOf(
+        "/widget/mobile.js",
+        "/widget/v2/mobile.js",
+        "/plugin/latest/dist/mobile.min.js",
+        "/plugin/latest/dist/widget.min.js",
+        "/plugin/widget-v2/latest/dist/mobile.min.js",
+        "/plugin/widget-v2/latest/dist/widget.min.js"
+    )
     private var mFilePathCallback: ValueCallback<Array<Uri?>>? = null
     private var mCameraPhotoPath: String? = null
     private val INPUT_FILE_REQUEST_CODE = 1
@@ -257,6 +266,7 @@ class YellowBotWebviewFragment : Fragment() {
         // Inflate the layout for this fragment
         val v = inflater.inflate(R.layout.fragment_yellow_bot_webview, container, false)
         myWebView = v.findViewById(R.id.yellowWebView)
+        errorOverlay = v.findViewById(R.id.errorView)
 
         preLoadWebView()
         return v
@@ -374,7 +384,35 @@ class YellowBotWebviewFragment : Fragment() {
             JavaScriptInterface(requireActivity(), myWebView),
             "YMHandler"
         )
-        myWebView.webViewClient = WebViewClient()
+        myWebView.webViewClient = object : WebViewClient() {
+            override fun onReceivedError(
+                view: WebView?,
+                request: WebResourceRequest?,
+                error: WebResourceError?
+            ) {
+                super.onReceivedError(view, request, error)
+                request?.url?.path?.let { path ->
+                    if (errorPathsToValidate.any { path.contains(it) }) {
+                        val showCloseButton = ConfigService.getInstance().config.showCloseButton
+                        val isCloseButtonColorSet = (ConfigService.getInstance().config.closeButtonColor != -1) || (ConfigService.getInstance().config.closeButtonColorFromHex.isNotEmpty())
+                        if (showCloseButton && !isCloseButtonColorSet) {
+                            ConfigService.getInstance().config.closeButtonColor = R.color.ymColorDark
+                            setCloseButtonColor()
+                        }
+                        myWebView.visibility = View.GONE
+                        errorOverlay.visibility = View.VISIBLE
+                        YMChat.getInstance().emitEvent(
+                            YMBotEventResponse(
+                                "bot-load-failed",
+                                "",
+                                false
+                            )
+                        )
+                    }
+                }
+            }
+        }
+
         myWebView.webChromeClient = object : WebChromeClient() {
             private var mCustomView: View? = null
             private var mCustomViewCallback: CustomViewCallback? = null

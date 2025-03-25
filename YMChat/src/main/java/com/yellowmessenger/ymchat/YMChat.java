@@ -41,6 +41,7 @@ public class YMChat {
     private final String TAG = "YMChat";
     private BotEventListener listener, localListener;
     private BotCloseEventListener botCloseEventListener;
+    private BotLoadFailedEventListener botLoadFailedEventListener;
     private static YMChat botPluginInstance;
     public YMConfig config;
     private final String unlinkNotificationUrl = "/api/mobile-backend/device-token?bot=";
@@ -70,6 +71,7 @@ public class YMChat {
     void clearLocalListener() {
         this.localListener = null;
         this.botCloseEventListener = null;
+        this.botLoadFailedEventListener = null;
     }
 
     public void onEventFromBot(BotEventListener listener) {
@@ -78,6 +80,10 @@ public class YMChat {
 
     public void onBotClose(BotCloseEventListener listener) {
         this.botCloseEventListener = listener;
+    }
+
+    public void onBotLoadFailed(BotLoadFailedEventListener listener) {
+        this.botLoadFailedEventListener = listener;
     }
 
     public void reloadBot() {
@@ -192,6 +198,8 @@ public class YMChat {
         if (event != null) {
             if (botCloseEventListener != null && event.getCode() != null && isCloseBotEvent(event)) {
                 botCloseEventListener.onClosed();
+            } else if (botLoadFailedEventListener != null && event.getCode() != null && isBotLoadFailedEvent(event)) {
+                botLoadFailedEventListener.onBotLoadFailed();
             } else {
                 if (listener != null)
                     listener.onSuccess(event);
@@ -210,6 +218,10 @@ public class YMChat {
 
     private boolean isCloseBotEvent(YMBotEventResponse event) {
         return (event.getCode() != null && event.getCode().equals("bot-closed"));
+    }
+
+    private boolean isBotLoadFailedEvent(YMBotEventResponse event) {
+        return (event.getCode() != null && event.getCode().equals("bot-load-failed"));
     }
 
     /**
