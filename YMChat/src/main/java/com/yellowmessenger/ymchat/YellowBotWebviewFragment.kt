@@ -393,6 +393,12 @@ class YellowBotWebviewFragment : Fragment() {
                 super.onReceivedError(view, request, error)
                 request?.url?.path?.let { path ->
                     if (errorPathsToValidate.any { path.contains(it) }) {
+                        val showCloseButton = ConfigService.getInstance().config.showCloseButton
+                        val isCloseButtonColorSet = (ConfigService.getInstance().config.closeButtonColor != -1) || (ConfigService.getInstance().config.closeButtonColorFromHex.isNotEmpty())
+                        if (showCloseButton && !isCloseButtonColorSet) {
+                            ConfigService.getInstance().config.closeButtonColor = R.color.ymColorDark
+                            setCloseButtonColor()
+                        }
                         myWebView.visibility = View.GONE
                         errorOverlay.visibility = View.VISIBLE
                         YMChat.getInstance().emitEvent(
