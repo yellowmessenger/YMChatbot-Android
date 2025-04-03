@@ -37,6 +37,7 @@ import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.JsonObject
 import com.google.gson.reflect.TypeToken
 import com.yellowmessenger.ymchat.models.ConfigService
 import com.yellowmessenger.ymchat.models.JavaScriptInterface
@@ -411,6 +412,18 @@ class YellowBotWebviewFragment : Fragment() {
                     }
                 }
             }
+
+            override fun shouldOverrideUrlLoading(
+                view: WebView?,
+                request: WebResourceRequest?
+            ): Boolean {
+                if (ConfigService.getInstance().config.shouldOpenLinkExternally) {
+                    return super.shouldOverrideUrlLoading(view, request)
+                } else {
+                    emitUrlClickEvent(request?.url.toString())
+                    return true
+                }
+            }
         }
 
         myWebView.webChromeClient = object : WebChromeClient() {
@@ -495,15 +508,23 @@ class YellowBotWebviewFragment : Fragment() {
                 resultMsg.sendToTarget()
                 if (newWebView != null) {
                     newWebView.webViewClient = object : WebViewClient() {
-                        override fun shouldOverrideUrlLoading(view: WebView, url: String): Boolean {
-                            try {
-                                val browserIntent = Intent(Intent.ACTION_VIEW)
-                                browserIntent.data = Uri.parse(url)
-                                startActivity(browserIntent)
-                            } catch (e: Exception) {
-                                //Some error occurred
+                        override fun shouldOverrideUrlLoading(
+                            view: WebView?,
+                            request: WebResourceRequest?
+                        ): Boolean {
+                            if (ConfigService.getInstance().config.shouldOpenLinkExternally) {
+                                try {
+                                    val browserIntent = Intent(Intent.ACTION_VIEW)
+                                    browserIntent.data = Uri.parse(request?.url.toString())
+                                    startActivity(browserIntent)
+                                } catch (e: Exception) {
+                                    //Some error occurred
+                                }
+                                return true
+                            } else {
+                                emitUrlClickEvent(request?.url.toString())
+                                return false
                             }
-                            return true
                         }
                     }
                 }
@@ -551,6 +572,16 @@ class YellowBotWebviewFragment : Fragment() {
         return myWebView
     }
 
+    private fun emitUrlClickEvent(url: String) {
+        val eventData = Gson().toJson(mapOf("url" to url))
+        YMChat.getInstance().emitEvent(
+            YMBotEventResponse(
+                "url-clicked",
+                eventData,
+                false
+            )
+        )
+    }
     private fun isDeviceLocationEnabled(context: Context): Boolean {
         val locationManager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
