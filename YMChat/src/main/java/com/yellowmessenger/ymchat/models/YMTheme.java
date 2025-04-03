@@ -9,4 +9,5 @@ public class YMTheme {
     public String botDesc;
     public String botClickIcon;
     public String chatBotTheme;
+    public String linkColor;
 }
