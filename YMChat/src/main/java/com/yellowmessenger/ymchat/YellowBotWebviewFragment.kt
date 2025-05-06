@@ -922,10 +922,30 @@ class YellowBotWebviewFragment : Fragment() {
     private fun alignMicButton() {
         val version = ConfigService.getInstance().config.version
         val params = micButton.layoutParams as RelativeLayout.LayoutParams
-        if (version == 1) {
-            params.setMargins(0, 0, 4, 200)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity?.window?.decorView?.setOnApplyWindowInsetsListener { _, insets ->
+                val systemBarsInsets = insets.getInsets(WindowInsets.Type.systemBars())
+                val displayCutoutInsets = insets.getInsets(WindowInsets.Type.displayCutout())
+
+                val topMargin = systemBarsInsets.top
+                val bottomMargin = systemBarsInsets.bottom
+                val leftMargin = displayCutoutInsets.left
+                val rightMargin = displayCutoutInsets.right
+
+                if (version == 1) {
+                    params.setMargins(leftMargin, topMargin, rightMargin + 4, bottomMargin + 200)
+                } else {
+                    params.setMargins(leftMargin, topMargin, rightMargin, bottomMargin + 186)
+                }
+
+                insets
+            }
         } else {
-            params.setMargins(0, 0, 0, 186)
+            if (version == 1) {
+                params.setMargins(0, 0, 4, 200)
+            } else {
+                params.setMargins(0, 0, 0, 186)
+            }
         }
         micButton.layoutParams = params
     }
