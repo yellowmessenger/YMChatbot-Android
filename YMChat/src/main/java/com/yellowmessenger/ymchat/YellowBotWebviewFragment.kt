@@ -33,6 +33,8 @@ import androidx.appcompat.content.res.AppCompatResources
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.graphics.drawable.DrawableCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.google.android.material.snackbar.Snackbar
@@ -155,7 +157,9 @@ class YellowBotWebviewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStatusBarColor()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            setStatusBarColor()
+        }
 
         hasAudioPermissionInManifest = hasAudioPermissionInManifest(requireContext())
         // setting up local listener
@@ -276,6 +280,23 @@ class YellowBotWebviewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentLayout = view
+        val parentView = view.findViewById<View>(R.id.parentView)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            val statusBarColor = ConfigService.getInstance().config.statusBarColor
+            if (statusBarColor != -1) {
+                parentView.setBackgroundColor(statusBarColor)
+            }
+            try {
+                val statusBarColorFromHex = ConfigService.getInstance().config.statusBarColorFromHex
+                if (statusBarColorFromHex != null && statusBarColorFromHex.isNotEmpty() && activity != null) {
+                    parentView.setBackgroundColor(Color.parseColor(statusBarColorFromHex))
+                }
+            } catch (e: java.lang.Exception) {
+                //Exception occurred
+            }
+        } else {
+            setStatusBarColorFromHex()
+        }
         val enableSpeech = this.speechEnabled
         micButton = view.findViewById(R.id.floatingActionButton)
         if (enableSpeech) {
@@ -334,7 +355,6 @@ class YellowBotWebviewFragment : Fragment() {
             }
         }
         showCloseButton()
-        setStatusBarColorFromHex()
         setCloseButtonColorFromHex()
         setKeyboardListener()
     }
