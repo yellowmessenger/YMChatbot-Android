@@ -937,6 +937,7 @@ class YellowBotWebviewFragment : Fragment() {
                 } else {
                     params.setMargins(leftMargin, topMargin, rightMargin, bottomMargin + 186)
                 }
+                micButton.translationY += (bottomMargin / 2)
 
                 insets
             }
