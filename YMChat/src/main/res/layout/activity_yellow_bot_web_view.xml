@@ -19,7 +19,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:visibility="gone"
-        android:background="@android:color/holo_green_dark"
+        android:background="@android:color/black"
         tools:ignore="MissingConstraints" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
