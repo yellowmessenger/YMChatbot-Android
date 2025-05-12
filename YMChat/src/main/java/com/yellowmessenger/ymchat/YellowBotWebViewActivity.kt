@@ -17,7 +17,7 @@ class YellowBotWebViewActivity : AppCompatActivity() {
         setContentView(R.layout.activity_yellow_bot_web_view)
         loadFragment()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val rootView = findViewById<View>(R.id.container)
             val customStatusBar = findViewById<View>(R.id.customStatusBar)
             customStatusBar.visibility = View.VISIBLE

@@ -155,7 +155,7 @@ class YellowBotWebviewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             setStatusBarColor()
         }
 
@@ -337,7 +337,7 @@ class YellowBotWebviewFragment : Fragment() {
             }
         }
         showCloseButton()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             setStatusBarColorFromHex()
         }
         setCloseButtonColorFromHex()
@@ -907,7 +907,7 @@ class YellowBotWebviewFragment : Fragment() {
     private fun alignMicButton() {
         val version = ConfigService.getInstance().config.version
         val params = micButton.layoutParams as RelativeLayout.LayoutParams
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             activity?.window?.decorView?.setOnApplyWindowInsetsListener { _, insets ->
                 val systemBarsInsets = insets.getInsets(WindowInsets.Type.systemBars())
                 val displayCutoutInsets = insets.getInsets(WindowInsets.Type.displayCutout())
