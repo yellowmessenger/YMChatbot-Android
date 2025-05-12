@@ -7,6 +7,7 @@ import android.view.View
 import android.view.WindowInsets
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.FragmentTransaction
 import com.yellowmessenger.ymchat.models.ConfigService
 import com.yellowmessenger.ymchat.models.YMBotEventResponse
@@ -21,11 +22,12 @@ class YellowBotWebViewActivity : AppCompatActivity() {
             val rootView = findViewById<View>(R.id.container)
             val customStatusBar = findViewById<View>(R.id.customStatusBar)
             customStatusBar.visibility = View.VISIBLE
-            val statusBarColor = ConfigService.getInstance().config.statusBarColor
-            if (statusBarColor != -1) {
-                customStatusBar.setBackgroundColor(statusBarColor)
-            }
             try {
+                val statusBarColor = ConfigService.getInstance().config.statusBarColor
+                if (statusBarColor != -1) {
+                    customStatusBar.setBackgroundColor(ContextCompat.getColor(this, statusBarColor))
+                }
+
                 val statusBarColorFromHex = ConfigService.getInstance().config.statusBarColorFromHex
                 if (statusBarColorFromHex != null && statusBarColorFromHex.isNotEmpty()) {
                     customStatusBar.setBackgroundColor(Color.parseColor(statusBarColorFromHex))
