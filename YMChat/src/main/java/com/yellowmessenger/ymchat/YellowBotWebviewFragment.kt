@@ -155,7 +155,9 @@ class YellowBotWebviewFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setStatusBarColor()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            setStatusBarColor()
+        }
 
         hasAudioPermissionInManifest = hasAudioPermissionInManifest(requireContext())
         // setting up local listener
@@ -276,6 +278,7 @@ class YellowBotWebviewFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         parentLayout = view
+
         val enableSpeech = this.speechEnabled
         micButton = view.findViewById(R.id.floatingActionButton)
         if (enableSpeech) {
@@ -334,7 +337,9 @@ class YellowBotWebviewFragment : Fragment() {
             }
         }
         showCloseButton()
-        setStatusBarColorFromHex()
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            setStatusBarColorFromHex()
+        }
         setCloseButtonColorFromHex()
         setKeyboardListener()
     }
@@ -902,10 +907,31 @@ class YellowBotWebviewFragment : Fragment() {
     private fun alignMicButton() {
         val version = ConfigService.getInstance().config.version
         val params = micButton.layoutParams as RelativeLayout.LayoutParams
-        if (version == 1) {
-            params.setMargins(0, 0, 4, 200)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.VANILLA_ICE_CREAM) {
+            activity?.window?.decorView?.setOnApplyWindowInsetsListener { _, insets ->
+                val systemBarsInsets = insets.getInsets(WindowInsets.Type.systemBars())
+                val displayCutoutInsets = insets.getInsets(WindowInsets.Type.displayCutout())
+
+                val topMargin = systemBarsInsets.top
+                val bottomMargin = systemBarsInsets.bottom
+                val leftMargin = displayCutoutInsets.left
+                val rightMargin = displayCutoutInsets.right
+
+                if (version == 1) {
+                    params.setMargins(leftMargin, topMargin, rightMargin + 4, bottomMargin + 200)
+                } else {
+                    params.setMargins(leftMargin, topMargin, rightMargin, bottomMargin + 186)
+                }
+                micButton.translationY += (bottomMargin / 2)
+
+                insets
+            }
         } else {
-            params.setMargins(0, 0, 0, 186)
+            if (version == 1) {
+                params.setMargins(0, 0, 4, 200)
+            } else {
+                params.setMargins(0, 0, 0, 186)
+            }
         }
         micButton.layoutParams = params
     }
