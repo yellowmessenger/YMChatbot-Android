@@ -5,13 +5,11 @@ plugins {
 
 android {
     namespace 'com.yellowmessenger.ymchatexample'
-    compileSdkVersion 34
-    buildToolsVersion "30.0.3"
-
+    compileSdk 35
     defaultConfig {
         applicationId "com.yellowmessenger.ymchatexample"
         minSdkVersion 21
-        targetSdkVersion 34
+        targetSdk 35
         versionCode 1
         versionName "2.21.1"
 

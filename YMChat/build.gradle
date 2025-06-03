@@ -5,14 +5,11 @@ plugins {
 
 android {
     namespace 'com.yellowmessenger.ymchat'
-    compileSdkVersion 34
-    buildToolsVersion "30.0.3"
+    compileSdk 35
 
     defaultConfig {
         minSdkVersion 21
-        targetSdkVersion 34
-        versionCode 1
-        versionName "2.21.1"
+        targetSdk 35
         multiDexEnabled = true
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -32,7 +29,6 @@ android {
 }
 repositories {
     mavenCentral()
-    jcenter()
     google()
 }
 
