@@ -39,7 +39,7 @@ public class JavaScriptInterface {
             incomingEvent = new YMBotEventResponse(null, null, false);
         }
 
-        if (incomingEvent.getCode() != null && ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode()))) {
+        if (incomingEvent.getCode() != null && ("close-bot".equals(incomingEvent.getCode()) || "upload-image".equals(incomingEvent.getCode()) || "pwa-loaded".equals(incomingEvent.getCode()))) {
             incomingEvent.setInternal(true);
         }
 

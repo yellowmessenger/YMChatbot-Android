@@ -258,6 +258,14 @@ class YellowBotWebviewFragment : Fragment() {
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
+                "pwa-loaded"-> try {
+                    activity?.runOnUiThread {
+                        setCloseButtonColor()
+                        setCloseButtonColorFromHex()
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
             }
         }
     }
@@ -340,7 +348,6 @@ class YellowBotWebviewFragment : Fragment() {
         if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             setStatusBarColorFromHex()
         }
-        setCloseButtonColorFromHex()
         setKeyboardListener()
     }
 
@@ -949,6 +956,7 @@ class YellowBotWebviewFragment : Fragment() {
         val showCloseButton = ConfigService.getInstance().config.showCloseButton
         if (showCloseButton) {
             closeButton.visibility = View.VISIBLE
+            ConfigService.getInstance().config.closeButtonColor = R.color.ymColorDark
             setCloseButtonColor()
         } else {
             closeButton.visibility = View.GONE
