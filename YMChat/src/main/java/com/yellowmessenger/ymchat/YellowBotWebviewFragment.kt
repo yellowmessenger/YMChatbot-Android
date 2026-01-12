@@ -601,7 +601,7 @@ class YellowBotWebviewFragment : Fragment() {
 
     private fun showFileChooser() {
         val hideCameraForUpload = ConfigService.getInstance().config.hideCameraForUpload
-        if (hideCameraForUpload || isMultiFileUpload()) {
+        if (hideCameraForUpload) {
             if (context != null) {
                 launchFileIntent()
             }
