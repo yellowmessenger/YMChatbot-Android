@@ -5,6 +5,7 @@ import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowInsets
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.content.ContextCompat
@@ -17,6 +18,27 @@ class YellowBotWebViewActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_yellow_bot_web_view)
         loadFragment()
+
+        // Register OnBackPressedCallback for Predictive Back Navigation support (Android 16+)
+        onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                try {
+                    if (supportFragmentManager.backStackEntryCount == 1) {
+                        YMChat.getInstance().emitEvent(YMBotEventResponse("bot-closed", "", false))
+                        finish()
+                    } else {
+                        // Temporarily disable this callback and trigger the default behavior
+                        // to allow fragment back stack handling
+                        isEnabled = false
+                        onBackPressedDispatcher.onBackPressed()
+                        isEnabled = true
+                    }
+                } catch (e: Exception) {
+                    // Some problem occurred please relaunch the bot
+                    finish()
+                }
+            }
+        })
 
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             val rootView = findViewById<View>(R.id.container)
@@ -55,20 +77,5 @@ class YellowBotWebViewActivity : AppCompatActivity() {
         transaction.replace(R.id.container, YellowBotWebviewFragment.newInstance())
         transaction.addToBackStack(null)
         transaction.commit()
-    }
-
-    override fun onBackPressed() {
-        try {
-            if (supportFragmentManager.backStackEntryCount == 1) {
-                YMChat.getInstance().emitEvent(YMBotEventResponse("bot-closed", "", false))
-                finish()
-            } else {
-                super.onBackPressed()
-            }
-        } catch (e: Exception) {
-            //Some problem occurred please relaunch the bot
-            finish()
-
-        }
     }
 }
