@@ -169,7 +169,7 @@ class YellowBotWebviewFragment : Fragment() {
                         YMChat.getInstance().emitEvent(YMBotEventResponse("bot-closed", "", false))
                         if (activity is YellowBotWebViewActivity) {
                             closeBot()
-                            activity?.onBackPressed()
+                            activity?.onBackPressedDispatcher?.onBackPressed()
                             isBotClosing = true
                         }
                     }
@@ -340,7 +340,7 @@ class YellowBotWebviewFragment : Fragment() {
             YMChat.getInstance().emitEvent(YMBotEventResponse("bot-closed", "", false))
             if (activity is YellowBotWebViewActivity) {
                 closeBot()
-                activity?.onBackPressed()
+                activity?.onBackPressedDispatcher?.onBackPressed()
                 isBotClosing = true
             }
         }
@@ -1023,7 +1023,7 @@ class YellowBotWebviewFragment : Fragment() {
         if (ConfigService.getInstance().config.botId == null || ConfigService.getInstance().config.botId.trim()
                 .isEmpty()
         ) {
-            activity?.onBackPressed()
+            activity?.onBackPressedDispatcher?.onBackPressed()
         }
         if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {
             reload()
