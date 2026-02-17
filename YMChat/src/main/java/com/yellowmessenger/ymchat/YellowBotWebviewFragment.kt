@@ -166,6 +166,7 @@ class YellowBotWebviewFragment : Fragment() {
             when (botEvent.code) {
                 "close-bot" -> try {
                     activity?.runOnUiThread {
+                        if (!isAdded) return@runOnUiThread
                         YMChat.getInstance().emitEvent(YMBotEventResponse("bot-closed", "", false))
                         if (activity is YellowBotWebViewActivity) {
                             closeBot()
@@ -337,6 +338,7 @@ class YellowBotWebviewFragment : Fragment() {
 
         closeButton = view.findViewById(R.id.backButton)
         closeButton.setOnClickListener {
+            if (!isAdded) return@setOnClickListener
             YMChat.getInstance().emitEvent(YMBotEventResponse("bot-closed", "", false))
             if (activity is YellowBotWebViewActivity) {
                 closeBot()
@@ -1023,7 +1025,13 @@ class YellowBotWebviewFragment : Fragment() {
         if (ConfigService.getInstance().config.botId == null || ConfigService.getInstance().config.botId.trim()
                 .isEmpty()
         ) {
-            activity?.onBackPressedDispatcher?.onBackPressed()
+            view?.post {
+                if (isAdded) {
+                    activity?.onBackPressedDispatcher?.onBackPressed()
+                }
+            }
+            super.onStart()
+            return
         }
         if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {
             reload()
