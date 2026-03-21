@@ -74,7 +74,8 @@ class YellowBotWebviewFragment : Fragment() {
         "/plugin/latest/dist/mobile.min.js",
         "/plugin/latest/dist/widget.min.js",
         "/plugin/widget-v2/latest/dist/mobile.min.js",
-        "/plugin/widget-v2/latest/dist/widget.min.js"
+        "/plugin/widget-v2/latest/dist/widget.min.js",
+        "/plugin/widget-v3/staging/dist/loader.umd.js"
     )
     private var mFilePathCallback: ValueCallback<Array<Uri?>>? = null
     private var mCameraPhotoPath: String? = null
@@ -793,7 +794,12 @@ class YellowBotWebviewFragment : Fragment() {
 
     // Sending messages to bot
     fun sendEvent(eventCode: String, eventData: String) {
-        myWebView.loadUrl("javascript:sendEvent(\'$eventCode\',\'$eventData\');")
+        val version = ConfigService.getInstance().config.version
+        if (version == 3) {
+            myWebView.loadUrl("javascript:if(typeof ChatWidget !== 'undefined' && typeof ChatWidget.sendEvent === 'function'){ ChatWidget.sendEvent('$eventCode','$eventData'); }")
+        } else {
+            myWebView.loadUrl("javascript:sendEvent(\'$eventCode\',\'$eventData\');")
+        }
     }
 
     private fun closeBot() {
