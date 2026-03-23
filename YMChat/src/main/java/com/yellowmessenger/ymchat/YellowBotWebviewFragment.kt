@@ -298,8 +298,9 @@ class YellowBotWebviewFragment : Fragment() {
         parentLayout = view
 
         val enableSpeech = this.speechEnabled
+        val version = ConfigService.getInstance().config.version
         micButton = view.findViewById(R.id.floatingActionButton)
-        if (enableSpeech) {
+        if (enableSpeech && (version == 1 || version == 2)) {
             if (hasAudioPermissionInManifest) {
                 micButton.visibility = View.VISIBLE
                 micButton.setOnClickListener {
@@ -1002,7 +1003,8 @@ class YellowBotWebviewFragment : Fragment() {
 
     private fun showMic() {
         val enableSpeech = this.speechEnabled
-        if (enableSpeech && hasAudioPermissionInManifest) {
+        val version = ConfigService.getInstance().config.version
+        if (enableSpeech && hasAudioPermissionInManifest && (version == 1 || version == 2)) {
             micButton.show()
         } else {
             micButton.hide()
