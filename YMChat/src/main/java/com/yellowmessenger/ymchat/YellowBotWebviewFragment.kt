@@ -83,6 +83,7 @@ class YellowBotWebviewFragment : Fragment() {
     private var requestedPermission: String? = null
     private var geoCallback: GeolocationPermissions.Callback? = null
     private var geoOrigin: String? = null
+    private var pendingWebViewPermissionRequest: PermissionRequest? = null
     private var isMultiFileUpload = false
     private var isBotClosing = false
 
@@ -132,8 +133,15 @@ class YellowBotWebviewFragment : Fragment() {
                 }
             } else if (requestedPermission == Manifest.permission.RECORD_AUDIO) {
                 if (isGranted) {
-                    toggleBottomSheet()
+                    if (pendingWebViewPermissionRequest != null) {
+                        pendingWebViewPermissionRequest!!.grant(pendingWebViewPermissionRequest!!.resources)
+                        pendingWebViewPermissionRequest = null
+                    } else {
+                        toggleBottomSheet()
+                    }
                 } else {
+                    pendingWebViewPermissionRequest?.deny()
+                    pendingWebViewPermissionRequest = null
                     YmHelper.showSnackBarWithSettingAction(
                         requireContext(),
                         parentLayout,
@@ -572,6 +580,27 @@ class YellowBotWebviewFragment : Fragment() {
                 } else {
                     geoOrigin = origin
                     geoCallback = callback
+                }
+            }
+
+            override fun onPermissionRequest(request: PermissionRequest?) {
+                request?.let {
+                    val resources = it.resources
+                    if (resources.contains(PermissionRequest.RESOURCE_AUDIO_CAPTURE)) {
+                        if (getContext() == null || !hasAudioPermissionInManifest(requireContext())) {
+                            it.deny()
+                            return
+                        }
+                        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                            it.grant(resources)
+                        } else {
+                            pendingWebViewPermissionRequest = it
+                            requestedPermission = Manifest.permission.RECORD_AUDIO
+                            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    } else {
+                        it.deny()
+                    }
                 }
             }
         }
