@@ -86,6 +86,7 @@ class YellowBotWebviewFragment : Fragment() {
     private var pendingWebViewPermissionRequest: PermissionRequest? = null
     private var isMultiFileUpload = false
     private var isBotClosing = false
+    private var isWebViewReady = false
 
     private val requestPermissionLauncher = registerForActivityResult(
         RequestPermission()
@@ -270,6 +271,7 @@ class YellowBotWebviewFragment : Fragment() {
                 }
                 "pwa-loaded"-> try {
                     activity?.runOnUiThread {
+                        isWebViewReady = true
                         setCloseButtonColor()
                         setCloseButtonColorFromHex()
                     }
@@ -858,6 +860,7 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     fun reload() {
+        isWebViewReady = false
         myWebView.reload()
     }
 
@@ -1082,6 +1085,9 @@ class YellowBotWebviewFragment : Fragment() {
                 false
             )
         )
+        if (isWebViewReady) {
+            sendEvent(getString(R.string.ym_chat_bot_foreground_event), "")
+        }
         super.onStart()
     }
 
@@ -1316,6 +1322,9 @@ class YellowBotWebviewFragment : Fragment() {
                     false
                 )
             )
+            if (isWebViewReady) {
+                sendEvent(getString(R.string.ym_chat_bot_background_event), "")
+            }
         }
         super.onStop()
     }
