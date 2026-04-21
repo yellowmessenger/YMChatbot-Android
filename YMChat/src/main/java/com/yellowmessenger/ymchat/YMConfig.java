@@ -47,4 +47,11 @@ public class YMConfig {
     public YMConfig(@NonNull String botId) {
         this.botId = botId;
     }
+
+    public String getCustomBaseUrl() {
+        if (version == 3 && "https://app.yellowmessenger.com".equals(customBaseUrl)) {
+            return "https://cloud.yellow.ai";
+        }
+        return customBaseUrl;
+    }
 }

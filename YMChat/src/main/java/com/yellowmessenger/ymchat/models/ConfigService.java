@@ -56,7 +56,7 @@ public class ConfigService {
                 .appendQueryParameter("ymAuthenticationToken", config.ymAuthenticationToken == null ? "" : config.ymAuthenticationToken)
                 .appendQueryParameter("useSecureYmAuth", String.valueOf(config.useSecureYmAuth))
                 .appendQueryParameter("deviceToken", config.deviceToken == null ? "" : config.deviceToken)
-                .appendQueryParameter("customBaseUrl", config.customBaseUrl)
+                .appendQueryParameter("customBaseUrl", config.getCustomBaseUrl())
                 .appendQueryParameter("version", Integer.toString(config.version))
                 .appendQueryParameter("customLoaderUrl", config.customLoaderUrl)
                 .appendQueryParameter("appId", appId)

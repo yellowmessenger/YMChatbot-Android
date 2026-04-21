@@ -74,7 +74,8 @@ class YellowBotWebviewFragment : Fragment() {
         "/plugin/latest/dist/mobile.min.js",
         "/plugin/latest/dist/widget.min.js",
         "/plugin/widget-v2/latest/dist/mobile.min.js",
-        "/plugin/widget-v2/latest/dist/widget.min.js"
+        "/plugin/widget-v2/latest/dist/widget.min.js",
+        "/plugin/widget-v3/prod/dist/loader.umd.js"
     )
     private var mFilePathCallback: ValueCallback<Array<Uri?>>? = null
     private var mCameraPhotoPath: String? = null
@@ -82,6 +83,7 @@ class YellowBotWebviewFragment : Fragment() {
     private var requestedPermission: String? = null
     private var geoCallback: GeolocationPermissions.Callback? = null
     private var geoOrigin: String? = null
+    private var pendingWebViewPermissionRequest: PermissionRequest? = null
     private var isMultiFileUpload = false
     private var isBotClosing = false
 
@@ -131,8 +133,15 @@ class YellowBotWebviewFragment : Fragment() {
                 }
             } else if (requestedPermission == Manifest.permission.RECORD_AUDIO) {
                 if (isGranted) {
-                    toggleBottomSheet()
+                    if (pendingWebViewPermissionRequest != null) {
+                        pendingWebViewPermissionRequest!!.grant(pendingWebViewPermissionRequest!!.resources)
+                        pendingWebViewPermissionRequest = null
+                    } else {
+                        toggleBottomSheet()
+                    }
                 } else {
+                    pendingWebViewPermissionRequest?.deny()
+                    pendingWebViewPermissionRequest = null
                     YmHelper.showSnackBarWithSettingAction(
                         requireContext(),
                         parentLayout,
@@ -289,8 +298,9 @@ class YellowBotWebviewFragment : Fragment() {
         parentLayout = view
 
         val enableSpeech = this.speechEnabled
+        val version = ConfigService.getInstance().config.version
         micButton = view.findViewById(R.id.floatingActionButton)
-        if (enableSpeech) {
+        if (enableSpeech && (version == 1 || version == 2)) {
             if (hasAudioPermissionInManifest) {
                 micButton.visibility = View.VISIBLE
                 micButton.setOnClickListener {
@@ -573,6 +583,27 @@ class YellowBotWebviewFragment : Fragment() {
                     geoCallback = callback
                 }
             }
+
+            override fun onPermissionRequest(request: PermissionRequest?) {
+                request?.let {
+                    val resources = it.resources
+                    if (resources.contains(PermissionRequest.RESOURCE_AUDIO_CAPTURE)) {
+                        if (getContext() == null || !hasAudioPermissionInManifest(requireContext())) {
+                            it.deny()
+                            return
+                        }
+                        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                            it.grant(resources)
+                        } else {
+                            pendingWebViewPermissionRequest = it
+                            requestedPermission = Manifest.permission.RECORD_AUDIO
+                            requestPermissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                    } else {
+                        it.deny()
+                    }
+                }
+            }
         }
         val htmlurl = if (ConfigService.getInstance().config.useLiteVersion) {
             getString(R.string.ym_lite_chatbot_base_url)
@@ -793,7 +824,12 @@ class YellowBotWebviewFragment : Fragment() {
 
     // Sending messages to bot
     fun sendEvent(eventCode: String, eventData: String) {
-        myWebView.loadUrl("javascript:sendEvent(\'$eventCode\',\'$eventData\');")
+        val version = ConfigService.getInstance().config.version
+        if (version == 3) {
+            myWebView.loadUrl("javascript:if(typeof ChatWidget !== 'undefined' && typeof ChatWidget.sendEvent === 'function'){ ChatWidget.sendEvent('$eventCode','$eventData'); }")
+        } else {
+            myWebView.loadUrl("javascript:sendEvent(\'$eventCode\',\'$eventData\');")
+        }
     }
 
     private fun closeBot() {
@@ -967,7 +1003,8 @@ class YellowBotWebviewFragment : Fragment() {
 
     private fun showMic() {
         val enableSpeech = this.speechEnabled
-        if (enableSpeech && hasAudioPermissionInManifest) {
+        val version = ConfigService.getInstance().config.version
+        if (enableSpeech && hasAudioPermissionInManifest && (version == 1 || version == 2)) {
             micButton.show()
         } else {
             micButton.hide()

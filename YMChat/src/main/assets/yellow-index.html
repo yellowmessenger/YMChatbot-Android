@@ -60,97 +60,142 @@
         }catch(e){
         }
 
-       var scriptUrl = customBaseUrl+"/widget/mobile.js"
-        if(version == '2'){
-            scriptUrl = customBaseUrl+"/widget/v2/mobile.js"
-        }
+        if (version == '3') {
+            var v3ScriptUrl = "https://cdn.yellowmessenger.com/plugin/widget-v3/prod/dist/loader.umd.js";
 
-
-        window.ymConfig = {
-            bot: botId || '',
-            pwa: true,
-            sdk: true,
-            ymAuthenticationToken: ymAuthenticationToken,
-            useSecureYmAuth: useSecureYmAuth == 'true',
-            deviceToken: deviceToken,
-            logging: true,
-            setDisableActionsTimeout: disableActionsOnLoad == 'true',
-            handlers: {
-                sendIOSEvent: function (data) {
-
-                    try {
-                        window.webkit.messageHandlers.ymHandler.postMessage(data);
-                    } catch (e) { }
-                    try {
-                        window.YMHandler.receiveMessage(JSON.stringify(data));
-                    } catch (e) { }
-                    try {
-                        window.ReactNativeWebView.postMessage(JSON.stringify(data));
-                    } catch (e) { }
-
+            var v3Config = {
+                yellowMessenger: {
+                    botId: botId || '',
+                    host: customBaseUrl,
+                    ymAuthenticationToken: ymAuthenticationToken,
+                    useSecureYmAuth: useSecureYmAuth == 'true',
+                    setDisableActionsTimeout: disableActionsOnLoad == 'true',
+                    deviceToken: deviceToken,
+                    payload: payload,
+                    triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true : false,
+                    triggerJourney: payloadJSON.JourneySlug,
+                    appId: appId,
+                    theme: JSON.parse(theme)
+                },
+                sdk: true,
+                handlers: {
+                    sendIOSEvent: function (data) {
+                        try { window.webkit.messageHandlers.ymHandler.postMessage(data); } catch (e) { }
+                        try { window.YMHandler.receiveMessage(JSON.stringify(data)); } catch (e) { }
+                        try { window.ReactNativeWebView.postMessage(JSON.stringify(data)); } catch (e) { }
+                    }
                 }
-            },
-            payload: payload,
-            triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
-            triggerJourney: payloadJSON.JourneySlug,
-            theme: JSON.parse(theme),
-            appId: appId
-        };
+            };
+
+            if (payloadJSON.UserId) {
+                v3Config.yellowMessenger.userId = payloadJSON.UserId;
+            }
+
+            function tryInitV3() {
+                if (typeof ChatWidget !== "undefined" && typeof ChatWidget.init === "function") {
+                    ChatWidget.init(v3Config);
+                } else {
+                    setTimeout(tryInitV3, 50);
+                }
+            }
+
+            var v3Script = document.createElement("script");
+            v3Script.type = "text/javascript";
+            v3Script.async = true;
+            v3Script.src = v3ScriptUrl;
+            v3Script.onload = function () { tryInitV3(); };
+            var firstScript = document.getElementsByTagName("script")[0];
+            firstScript.parentNode.insertBefore(v3Script, firstScript);
+
+        } else {
+            var scriptUrl = customBaseUrl+"/widget/mobile.js"
+            if(version == '2'){
+                scriptUrl = customBaseUrl+"/widget/v2/mobile.js"
+            }
+
+            window.ymConfig = {
+                bot: botId || '',
+                pwa: true,
+                sdk: true,
+                ymAuthenticationToken: ymAuthenticationToken,
+                useSecureYmAuth: useSecureYmAuth == 'true',
+                deviceToken: deviceToken,
+                logging: true,
+                setDisableActionsTimeout: disableActionsOnLoad == 'true',
+                handlers: {
+                    sendIOSEvent: function (data) {
+                        try {
+                            window.webkit.messageHandlers.ymHandler.postMessage(data);
+                        } catch (e) { }
+                        try {
+                            window.YMHandler.receiveMessage(JSON.stringify(data));
+                        } catch (e) { }
+                        try {
+                            window.ReactNativeWebView.postMessage(JSON.stringify(data));
+                        } catch (e) { }
+                    }
+                },
+                payload: payload,
+                triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true: false ,
+                triggerJourney: payloadJSON.JourneySlug,
+                theme: JSON.parse(theme),
+                appId: appId
+            };
 
             window.ymConfig.host = customBaseUrl;
 
-        if(payloadJSON.UserId) {
-            window.ymConfig.userId = payloadJSON.UserId;
-        }
+            if(payloadJSON.UserId) {
+                window.ymConfig.userId = payloadJSON.UserId;
+            }
 
-        function sendEvent(eventCode, eventData) {
-            var iframe = document.getElementById('ymIframe');
-            iframe.contentWindow.postMessage(JSON.stringify({
-                    event_code: eventCode,
-                    data: eventData
-                }));
+            function sendEvent(eventCode, eventData) {
+                var iframe = document.getElementById('ymIframe');
+                iframe.contentWindow.postMessage(JSON.stringify({
+                        event_code: eventCode,
+                        data: eventData
+                    }));
 
-            try {
-                window.YMHandler.receiveMessage(JSON.stringify({ code: "Message Received", data: s }));
-            } catch (e) { }
-            try {
-                window.webkit.messageHandlers.ymHandler.postMessage({ code: "Message Received", data: s });
-            } catch (e) { }
-        }
+                try {
+                    window.YMHandler.receiveMessage(JSON.stringify({ code: "Message Received", data: s }));
+                } catch (e) { }
+                try {
+                    window.webkit.messageHandlers.ymHandler.postMessage({ code: "Message Received", data: s });
+                } catch (e) { }
+            }
 
-        (function () {
-            var w = window, ic = w.YellowMessenger;
-            if ("function" === typeof ic)
-                ic("reattach_activator"), ic("update", ymConfig);
-            else {
-                var d = document, i = function () {
-                    i.c(arguments)
-                };
+            (function () {
+                var w = window, ic = w.YellowMessenger;
+                if ("function" === typeof ic)
+                    ic("reattach_activator"), ic("update", ymConfig);
+                else {
+                    var d = document, i = function () {
+                        i.c(arguments)
+                    };
 
-                function l() {
-                    var e = d.createElement("script");
-                    e.type = "text/javascript", e.async = !0, e.src = scriptUrl;
-                    var t = d.getElementsByTagName("script")[0];
-                    t.parentNode.insertBefore(e, t)
+                    function l() {
+                        var e = d.createElement("script");
+                        e.type = "text/javascript", e.async = !0, e.src = scriptUrl;
+                        var t = d.getElementsByTagName("script")[0];
+                        t.parentNode.insertBefore(e, t)
+                    }
+
+                    i.q = [], i.c = function (e) {
+                        i.q.push(e)
+                    }, w.YellowMessenger = i, w.attachEvent ? w.attachEvent("onload", l) : w.addEventListener("load", l, !1)
                 }
-
-                i.q = [], i.c = function (e) {
-                    i.q.push(e)
-                }, w.YellowMessenger = i, w.attachEvent ? w.attachEvent("onload", l) : w.addEventListener("load", l, !1)
-            }
-            if ('serviceWorker' in window.navigator) {
-
-                window.navigator.serviceWorker.register('https://app.yellowmessenger.com/pwa/service-worker',
-                    {
-                        'scope': '/pwa/mobile/'+botId
-                    })
-                    .then(function (reg) {
-                        console.log("Service worker registered.", reg);
-                    }).catch(function (err) {
-                        console.log("No it didn't. This happened:", err)
-                    });
-            }
-        })();
+                if ('serviceWorker' in window.navigator) {
+                    window.navigator.serviceWorker.register('https://app.yellowmessenger.com/pwa/service-worker',
+                        {
+                            'scope': '/pwa/mobile/'+botId
+                        })
+                        .then(function (reg) {
+                            console.log("Service worker registered.", reg);
+                        }).catch(function (err) {
+                            console.log("No it didn't. This happened:", err)
+                        });
+                }
+            })();
+        }
     </script>
 </body>
 </html>
