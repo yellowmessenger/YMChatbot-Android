@@ -2,6 +2,7 @@ package com.yellowmessenger.ymchat;
 
 import androidx.annotation.NonNull;
 
+import com.yellowmessenger.ymchat.models.YMActivationMode;
 import com.yellowmessenger.ymchat.models.YMEnableSpeechConfig;
 import com.yellowmessenger.ymchat.models.YMSpeechConfig;
 import com.yellowmessenger.ymchat.models.YMTheme;
@@ -43,6 +44,7 @@ public class YMConfig {
 
     public YMSpeechConfig speechConfig = new YMSpeechConfig();
     public YMTheme theme = new YMTheme();
+    public YMActivationMode activationMode = YMActivationMode.CHAT;
 
     public YMConfig(@NonNull String botId) {
         this.botId = botId;

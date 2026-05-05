@@ -53,6 +53,7 @@
         var disableActionsOnLoad = getParams(window.location.href)["disableActionsOnLoad"];
         document.getElementById("se-pre-con").style.backgroundImage = imageLink;
         var appId = getParams(window.location.href)["appId"];
+        var defaultOpenMode = getParams(window.location.href)["defaultOpenMode"] || "chat";
 
         var payloadJSON = {};
         try{
@@ -75,7 +76,8 @@
                     triggerJourneyOnEnableHistory: payloadJSON.JourneySlug ? true : false,
                     triggerJourney: payloadJSON.JourneySlug,
                     appId: appId,
-                    theme: JSON.parse(theme)
+                    theme: JSON.parse(theme),
+                    defaultOpenMode: defaultOpenMode
                 },
                 sdk: true,
                 handlers: {

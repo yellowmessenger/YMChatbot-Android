@@ -147,6 +147,7 @@ public class YMChat {
         if (!(config.version == 1 || config.version == 2 || config.version == 3)) {
             throw new Exception("version can be either 1, 2, or 3");
         }
+
         return true;
     }
 
