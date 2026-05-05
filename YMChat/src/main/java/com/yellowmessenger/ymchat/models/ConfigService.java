@@ -62,6 +62,7 @@ public class ConfigService {
                 .appendQueryParameter("appId", appId)
                 .appendQueryParameter("disableActionsOnLoad", String.valueOf(config.disableActionsOnLoad))
                 .appendQueryParameter("ym.theme",config.theme == null ? "" : getTheme())
+                .appendQueryParameter("defaultOpenMode", config.activationMode != null ? config.activationMode.getValue() : YMActivationMode.CHAT.getValue())
                 .build();
 
         return builtUri.toString();
