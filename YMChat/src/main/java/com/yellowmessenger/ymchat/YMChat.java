@@ -165,6 +165,10 @@ public class YMChat {
         }
     }
 
+    public void stopVoiceMode() {
+        emitLocalEvent(new YMBotEventResponse("stop-voice-mode", "", false));
+    }
+
     public void closeBot() {
         if (localListener != null)
             localListener.onSuccess(new YMBotEventResponse("close-bot", "", false));
