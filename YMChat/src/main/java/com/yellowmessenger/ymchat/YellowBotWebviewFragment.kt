@@ -269,6 +269,13 @@ class YellowBotWebviewFragment : Fragment() {
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
+                "stop-voice-mode" -> try {
+                    activity?.runOnUiThread {
+                        stopVoiceMode()
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
                 "pwa-loaded"-> try {
                     activity?.runOnUiThread {
                         isWebViewReady = true
@@ -1243,6 +1250,21 @@ class YellowBotWebviewFragment : Fragment() {
             }
         }
     }
+
+    fun stopVoiceMode() {
+        if (context == null) return
+        val voiceArea: RelativeLayout = parentLayout.findViewById(R.id.voiceArea)
+        val micButton: YmMovableFloatingActionButton = parentLayout.findViewById(R.id.floatingActionButton)
+        if (voiceArea.visibility == View.VISIBLE) {
+            voiceArea.visibility = View.INVISIBLE
+            micButton.setImageDrawable(AppCompatResources.getDrawable(requireContext(), R.drawable.ic_mic_ym_small))
+            sr?.stopListening()
+        }
+        if (isWebViewReady) {
+            sendEvent(getString(R.string.ym_chat_bot_background_event), "")
+        }
+    }
+
 
     fun closeVoiceArea() {
 
