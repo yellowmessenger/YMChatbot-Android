@@ -76,7 +76,7 @@ class YellowBotWebviewFragment : Fragment() {
         "/plugin/latest/dist/widget.min.js",
         "/plugin/widget-v2/latest/dist/mobile.min.js",
         "/plugin/widget-v2/latest/dist/widget.min.js",
-        "/plugin/widget-v3/prod/dist/loader.umd.js"
+        "/plugin/widget-v3/staging/dist/loader.umd.js"
     )
     private var mFilePathCallback: ValueCallback<Array<Uri?>>? = null
     private var mCameraPhotoPath: String? = null
