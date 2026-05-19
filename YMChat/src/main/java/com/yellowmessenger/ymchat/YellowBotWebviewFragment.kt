@@ -42,6 +42,7 @@ import com.google.gson.reflect.TypeToken
 import com.yellowmessenger.ymchat.models.ConfigService
 import com.yellowmessenger.ymchat.models.JavaScriptInterface
 import com.yellowmessenger.ymchat.models.YMBotEventResponse
+import com.yellowmessenger.ymchat.models.YMUploadSource
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import java.io.File
@@ -484,7 +485,7 @@ class YellowBotWebviewFragment : Fragment() {
                 }
                 mFilePathCallback = filePath as ValueCallback<Array<Uri?>>?
                 isMediaUploadOptionSelected = false
-                showFileChooser()
+                showFileChooser(captureEnabled = fileChooserParams.isCaptureEnabled())
                 return true
             }
 
@@ -641,35 +642,62 @@ class YellowBotWebviewFragment : Fragment() {
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
-    private fun showFileChooser() {
-        val hideCameraForUpload = ConfigService.getInstance().config.hideCameraForUpload
-        if (hideCameraForUpload) {
-            if (context != null) {
-                launchFileIntent()
-            }
-        } else {
-            showBottomSheet()
+    private fun showFileChooser(captureEnabled: Boolean) {
+        if (captureEnabled) {
+            if (context != null) checkAndLaunchCamera()
+            return
+        }
+
+        val sources = resolveUploadSources()
+        val hasCamera = YMUploadSource.CAMERA in sources
+        val hasFile = YMUploadSource.FILE in sources
+
+        when {
+            hasCamera && hasFile -> showBottomSheet(sources)
+            hasCamera -> if (context != null) checkAndLaunchCamera()
+            hasFile -> if (context != null) launchFileIntent()
+            else -> showBottomSheet(listOf(YMUploadSource.CAMERA, YMUploadSource.FILE))
         }
     }
 
-    private fun showBottomSheet() {
+    private fun resolveUploadSources(): List<YMUploadSource> {
+        ConfigService.getInstance().config.allowedUploadSources?.let { return it }
+        return if (ConfigService.getInstance().config.hideCameraForUpload) {
+            listOf(YMUploadSource.FILE)
+        } else {
+            listOf(YMUploadSource.CAMERA, YMUploadSource.FILE)
+        }
+    }
+
+    private fun showBottomSheet(sources: List<YMUploadSource>) {
         if (context != null) {
             val bottomSheetDialog = BottomSheetDialog(requireContext())
             bottomSheetDialog.setContentView(R.layout.bottom_sheet_dialog_attachment)
             val cameraLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.camera_layout)
             val fileLayout = bottomSheetDialog.findViewById<LinearLayout>(R.id.file_layout)
-            cameraLayout?.setOnClickListener { v: View? ->
-                isMediaUploadOptionSelected = true
-                checkAndLaunchCamera()
-                bottomSheetDialog.dismiss()
-            }
-            fileLayout?.setOnClickListener { v: View? ->
-                isMediaUploadOptionSelected = true
-                if (context != null) {
-                    launchFileIntent()
+
+            if (YMUploadSource.CAMERA in sources) {
+                cameraLayout?.visibility = View.VISIBLE
+                cameraLayout?.setOnClickListener {
+                    isMediaUploadOptionSelected = true
+                    checkAndLaunchCamera()
+                    bottomSheetDialog.dismiss()
                 }
-                bottomSheetDialog.dismiss()
+            } else {
+                cameraLayout?.visibility = View.GONE
             }
+
+            if (YMUploadSource.FILE in sources) {
+                fileLayout?.visibility = View.VISIBLE
+                fileLayout?.setOnClickListener {
+                    isMediaUploadOptionSelected = true
+                    if (context != null) launchFileIntent()
+                    bottomSheetDialog.dismiss()
+                }
+            } else {
+                fileLayout?.visibility = View.GONE
+            }
+
             bottomSheetDialog.setOnDismissListener {
                 if (!isMediaUploadOptionSelected) {
                     resetFilePathCallback()
