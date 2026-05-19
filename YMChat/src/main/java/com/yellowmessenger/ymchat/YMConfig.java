@@ -6,8 +6,10 @@ import com.yellowmessenger.ymchat.models.YMActivationMode;
 import com.yellowmessenger.ymchat.models.YMEnableSpeechConfig;
 import com.yellowmessenger.ymchat.models.YMSpeechConfig;
 import com.yellowmessenger.ymchat.models.YMTheme;
+import com.yellowmessenger.ymchat.models.YMUploadSource;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class YMConfig {
     public String botId;
@@ -22,7 +24,13 @@ public class YMConfig {
     public String customBaseUrl = "https://app.yellowmessenger.com";
     public int statusBarColor = -1;
     public String statusBarColorFromHex = "";
+    /**
+     * @deprecated Use allowedUploadSources instead.
+     */
+    @Deprecated
     public boolean hideCameraForUpload = false;
+
+    public List<YMUploadSource> allowedUploadSources = null;
     public boolean showCloseButton = true;
     public int closeButtonColor = -1;
     public String closeButtonColorFromHex = "";
