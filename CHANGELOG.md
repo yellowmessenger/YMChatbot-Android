@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.3.2](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.3.2) (2026-07-23)
+
+### Security 🔒
+* Closed a residual gap from the `v3.3.1` fix: the popup WebView opened via `window.open()`/`target=_blank` (`onCreateWindow`) had no scheme allowlist and did not have `allowFileAccess` disabled, since it's a separate WebView instance that doesn't inherit the main WebView's settings. Now enforces the same `http`/`https`-only scheme allowlist and disables `allowFileAccess` on the popup WebView.
+
+---
+
 ## [v3.3.1](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.3.1) (2026-07-23)
 
 ### Security 🔒
