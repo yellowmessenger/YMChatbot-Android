@@ -412,7 +412,7 @@ class YellowBotWebviewFragment : Fragment() {
         myWebView.settings.domStorageEnabled = true
         myWebView.settings.setSupportMultipleWindows(true)
         myWebView.settings.javaScriptCanOpenWindowsAutomatically = true
-        myWebView.settings.allowFileAccess = true
+        myWebView.settings.allowFileAccess = false
         myWebView.settings.setGeolocationDatabasePath(context?.filesDir?.path)
         myWebView.settings.mediaPlaybackRequiresUserGesture = false
         myWebView.addJavascriptInterface(
@@ -451,11 +451,22 @@ class YellowBotWebviewFragment : Fragment() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
-                if (ConfigService.getInstance().config.shouldOpenLinkExternally) {
-                    return super.shouldOverrideUrlLoading(view, request)
-                } else {
-                    emitUrlClickEvent(request?.url.toString())
+                val url = request?.url
+                val scheme = url?.scheme?.lowercase(Locale.ROOT)
+                if (scheme != "http" && scheme != "https") {
+                    // Block javascript:, file:, data:, content: and any other non-http(s) navigation
                     return true
+                }
+                return if (ConfigService.getInstance().config.shouldOpenLinkExternally) {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW, url))
+                    } catch (e: Exception) {
+                        //Some error occurred
+                    }
+                    true
+                } else {
+                    emitUrlClickEvent(url.toString())
+                    true
                 }
             }
         }
