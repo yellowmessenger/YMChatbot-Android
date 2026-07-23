@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.3.1](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.3.1) (2026-07-23)
+
+### Security 🔒
+* Restricted the WebView JS bridge's `loadURL()` to `http`/`https` schemes, closing off `javascript:`, `file:`, `data:`, and `content:` URLs.
+* Fixed link handling so `shouldOpenLinkExternally` (default `true`) correctly opens links in the system browser instead of loading them in the in-app WebView.
+* Disabled WebView file-system access (`allowFileAccess`) since it is not required for normal operation.
+
+---
+
 ## [v3.3.0](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.3.0) (2026-05-19)
 
 ### New Update 🚀
