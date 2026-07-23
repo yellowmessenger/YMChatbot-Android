@@ -548,6 +548,7 @@ class YellowBotWebviewFragment : Fragment() {
                 resultMsg: Message
             ): Boolean {
                 val newWebView = context?.let { WebView(it) }
+                newWebView?.settings?.allowFileAccess = false
                 val transport = resultMsg.obj as WebViewTransport
                 transport.webView = newWebView
                 resultMsg.sendToTarget()
@@ -557,6 +558,11 @@ class YellowBotWebviewFragment : Fragment() {
                             view: WebView?,
                             request: WebResourceRequest?
                         ): Boolean {
+                            val scheme = request?.url?.scheme?.lowercase(Locale.ROOT)
+                            if (scheme != "http" && scheme != "https") {
+                                // Block javascript:, file:, data:, content: and any other non-http(s) navigation
+                                return true
+                            }
                             if (ConfigService.getInstance().config.shouldOpenLinkExternally) {
                                 try {
                                     val browserIntent = Intent(Intent.ACTION_VIEW)
