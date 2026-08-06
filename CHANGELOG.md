@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.4.0](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.4.0) (2026-08-06)
+
+### New Update 🚀
+* Added automatic screen-awake handling during Voice Mode: the SDK now keeps the device screen on for the duration of an active voice conversation (driven by `voice-mode-started`/`voice-mode-ended` events from the web widget) and restores normal screen-timeout behavior as soon as the call ends.
+
+---
+
 ## [v3.3.2](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.3.2) (2026-07-23)
 
 ### Security 🔒
