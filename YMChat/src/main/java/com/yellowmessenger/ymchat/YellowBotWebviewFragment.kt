@@ -277,6 +277,20 @@ class YellowBotWebviewFragment : Fragment() {
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
+                "voice-mode-started" -> try {
+                    activity?.runOnUiThread {
+                        acquireVoiceScreenWakeLock()
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
+                "voice-mode-ended" -> try {
+                    activity?.runOnUiThread {
+                        releaseVoiceScreenWakeLock()
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
                 "pwa-loaded"-> try {
                     activity?.runOnUiThread {
                         isWebViewReady = true
@@ -1296,6 +1310,26 @@ class YellowBotWebviewFragment : Fragment() {
         }
     }
 
+    private var isVoiceScreenWakeLockActive = false
+
+    /**
+     * Keeps the screen on while Voice Mode is active, driven by "voice-mode-started"/
+     * "voice-mode-ended" events from the web widget. Uses the activity window flag
+     * (not PowerManager.WakeLock) so it needs no extra permission and is auto-scoped
+     * to this activity.
+     */
+    private fun acquireVoiceScreenWakeLock() {
+        if (isVoiceScreenWakeLockActive) return
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        isVoiceScreenWakeLockActive = true
+    }
+
+    private fun releaseVoiceScreenWakeLock() {
+        if (!isVoiceScreenWakeLockActive) return
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        isVoiceScreenWakeLockActive = false
+    }
+
     fun stopVoiceMode() {
         if (context == null) return
         val voiceArea: RelativeLayout = parentLayout.findViewById(R.id.voiceArea)
@@ -1378,6 +1412,7 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     override fun onStop() {
+        releaseVoiceScreenWakeLock()
         if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {
             updateAgentStatus("offline")
         }
@@ -1397,6 +1432,7 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     override fun onDestroy() {
+        releaseVoiceScreenWakeLock()
         YMChat.getInstance().clearLocalListener()
         super.onDestroy()
     }
