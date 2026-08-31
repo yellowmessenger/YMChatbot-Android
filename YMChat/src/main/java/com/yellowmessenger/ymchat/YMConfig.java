@@ -53,6 +53,7 @@ public class YMConfig {
     public YMSpeechConfig speechConfig = new YMSpeechConfig();
     public YMTheme theme = new YMTheme();
     public YMActivationMode activationMode = YMActivationMode.CHAT;
+    public String initialUserMessage = null;
 
     public YMConfig(@NonNull String botId) {
         this.botId = botId;
