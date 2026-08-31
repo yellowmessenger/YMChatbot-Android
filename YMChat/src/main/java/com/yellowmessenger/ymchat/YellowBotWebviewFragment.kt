@@ -277,6 +277,20 @@ class YellowBotWebviewFragment : Fragment() {
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
                 }
+                "voice-mode-started" -> try {
+                    activity?.runOnUiThread {
+                        acquireVoiceScreenWakeLock()
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
+                "voice-mode-ended" -> try {
+                    activity?.runOnUiThread {
+                        releaseVoiceScreenWakeLock()
+                    }
+                } catch (e: java.lang.Exception) {
+                    //Exception Occurred
+                }
                 "pwa-loaded"-> try {
                     activity?.runOnUiThread {
                         isWebViewReady = true
@@ -412,7 +426,7 @@ class YellowBotWebviewFragment : Fragment() {
         myWebView.settings.domStorageEnabled = true
         myWebView.settings.setSupportMultipleWindows(true)
         myWebView.settings.javaScriptCanOpenWindowsAutomatically = true
-        myWebView.settings.allowFileAccess = true
+        myWebView.settings.allowFileAccess = false
         myWebView.settings.setGeolocationDatabasePath(context?.filesDir?.path)
         myWebView.settings.mediaPlaybackRequiresUserGesture = false
         myWebView.addJavascriptInterface(
@@ -451,11 +465,22 @@ class YellowBotWebviewFragment : Fragment() {
                 view: WebView?,
                 request: WebResourceRequest?
             ): Boolean {
-                if (ConfigService.getInstance().config.shouldOpenLinkExternally) {
-                    return super.shouldOverrideUrlLoading(view, request)
-                } else {
-                    emitUrlClickEvent(request?.url.toString())
+                val url = request?.url
+                val scheme = url?.scheme?.lowercase(Locale.ROOT)
+                if (scheme != "http" && scheme != "https") {
+                    // Block javascript:, file:, data:, content: and any other non-http(s) navigation
                     return true
+                }
+                return if (ConfigService.getInstance().config.shouldOpenLinkExternally) {
+                    try {
+                        startActivity(Intent(Intent.ACTION_VIEW, url))
+                    } catch (e: Exception) {
+                        //Some error occurred
+                    }
+                    true
+                } else {
+                    emitUrlClickEvent(url.toString())
+                    true
                 }
             }
         }
@@ -537,6 +562,7 @@ class YellowBotWebviewFragment : Fragment() {
                 resultMsg: Message
             ): Boolean {
                 val newWebView = context?.let { WebView(it) }
+                newWebView?.settings?.allowFileAccess = false
                 val transport = resultMsg.obj as WebViewTransport
                 transport.webView = newWebView
                 resultMsg.sendToTarget()
@@ -546,6 +572,11 @@ class YellowBotWebviewFragment : Fragment() {
                             view: WebView?,
                             request: WebResourceRequest?
                         ): Boolean {
+                            val scheme = request?.url?.scheme?.lowercase(Locale.ROOT)
+                            if (scheme != "http" && scheme != "https") {
+                                // Block javascript:, file:, data:, content: and any other non-http(s) navigation
+                                return true
+                            }
                             if (ConfigService.getInstance().config.shouldOpenLinkExternally) {
                                 try {
                                     val browserIntent = Intent(Intent.ACTION_VIEW)
@@ -1279,6 +1310,26 @@ class YellowBotWebviewFragment : Fragment() {
         }
     }
 
+    private var isVoiceScreenWakeLockActive = false
+
+    /**
+     * Keeps the screen on while Voice Mode is active, driven by "voice-mode-started"/
+     * "voice-mode-ended" events from the web widget. Uses the activity window flag
+     * (not PowerManager.WakeLock) so it needs no extra permission and is auto-scoped
+     * to this activity.
+     */
+    private fun acquireVoiceScreenWakeLock() {
+        if (isVoiceScreenWakeLockActive) return
+        activity?.window?.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        isVoiceScreenWakeLockActive = true
+    }
+
+    private fun releaseVoiceScreenWakeLock() {
+        if (!isVoiceScreenWakeLockActive) return
+        activity?.window?.clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        isVoiceScreenWakeLockActive = false
+    }
+
     fun stopVoiceMode() {
         if (context == null) return
         val voiceArea: RelativeLayout = parentLayout.findViewById(R.id.voiceArea)
@@ -1361,6 +1412,7 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     override fun onStop() {
+        releaseVoiceScreenWakeLock()
         if (shouldKeepApplicationInBackground && (isAgentConnected || ConfigService.getInstance().config.alwaysReload)) {
             updateAgentStatus("offline")
         }
@@ -1380,6 +1432,7 @@ class YellowBotWebviewFragment : Fragment() {
     }
 
     override fun onDestroy() {
+        releaseVoiceScreenWakeLock()
         YMChat.getInstance().clearLocalListener()
         super.onDestroy()
     }
