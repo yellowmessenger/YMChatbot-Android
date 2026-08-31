@@ -88,6 +88,7 @@ class YellowBotWebviewFragment : Fragment() {
     private var isMultiFileUpload = false
     private var isBotClosing = false
     private var isWebViewReady = false
+    private var hasSentInitialUserMessage = false
 
     private val requestPermissionLauncher = registerForActivityResult(
         RequestPermission()
@@ -296,6 +297,7 @@ class YellowBotWebviewFragment : Fragment() {
                         isWebViewReady = true
                         setCloseButtonColor()
                         setCloseButtonColorFromHex()
+                        sendInitialUserMessageIfNeeded()
                     }
                 } catch (e: java.lang.Exception) {
                     //Exception Occurred
@@ -893,11 +895,21 @@ class YellowBotWebviewFragment : Fragment() {
     // Sending messages to bot
     fun sendEvent(eventCode: String, eventData: String) {
         val version = ConfigService.getInstance().config.version
+        val safeEventData = Gson().toJson(eventData) // escaped, double-quoted JS string literal
         if (version == 3) {
-            myWebView.loadUrl("javascript:if(typeof ChatWidget !== 'undefined' && typeof ChatWidget.sendEvent === 'function'){ ChatWidget.sendEvent('$eventCode','$eventData'); }")
+            myWebView.loadUrl("javascript:if(typeof ChatWidget !== 'undefined' && typeof ChatWidget.sendEvent === 'function'){ ChatWidget.sendEvent('$eventCode',$safeEventData); }")
         } else {
-            myWebView.loadUrl("javascript:sendEvent(\'$eventCode\',\'$eventData\');")
+            myWebView.loadUrl("javascript:sendEvent('$eventCode',$safeEventData);")
         }
+    }
+
+    private fun sendInitialUserMessageIfNeeded() {
+        if (hasSentInitialUserMessage) return
+        val message = ConfigService.getInstance().config.initialUserMessage
+        if (message.isNullOrBlank()) return
+        hasSentInitialUserMessage = true
+        val payload = JsonObject().apply { addProperty("message", message) }.toString()
+        sendEvent("send-initial-user-message", payload)
     }
 
     private fun closeBot() {
