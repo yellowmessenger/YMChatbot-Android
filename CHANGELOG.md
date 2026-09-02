@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.5.1](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.1) (2026-09-02)
+
+### New Update 🚀
+* Added a native text-to-speech fallback (`speakText`/`stopSpeaking` on the `YMHandler` JS bridge, backed by `android.speech.tts.TextToSpeech`) for the web widget's "Read aloud" button, since `android.webkit.WebView` does not implement `window.speechSynthesis`.
+
+---
+
 ## [v3.5.0](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.0) (2026-08-31)
 
 ### New Update 🚀
