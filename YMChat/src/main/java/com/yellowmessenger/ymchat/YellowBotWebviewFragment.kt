@@ -68,6 +68,7 @@ class YellowBotWebviewFragment : Fragment() {
     private var hasAudioPermissionInManifest = false
     private val TAG = "YMChat"
     private lateinit var myWebView: WebView
+    private lateinit var jsInterface: JavaScriptInterface
     private lateinit var errorOverlay: FrameLayout
     private val errorPathsToValidate = listOf(
         "/widget/mobile.js",
@@ -431,10 +432,8 @@ class YellowBotWebviewFragment : Fragment() {
         myWebView.settings.allowFileAccess = false
         myWebView.settings.setGeolocationDatabasePath(context?.filesDir?.path)
         myWebView.settings.mediaPlaybackRequiresUserGesture = false
-        myWebView.addJavascriptInterface(
-            JavaScriptInterface(requireActivity(), myWebView),
-            "YMHandler"
-        )
+        jsInterface = JavaScriptInterface(requireActivity(), myWebView)
+        myWebView.addJavascriptInterface(jsInterface, "YMHandler")
         myWebView.webViewClient = object : WebViewClient() {
             override fun onReceivedError(
                 view: WebView?,
@@ -1446,6 +1445,9 @@ class YellowBotWebviewFragment : Fragment() {
     override fun onDestroy() {
         releaseVoiceScreenWakeLock()
         YMChat.getInstance().clearLocalListener()
+        if (::jsInterface.isInitialized) {
+            jsInterface.destroy()
+        }
         super.onDestroy()
     }
 
