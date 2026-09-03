@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.5.2](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.2) (2026-09-03)
+
+### Bug Fix 🐛
+* No functional change — validates the automated tag/CHANGELOG/GitHub Release pipeline end-to-end (see #134).
+
+---
+
 ## [v3.5.1](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.1) (2026-09-02)
 
 ### New Update 🚀
