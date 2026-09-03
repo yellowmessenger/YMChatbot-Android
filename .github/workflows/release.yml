@@ -1,0 +1,75 @@
+name: Release
+
+# Reproduces this repo's existing manual release process: whenever a push to
+# dev carries a versionName in app/build.gradle that hasn't been tagged yet,
+# tag that commit (vX.Y.Z) and publish a GitHub Release whose body is the
+# matching CHANGELOG.md section. JitPack publishes the library straight from
+# the tag, so tagging IS the publish step. A push to dev that isn't a release
+# (its versionName is already tagged) is a no-op.
+
+on:
+  push:
+    branches: [dev]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version from app/build.gradle
+        id: version
+        run: |
+          VERSION="$(sed -n 's/.*versionName[[:space:]]*"\([^"]*\)".*/\1/p' app/build.gradle | head -1)"
+          if [[ -z "$VERSION" ]]; then
+            echo "::error::could not read versionName from app/build.gradle"
+            exit 1
+          fi
+          echo "version=$VERSION" >> "$GITHUB_OUTPUT"
+          echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check whether this version is already released
+        id: check
+        run: |
+          if git rev-parse -q --verify "refs/tags/${{ steps.version.outputs.tag }}" >/dev/null; then
+            echo "already_tagged=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "already_tagged=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Extract CHANGELOG section
+        if: steps.check.outputs.already_tagged == 'false'
+        id: changelog
+        run: |
+          TAG="${{ steps.version.outputs.tag }}"
+          NOTES_FILE="$(mktemp)"
+          if ! ./scripts/extract_changelog_section.sh "$TAG" CHANGELOG.md > "$NOTES_FILE"; then
+            echo "::error::no CHANGELOG.md section found for $TAG"
+            exit 1
+          fi
+          echo "notes_file=$NOTES_FILE" >> "$GITHUB_OUTPUT"
+
+      - name: Create tag
+        if: steps.check.outputs.already_tagged == 'false'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag -a "$TAG" -m "$TAG"
+          git push origin "$TAG"
+
+      - name: Create GitHub Release
+        if: steps.check.outputs.already_tagged == 'false'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$TAG" \
+            --title "$TAG" \
+            --notes-file "${{ steps.changelog.outputs.notes_file }}"
