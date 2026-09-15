@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.5.3](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.3) (2026-09-15)
+
+### Bug Fix 🐛
+* Fixed the web widget's "Read aloud" button on Android: it now switches to a stop button while a message is being spoken, a second tap stops playback instead of restarting the message from the beginning, and the button resets on its own when the message finishes. The `YMHandler` JS bridge gained `isSpeaking()`, backed by `UtteranceProgressListener`, so the widget can track playback state.
+
+---
+
 ## [v3.5.2](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.2) (2026-09-03)
 
 ### Bug Fix 🐛
