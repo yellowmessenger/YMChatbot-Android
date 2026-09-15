@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.5.4](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.4) (2026-09-15)
+
+### Bug Fix 🐛
+* The "Read aloud" button no longer reads emoji out loud. Text-to-speech engines pronounce emoji by name, so "Your payment is confirmed 😊" was read as "...confirmed smiling face with smiling eyes"; emoji are now stripped before the text reaches the engine.
+
+---
+
 ## [v3.5.3](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.3) (2026-09-15)
 
 ### Bug Fix 🐛
