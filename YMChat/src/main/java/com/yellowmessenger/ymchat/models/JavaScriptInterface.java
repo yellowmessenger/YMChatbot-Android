@@ -30,7 +30,9 @@ public class JavaScriptInterface {
         mWebView = _webView;
 
         tts = new TextToSpeech(parentActivity, status -> {
-            if (status == TextToSpeech.SUCCESS) {
+            // tts may still be null here: some OEM TTS engines invoke this listener
+            // before the constructor's assignment to the tts field has completed.
+            if (status == TextToSpeech.SUCCESS && tts != null) {
                 tts.setLanguage(Locale.getDefault());
                 tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
                     @Override
