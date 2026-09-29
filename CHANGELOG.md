@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file.
 
+## [v3.5.5](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.5) (2026-09-29)
+
+### Bug Fix 🐛
+* Fixed a crash on init: `TextToSpeech.setLanguage()` could throw a `NullPointerException` on devices where the TTS engine invokes its init callback before our own field assignment completes. The callback now checks that the field is set before using it.
+
+---
+
 ## [v3.5.4](https://github.com/yellowmessenger/YMChatbot-Android/releases/tag/v3.5.4) (2026-09-15)
 
 ### Bug Fix 🐛
